@@ -1,0 +1,71 @@
+:root {
+  --main-bg-color: #000;
+  --text-main: #000;
+  --text-alt: #999;
+  --text-light: #eee;
+  --bg-dark: #111;
+  --bg-alt: #dfdfdf;
+}
+
+body {
+  font-size:18px;
+  color: var(--text-main);
+  margin: auto;
+  font-family: "Roboto", Helvetica, Arial, Sans-serif;
+  word-wrap: break-word;
+  line-height: 1.5;
+  padding: 15px;
+  max-width: 1000px;
+}
+
+#page-header {
+  padding: 0.2rem;
+  display: flex;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.nav-table th {
+  text-align: left;
+  font-weight: normal;
+}
+
+.subtle {
+  color: var(--text-alt);
+}
+
+.nav-table {
+  width: 100%;
+}
+
+.title-link {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+table.nav-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 2px solid black;
+}
+
+a {
+  color: black;
+}
+
+.nav-table tr:nth-child(even) td{ background-color: var(--bg-alt) }
+.nav-table th { background-color: var(--bg-dark); color: var(--text-light);}
+
+
+a:hover {
+  text-decoration: none;
+}
+
+.nav-table td, th {
+  padding: 0.2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+}

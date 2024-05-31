@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="/style.css">
+<title><%= @title ? @title : "fishbb" %></title>
+<body>
+  <header>
+  <div id="page-header">
+    <div id="header-title">
+    <h1>Forum Name</h1>
+    Forum Subtitle
+    </div>
+    <div style="float:right;" id="nav">
+      Resgister
+      Login
+      Search
+      Hello, (You)
+    </div>
+  </div>
+  </header>
+  <main>
+    <%= yield %>
+  </main>
+  <footer>
+    running fishbb version 0.1
+  </footer>
+</body>
+</html>
