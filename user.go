@@ -1,7 +1,7 @@
 package main
 
 type User struct {
-	id integer 
+	id       int
 	username string
 }
 

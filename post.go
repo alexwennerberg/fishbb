@@ -15,10 +15,10 @@ func createPost() {
 func updatePost() {
 }
 
-func deletePost(id int) err {
+func deletePost(id int) error {
 	return nil
 }
 
-func reportPost(id int) err {
+func reportPost(id int) error {
 	return nil
 }

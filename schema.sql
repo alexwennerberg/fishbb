@@ -1,7 +1,7 @@
 create table forums (
   id integer primary key,
   name text,
-  description text,
+  description text
 );
 
 create table threads (
@@ -9,7 +9,7 @@ create table threads (
   forumid integer,
   authorid integer,
   title text,
-  created text,
+  created text
 );
 
 create table posts (
@@ -24,18 +24,27 @@ create table posts (
 create table users (
   id integer primary key,
   username text,
+  hash text,
   email text,
-  password text,
   role text,
   avatar blob,
   active boolean,
   emailVerified boolean,
   about text,
   website text,
-  created text,
+  created text
 );
 
-create table invitations (
+create table auth (
+  userid integer,
+  hash text,
+  expiry text
 );
 
-/* create indeces TODO */
+create table config (
+  csrfkey text 
+);
+
+
+-- create table invitations (
+-- );

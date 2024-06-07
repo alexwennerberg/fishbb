@@ -1,1 +1,4 @@
 .bundle
+fishbb
+*.db
+*.db-*

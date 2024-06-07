@@ -1,8 +1,15 @@
 Setup templates -> implmement basic functionality
 
+remove fishbb.db from history
+
+panics -> log.Fatal
+come up with good logging story
+better db init / signal handling
+
 CSRF protections
 Google OAuth
 Rate limiting
+Microformats
 RRDtool integration / metrics
 search
 avatars (honk'd)
