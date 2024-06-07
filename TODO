@@ -1,0 +1,18 @@
+Setup templates -> implmement basic functionality
+
+CSRF protections
+Google OAuth
+Rate limiting
+RRDtool integration / metrics
+search
+avatars (honk'd)
+user profiles
+Notifications
+JS markdown editor
+relicense to v3
+
+Later goals:
+language selection and localization
+2fa
+json API
+full Email interface / email notifications
