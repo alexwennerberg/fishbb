@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-var stmtGetForums, stmtCreateThread, stmtCreateForum *sql.Stmt
+var stmtCreateUser, stmtGetForums, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
 func opendb() *sql.DB {
@@ -52,8 +52,15 @@ func initdb() {
 		}
 	}
 	prepareStatements(db)
+	// set default values
 	// Create admin user
 	// Set csrfkey
+
+	createForum("General", "General discussion")
+	if devMode { // create admin / admin
+		createUser("admin", "webmaster@foo", "admin", Admin)
+	}
+
 	db.Close()
 	os.Exit(0)
 }
@@ -69,5 +76,6 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, "select id, name, description from forums")
 	stmtCreateForum = prepare(db, "insert into forums (name, description) values (?, ?)")
+	stmtCreateUser = prepare(db, "insert into users (username, email, hash) values (?, ?, ?)")
 	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title, created) values (?, ?, ?, ?);")
 }

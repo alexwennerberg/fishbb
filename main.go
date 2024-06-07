@@ -9,11 +9,11 @@ import (
 var softwareVersion = "0.1.0"
 
 var config Config
-var devMode = false
+var devMode = true
 
 func main() {
 	config = NewConfig() // TODO config story
-	flag.BoolVar(&devMode, "dev", devMode, "dev mdoe")
+	flag.BoolVar(&devMode, "dev", devMode, "dev mode")
 	flag.Parse()
 	args := flag.Args()
 	cmd := "run"

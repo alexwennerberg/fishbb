@@ -1,11 +1,19 @@
 package main
 
+import "time"
+
 type Post struct {
-	id int
+}
+
+type PostSummary struct {
+	ID          int
+	Author      string
+	ThreadTitle string
+	CreatedAt   time.Time
 }
 
 // TODO paginate
-func getPosts() []Post {
+func getPosts(limit, offset int) []Post {
 	return nil
 }
 

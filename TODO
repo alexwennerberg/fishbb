@@ -1,5 +1,6 @@
 Setup templates -> implmement basic functionality
 
+-dev is not working properly?
 remove fishbb.db from history
 
 panics -> log.Fatal

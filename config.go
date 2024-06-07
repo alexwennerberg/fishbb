@@ -1,5 +1,6 @@
 package main
 
+// most of these don't work yet
 type Config struct {
 	// allow signups without approval
 	OpenSignups              bool

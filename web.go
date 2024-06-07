@@ -13,6 +13,7 @@ var views *templates.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	u := login.GetUserInfo(r)
+	u.Username = "foo"
 	// TODO add other context?
 	if u == nil && !devMode {
 		w.Header().Set("Cache-control", "max-age=60")
@@ -27,7 +28,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	tmpl["Forums"] = []Forum{}
+	tmpl["Forums"] = getForums()
 	views.Execute(w, "index.html", tmpl)
 }
 
@@ -36,6 +37,12 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	// TODO parse request
+	limit := config.PageSize
+	offset := 0
+	tmpl["Threads"] = getThreads(1, limit, offset)
+	views.Execute(w, "forum.html", tmpl)
 }
 
 func threadPage(w http.ResponseWriter, r *http.Request) {
@@ -86,8 +93,8 @@ func serve() {
 	// Setup Templates
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexPage)
-	mux.HandleFunc("GET /{forumid}", forumPage)
-	mux.HandleFunc("GET /{forumid}/{threadid}", threadPage)
+	mux.HandleFunc("GET /f/{forum}", forumPage)
+	mux.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	mux.HandleFunc("GET /user/{id}", mePage)
 	mux.HandleFunc("GET /login", loginPage)
 	mux.HandleFunc("GET /reset-password", dummy)
@@ -111,6 +118,7 @@ func serve() {
 	mux.HandleFunc("POST /ban-user", dummy)
 	mux.HandleFunc("POST /set-user-role", dummy)
 
+	log.Println("starting server")
 	err := http.ListenAndServe(config.Port, login.Checker(mux))
 	if err != nil {
 		panic(err)

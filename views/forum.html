@@ -1,14 +1,13 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="forums">
-  <tr><th style="width:66%">Forum</th><th style="width:33%">Last Post</th></tr>
-  {{ range .Forums }}
+  <tr><th style="width:50%">Thread</th><th>Replies</th><th style="width:30%">Last Post</th></tr>
+  {{ range .Threads }}
   <tr>
     <td>
-      <a class="title-link" href="/f/{{.ID}}">{{.Name}}</a><br>
-      {{.Description}}
+      <a class="title-link" href="./{{.ID}}">{{.Title}}</a><br>
+      by Author >> Timestamp
     </td>
     <td>
-      <a href="">Thread title</a><br>
       by <a href="">Author</a>
       <br>
       <span>2022-01-01</span>

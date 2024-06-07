@@ -27,7 +27,6 @@ create table users (
   hash text,
   email text,
   role text,
-  avatar blob,
   active boolean,
   emailVerified boolean,
   about text,
@@ -45,6 +44,8 @@ create table config (
   csrfkey text 
 );
 
+-- index TODO:
+-- forums on name
 
 -- create table invitations (
 -- );
