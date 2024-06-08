@@ -1,8 +1,8 @@
 # FishBB
 
-Simple forum software (as a service)
+Simple forum software
 
-ruby (sinatra) + sqlite
+go + sqlite
 
 ## Self-hosting
 
@@ -10,6 +10,6 @@ TODO
 
 ## Open Source
 Some code and ideas were taken from:
-PHPBB
-Cerca
-Honk
+* PHPBB
+* Cerca
+* Honk
