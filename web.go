@@ -77,6 +77,17 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "new-post", tmpl)
 }
 
+func createNewPost(w http.ResponseWriter, r *http.Request) {
+	u := login.GetUserInfo(r)
+	content := r.FormValue("content")
+	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
+	_, err := createPost(u.UserID, int(tid), content)
+	if err != nil {
+		// handle
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func createNewThread(w http.ResponseWriter, r *http.Request) {
 	u := login.GetUserInfo(r)
 	title := r.FormValue("title")
@@ -164,7 +175,7 @@ func serve() {
 	mux.HandleFunc("GET /thread/new", newThreadPage)
 	mux.HandleFunc("POST /thread/new", createNewThread)
 	mux.HandleFunc("GET /post/new", newPostPage)
-	mux.HandleFunc("POST /post/new", dummy)
+	mux.HandleFunc("POST /post/new", createNewPost)
 
 	mux.HandleFunc("POST /dologin", login.LoginFunc)
 	mux.HandleFunc("POST /logout", login.LogoutFunc)
