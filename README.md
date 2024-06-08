@@ -10,6 +10,6 @@ TODO
 
 ## Open Source
 Some code and ideas were taken from:
-* PHPBB
-* Cerca
-* Honk
+* [PHPBB](https://www.phpbb.com/)
+* [Cerca](https://github.com/cblgh/cerca)
+* [Honk](https://humungus.tedunangst.com/r/honk)
