@@ -1,0 +1,12 @@
+{{ template "header.html" . }}
+<h2>{{.Thread.Title}}</h2>
+<a href="/">Reply</a>
+{{ range .Posts }}
+<div id="Post">
+  <img src="/user/{{.Author.Username}}">
+  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> >> {{.Created}}
+  {{ if .Edited }}(edited {{.Edited}}){{end}}
+  {{ .Content }}
+</div>
+{{ end }}
+{{ template "footer.html" . }}

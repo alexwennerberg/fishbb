@@ -1,3 +1,10 @@
+Setup fishbb.org (cloud provider)
+
+LOGO -> link home
+
+TODO page
+markdown
+
 Setup templates -> implmement basic functionality
 
 -dev is not working properly?
@@ -9,7 +16,7 @@ better db init / signal handling
 
 CSRF protections
 Google OAuth
-Rate limiting
+Rate limiting on create thread/post
 Microformats
 RRDtool integration / metrics
 search

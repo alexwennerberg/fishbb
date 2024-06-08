@@ -1,12 +1,16 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="forums">
   <tr><th style="width:50%">Thread</th><th>Replies</th><th style="width:30%">Last Post</th></tr>
+  {{ if .User }}
+  <a href="/thread/new?forumid={{.ForumID}}">New Thread</a>
+  {{ end }}
   {{ range .Threads }}
   <tr>
     <td>
-      <a class="title-link" href="./{{.ID}}">{{.Title}}</a><br>
-      by Author >> Timestamp
+      <a class="title-link" href="/f/general/{{.ID}}">{{.Title}}</a><br>
+      by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> {{.Created}}
     </td>
+    <td>0</td>
     <td>
       by <a href="">Author</a>
       <br>

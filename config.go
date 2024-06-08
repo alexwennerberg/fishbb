@@ -4,8 +4,8 @@ package main
 type Config struct {
 	// allow signups without approval
 	OpenSignups              bool
-	Name                     string
-	Description              string
+	BoardName                string
+	BoardDescription         string
 	RequireEmailVerification bool
 	// private instances are only visible to logged in users
 	Private string
@@ -29,9 +29,11 @@ type Config struct {
 
 func NewConfig() Config {
 	return Config{
-		Port:     ":8080",
-		PageSize: 100,
-		ViewDir:  "./views/",
-		DBPath:   "fishbb.db",
+		Port:             ":8080",
+		BoardName:        "fishbb",
+		BoardDescription: "A discussion board",
+		PageSize:         100,
+		ViewDir:          "./views/",
+		DBPath:           "fishbb.db",
 	}
 }

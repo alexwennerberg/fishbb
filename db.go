@@ -2,17 +2,20 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"fishbb/login"
 	"os"
 	"strings"
 
 	_ "embed"
-	_ "github.com/mattn/go-sqlite3"
 
-	"log"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-var stmtCreateUser, stmtGetForums, stmtCreateThread, stmtCreateForum *sql.Stmt
+var stmtGetForumID,
+	stmtGetForum, stmtCreateUser, stmtGetForums,
+	stmtGetUser,
+	stmtCreatePost, stmtGetThread, stmtGetPosts,
+	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
 func opendb() *sql.DB {
@@ -29,7 +32,6 @@ var sqlSchema string
 func initdb() {
 	// set csrf key
 	dbname := config.DBPath
-	fmt.Println(dbname)
 	_, err := os.Stat(dbname)
 	if err == nil {
 		panic(dbname + "already exists")
@@ -41,13 +43,13 @@ func initdb() {
 	}
 	_, err = db.Exec("PRAGMA journal_mode=WAL")
 	if err != nil {
-		log.Print(err)
+		log.Error("unexpected error:", "error", err)
 		return
 	}
 	for _, line := range strings.Split(sqlSchema, ";") {
 		_, err = db.Exec(line)
 		if err != nil {
-			log.Print(err)
+			log.Error(line, "error", err)
 			return
 		}
 	}
@@ -75,7 +77,32 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 
 func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, "select id, name, description from forums")
-	stmtCreateForum = prepare(db, "insert into forums (name, description) values (?, ?)")
+	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
+	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
+	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash) values (?, ?, ?)")
-	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title, created) values (?, ?, ?, ?);")
+	stmtGetUser = prepare(db, "select id,username,email,role,active,about,website,created from users where id = ?  ")
+	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
+	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
+	stmtGetThreads = prepare(db, `
+		select forumid, threads.authorid, users.username, title, 
+		threads.created, threads.pinned, threads.locked
+		from threads 
+		join users on users.id = threads.authorid
+		where forumid = ?
+	`)
+	stmtGetThread = prepare(db, `
+		select threads.authorid, title, threads.authorid, users.username, 
+		threads.created, threads.pinned, threads.locked
+		from threads 
+		join users on users.id = threads.authorid
+		where threads.id = ?`)
+	stmtGetPosts = prepare(db, `
+		select posts.id, content, users.id, users.username, posts.created, posts.edited 
+		from posts 
+		join users on posts.authorid = users.id 
+		where threadid = ?`)
+	login.Init(login.InitArgs{
+		Db: db,
+	})
 }

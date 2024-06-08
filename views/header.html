@@ -8,15 +8,19 @@
   <header>
   <div id="page-header">
     <div id="header-title">
-    <h1>Forum Name</h1>
-    Forum Subtitle
+      <h1><a href="/">{{.Config.BoardName}}</a></h1>
+      {{.Config.BoardDescription}}
     </div>
     <div style="float:right;" id="nav">
-      Resgister
-      Login
       Search
+      {{ if not .User }}
+      <a href="/register">Register</a>
+      <a href="/login">Login</a>
+      {{ else }}
       Hello, {{.User.Username}}
+      Logout
+      {{ end }}
     </div>
   </div>
   </header>
-  <main>
+<main>

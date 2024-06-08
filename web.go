@@ -2,26 +2,33 @@ package main
 
 import (
 	"fishbb/login"
-	"humungus.tedunangst.com/r/webs/templates"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+
+	"humungus.tedunangst.com/r/webs/templates"
 )
 
 var views *templates.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	u := login.GetUserInfo(r)
-	u.Username = "foo"
-	// TODO add other context?
 	if u == nil && !devMode {
 		w.Header().Set("Cache-control", "max-age=60")
 	}
 	info["User"] = u
-	err := views.Execute(w, name, info)
+	info["Config"] = config
+	info["Version"] = softwareVersion
+	var title = config.BoardName
+	if name != "index" {
+		title += " > " + name
+	}
+	info["Title"] = config.BoardName // TODO better
+	err := views.Execute(w, name+".html", info)
 	if err != nil {
-		log.Printf("foo") // TODO logging story
+		log.Error(err.Error())
 		// TODO server error
 	}
 }
@@ -29,28 +36,81 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	tmpl["Forums"] = getForums()
-	views.Execute(w, "index.html", tmpl)
+	serveHTML(w, r, "index", tmpl)
 }
 
-func mePage(w http.ResponseWriter, r *http.Request) {
-	// if path == "me" special case
+func userPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	uid, _ := strconv.Atoi(r.PathValue("id"))
+	tmpl["InfoUser"] = getUser(uid)
+	serveHTML(w, r, "user", tmpl)
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	// TODO parse request
 	limit := config.PageSize
 	offset := 0
+	tmpl["ForumID"] = getForumID(r.PathValue("forum"))
 	tmpl["Threads"] = getThreads(1, limit, offset)
-	views.Execute(w, "forum.html", tmpl)
+	serveHTML(w, r, "forum", tmpl)
 }
 
 func threadPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	threadID, _ := strconv.Atoi(r.PathValue("threadid"))
+	var limit, offset = 0, 0 // TODO
+	tmpl["Thread"] = getThread(threadID)
+	tmpl["Posts"] = getPosts(threadID, limit, offset)
+	serveHTML(w, r, "thread", tmpl)
+}
+
+func newThreadPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
+	tmpl["Forum"] = getForum(forumID)
+	serveHTML(w, r, "new-thread", tmpl)
+}
+
+func newPostPage(w http.ResponseWriter, r *http.Request) {
+	// ...
+	tmpl := make(map[string]any)
+	serveHTML(w, r, "new-post", tmpl)
+}
+
+func createNewThread(w http.ResponseWriter, r *http.Request) {
+	u := login.GetUserInfo(r)
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
+	tid, err := createThread(u.UserID, forumID, title)
+	if err != nil {
+		// handle
+	}
+	_, err = createPost(u.UserID, int(tid), content)
+	if err != nil {
+		// handle
+	}
+	slug := getForum(forumID).Slug
+	http.Redirect(w, r, fmt.Sprintf("/f/%s/%d", slug, tid), http.StatusSeeOther)
 }
 
 func loginPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	u := login.GetUserInfo(r)
+	if u != nil {
+		// Redirect home
+	}
+	serveHTML(w, r, "login", tmpl)
 }
 
+func registerPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	u := login.GetUserInfo(r)
+	if u != nil {
+		// Redirect home
+	}
+	serveHTML(w, r, "register", tmpl)
+}
 func serveAsset(w http.ResponseWriter, r *http.Request) {
 	if !devMode {
 		w.Header().Set("Cache-Control", "max-age=604800")
@@ -95,31 +155,32 @@ func serve() {
 	mux.HandleFunc("/", indexPage)
 	mux.HandleFunc("GET /f/{forum}", forumPage)
 	mux.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
-	mux.HandleFunc("GET /user/{id}", mePage)
+	mux.HandleFunc("GET /user/{id}", userPage)
 	mux.HandleFunc("GET /login", loginPage)
+	mux.HandleFunc("GET /register", registerPage)
 	mux.HandleFunc("GET /reset-password", dummy)
 	mux.HandleFunc("GET /search", dummy)
 	mux.HandleFunc("GET /style.css", serveAsset)
+	mux.HandleFunc("GET /thread/new", newThreadPage)
+	mux.HandleFunc("POST /thread/new", createNewThread)
+	mux.HandleFunc("GET /post/new", newPostPage)
+	mux.HandleFunc("POST /post/new", dummy)
 
-	// TODO rss
-
-	mux.HandleFunc("POST /login", login.LoginFunc)
+	mux.HandleFunc("POST /dologin", login.LoginFunc)
 	mux.HandleFunc("POST /logout", login.LogoutFunc)
 
-	mux.HandleFunc("POST /new-thread", dummy)
-	mux.HandleFunc("POST /new-post", dummy)
-	mux.HandleFunc("POST /delete-post", dummy)
-	mux.HandleFunc("POST /edit-post", dummy)
-	mux.HandleFunc("POST /update-thread-meta", dummy)
-	mux.HandleFunc("POST /update-user", dummy)
-	mux.HandleFunc("POST /reset-password", dummy)
+	mux.HandleFunc("POST /post/{id}/delete", dummy)
+	mux.HandleFunc("POST /post/{id}/edit", dummy)
+	mux.HandleFunc("POST /thread/{id}/update-meta", dummy)
+	mux.HandleFunc("POST /user/{id}/update", dummy)
+	mux.HandleFunc("POST /user/{id}/reset-password", dummy)
 
 	// admin functions
 	mux.HandleFunc("POST /ban-user", dummy)
 	mux.HandleFunc("POST /set-user-role", dummy)
 
-	log.Println("starting server")
-	err := http.ListenAndServe(config.Port, login.Checker(mux))
+	log.Debug("starting server")
+	err := http.ListenAndServe(config.Port, logRequest(login.Checker(mux)))
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,9 @@
 create table forums (
   id integer primary key,
   name text,
-  description text
+  description text,
+  slug text,
+  created datetime default CURRENT_TIMESTAMP
 );
 
 create table threads (
@@ -9,16 +11,19 @@ create table threads (
   forumid integer,
   authorid integer,
   title text,
-  created text
+  locked boolean not null default false,
+  pinned boolean not null default false,
+  created datetime default CURRENT_TIMESTAMP
 );
 
 create table posts (
   id integer primary key,
   threadid integer,
   authorid integer,
+  content text,
   reports integer,
-  created text,
-  edited text
+  created datetime default CURRENT_TIMESTAMP,
+  edited datetime
 );
 
 create table users (
@@ -27,11 +32,11 @@ create table users (
   hash text,
   email text,
   role text,
-  active boolean,
-  emailVerified boolean,
+  active boolean not null default false,
+  emailVerified boolean not null default false,
   about text,
   website text,
-  created text
+  created datetime default CURRENT_TIMESTAMP
 );
 
 create table auth (
@@ -46,6 +51,10 @@ create table config (
 
 -- index TODO:
 -- forums on name
+-- posts on threadid
 
 -- create table invitations (
 -- );
+
+-- create table reports
+-- create table notifications

@@ -39,7 +39,7 @@ import (
 
 // represents a logged in user
 type UserInfo struct {
-	UserID   int64
+	UserID   int
 	Username string
 }
 
@@ -209,22 +209,19 @@ type InitArgs struct {
 // auth table with (userid, hash, expiry) columns.
 // Requires a config table with (key, value) ('csrfkey', some secret).
 func Init(args InitArgs) {
-	if args.Logger != nil {
-		logger = args.Logger
-	} else {
-		logger = log.New(os.Stderr, "", log.LstdFlags)
-	}
+	// TODO logger
+	logger = log.New(os.Stderr, "", log.LstdFlags)
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select userid, hash from users where username = ? and userid > 0")
+	stmtUserName, err = db.Prepare("select id, hash from users where username = ? and id > 0")
 	if err != nil {
 		logger.Panic(err)
 	}
-	stmtUserAuth, err = db.Prepare("select users.userid, username, expiry from users join auth on users.userid = auth.userid where auth.hash = ? and expiry > ?")
+	stmtUserAuth, err = db.Prepare("select users.id, username, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
 		logger.Panic(err)
 	}
-	stmtUpdateUser, err = db.Prepare("update users set hash = ? where userid = ?")
+	stmtUpdateUser, err = db.Prepare("update users set hash = ? where id = ?")
 	if err != nil {
 		logger.Panic(err)
 	}
@@ -355,9 +352,9 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 	return userinfo, ok
 }
 
-func loaduser(username string) (int64, []byte, bool) {
+func loaduser(username string) (int, []byte, bool) {
 	row := stmtUserName.QueryRow(username)
-	var userid int64
+	var userid int
 	var hash []byte
 	err := row.Scan(&userid, &hash)
 	if err != nil {
@@ -457,7 +454,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteauth(userid int64) error {
+func deleteauth(userid int) error {
 	defer validcookies.Flush()
 	_, err := stmtDeleteAuth.Exec(userid)
 	return err
@@ -575,7 +572,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 }
 
 // Set password for a user.
-func SetPassword(userid int64, newpass string) error {
+func SetPassword(userid int, newpass string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(newpass), 12)
 	if err != nil {
 		logger.Printf("error generating hash: %s", err)

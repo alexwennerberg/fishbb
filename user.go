@@ -1,8 +1,23 @@
 package main
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type Role string
+
+type User struct {
+	ID       int
+	Username string
+	Email    string
+	Role     *Role
+	Active   *bool
+	About    *string
+	Website  *string
+	Created  time.Time
+}
 
 var Admin Role = "admin"
 var Mod Role = "mod"
@@ -17,5 +32,10 @@ func createUser(username, email, password string, role Role) error {
 	return err
 }
 
-func updateUserDetails() {
+func getUser(id int) User {
+	row := stmtGetUser.QueryRow(id)
+	var u User
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created)
+	logIfErr(err)
+	return u
 }

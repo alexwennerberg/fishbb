@@ -1,0 +1,15 @@
+{{ template "header.html" . }}
+<main>
+  <h1>Creating Thread in {{.Forum.Name}}</h1>
+    <form method="POST">
+        <div class="post-container" >
+            <label for="title">Thread Title:</label>
+            <input required name="title" type="text" id="Title">
+            <label for="content">Content:</label>
+            <textarea required name="content" id="content" placeholder='I have something to say...'></textarea>
+            <a href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">markdown guide</a>
+            <button type="submit">Create</button>
+        </div>
+    </form>
+</main>
+{{ template "footer.html" . }}
