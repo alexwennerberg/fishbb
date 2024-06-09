@@ -79,7 +79,7 @@ func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
 		select forums.id, name, description,
 		threadid, latest.title, latest.id, latest.authorid,
-		latest.username, cast(latest.created as datetime)
+		latest.username, latest.created
 		from forums
 		join (
 			select threadid, threads.title, posts.id, threads.authorid,

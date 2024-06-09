@@ -1,11 +1,15 @@
 :root {
   --text: #000;
   --text-inverse: #fff;
-  --text-alt: #777;
+  --text-alt: #677;
   --bg: #fff;
   --bg-inverse: #222;
   --bg-alt: #eee;
   --border: #000;
+}
+
+.text-alt {
+    color: var(--text-alt)
 }
 
 button {

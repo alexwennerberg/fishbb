@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var timeISO8601 = "2006-01-02 15:04:05"
+
 // generic log err function
 // non-blocking
 func logIfErr(err error) {

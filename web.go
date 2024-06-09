@@ -148,10 +148,12 @@ func loadTemplates() *template.Template {
 			toload = append(toload, viewDir+name)
 		}
 	}
-	views, _ := template.ParseFiles(toload...)
-	views.Funcs(template.FuncMap{
+	views, err :=  template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
-	})
+	}).ParseFiles(toload...)
+	if err != nil {
+		panic(err)
+	}
 	return views
 }
 

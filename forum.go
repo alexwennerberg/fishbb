@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type Forum struct {
 	ID          int
@@ -43,7 +45,8 @@ func getForums() []Forum {
 			&f.LastPost.ID,
 			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created)
 		logIfErr(err)
-		f.LastPost.Created, _ = time.Parse(time.RFC3339, created)
+		f.LastPost.Created, err = time.Parse(timeISO8601, created)
+		logIfErr(err)
 		f.Slug = slugify(f.Name)
 		forums = append(forums, f)
 	}
