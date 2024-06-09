@@ -7,11 +7,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"humungus.tedunangst.com/r/webs/templates"
+	"text/template"
 )
 
-var views *templates.Template
+var views *template.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	u := login.GetUserInfo(r)
@@ -26,7 +25,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 		title += " > " + name
 	}
 	info["Title"] = config.BoardName // TODO better
-	err := views.Execute(w, name+".html", info)
+	err := views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
 		log.Error(err.Error())
 		// TODO server error
@@ -136,7 +135,7 @@ func serveAsset(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, config.ViewDir+r.URL.Path)
 }
 
-func loadTemplates() *templates.Template {
+func loadTemplates() *template.Template {
 	var toload []string
 	viewDir := config.ViewDir
 	temps, err := os.ReadDir(viewDir)
@@ -149,7 +148,10 @@ func loadTemplates() *templates.Template {
 			toload = append(toload, viewDir+name)
 		}
 	}
-	views := templates.Load(devMode, toload...)
+	views, _ := template.ParseFiles(toload...)
+	views.Funcs(template.FuncMap{
+		"timeago": timeago,
+	})
 	return views
 }
 

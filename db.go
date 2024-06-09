@@ -76,7 +76,21 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 }
 
 func prepareStatements(db *sql.DB) {
-	stmtGetForums = prepare(db, "select id, name, description from forums")
+	stmtGetForums = prepare(db, `
+		select forums.id, name, description,
+		threadid, latest.title, latest.id, latest.authorid,
+		latest.username, cast(latest.created as datetime)
+		from forums
+		join (
+			select threadid, threads.title, posts.id, threads.authorid,
+			users.username, max(posts.created) as created, forumid	
+			from posts 
+			join users on users.id = posts.authorid
+			join threads on posts.threadid = threads.id
+			group by forumid 
+		) latest on latest.forumid = forums.id
+
+`)
 	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")

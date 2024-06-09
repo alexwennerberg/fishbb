@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type Forum struct {
 	ID          int
 	Name        string
@@ -16,7 +18,8 @@ func createForum(name, description string) error {
 func getForum(fid int) Forum {
 	row := stmtGetForum.QueryRow(fid)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug,
+)
 	logIfErr(err)
 	return f
 }
@@ -34,8 +37,13 @@ func getForums() []Forum {
 	rows, _ := stmtGetForums.Query()
 	for rows.Next() {
 		var f Forum
-		err := rows.Scan(&f.ID, &f.Name, &f.Description)
+		var created string
+		err := rows.Scan(&f.ID, &f.Name, &f.Description,
+			&f.LastPost.ThreadID, &f.LastPost.ThreadTitle,
+			&f.LastPost.ID,
+			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created)
 		logIfErr(err)
+		f.LastPost.Created, _ = time.Parse(time.RFC3339, created)
 		f.Slug = slugify(f.Name)
 		forums = append(forums, f)
 	}

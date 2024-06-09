@@ -12,9 +12,10 @@ type Post struct {
 
 type PostSummary struct {
 	ID          int
-	Author      string
+	Author      User
+	ThreadID string
 	ThreadTitle string
-	CreatedAt   time.Time
+	Created   time.Time
 }
 
 // TODO paginate

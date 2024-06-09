@@ -49,9 +49,8 @@ create table config (
   csrfkey text 
 );
 
--- index TODO:
--- forums on name
--- posts on threadid
+create index idxforums_slug on forums(slug);
+create index idxposts_threadid on posts(threadid);
 
 -- create table invitations (
 -- );
