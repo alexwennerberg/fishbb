@@ -1,7 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha512"
+	"image"
+	"image/png"
 	"net/http"
+
 	"strings"
 )
 
@@ -44,16 +49,6 @@ func logRequest(handler http.Handler) http.Handler {
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-import (
-	"bytes"
-	"crypto/sha512"
-	"fmt"
-	"image"
-	"image/png"
-	"io/ioutil"
-	"os"
-)
 
 // Modify the four colors used
 // TODO align with css

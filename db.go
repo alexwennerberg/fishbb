@@ -86,9 +86,18 @@ func prepareStatements(db *sql.DB) {
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetThreads = prepare(db, `
 		select forumid, threads.authorid, users.username, title, 
-		threads.created, threads.pinned, threads.locked
+		threads.created, threads.pinned, threads.locked,
+		latest.id, latest.authorid, latest.username, latest.created,
+		latest.replies
 		from threads 
 		join users on users.id = threads.authorid
+		join (
+			select threadid, posts.id, authorid, users.username, max(posts.created) as created, count(1) as replies
+			from posts 
+			join users on users.id = posts.authorid
+			group by threadid
+		) latest
+		on latest.threadid = threads.id
 		where forumid = ?
 	`)
 	stmtGetThread = prepare(db, `

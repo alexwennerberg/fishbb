@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Thread struct {
 	ID      int
@@ -9,6 +12,8 @@ type Thread struct {
 	Created time.Time
 	Pinned  bool
 	Locked  bool
+	Latest Post
+	Replies int
 }
 
 // TODO paginate
@@ -17,8 +22,13 @@ func getThreads(forumID, limit, offset int) []Thread {
 	rows, _ := stmtGetThreads.Query(forumID)
 	for rows.Next() {
 		var t Thread
-		err := rows.Scan(&t.ID, &t.Author.ID, &t.Author.Username, &t.Title, &t.Created, &t.Pinned, &t.Locked)
+		err := rows.Scan(
+			&t.ID, &t.Author.ID, &t.Author.Username, &t.Title, 
+			&t.Created, &t.Pinned, &t.Locked,
+			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
+			&t.Latest.Created, &t.Replies)
 		logIfErr(err)
+		fmt.Print(t.Replies)
 		threads = append(threads, t)
 	}
 	return threads

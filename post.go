@@ -6,7 +6,7 @@ type Post struct {
 	ID      int
 	Content string // TODO markdown
 	Author  User
-	Created time.Time
+	Created string // TODO
 	Edited  *time.Time
 }
 

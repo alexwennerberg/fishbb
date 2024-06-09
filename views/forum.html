@@ -10,11 +10,12 @@
       <a class="title-link" href="/f/general/{{.ID}}">{{.Title}}</a><br>
       by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> {{.Created}}
     </td>
-    <td>0</td>
+	<td>{{.Replies}}</td>
     <td>
-      by <a href="">Author</a>
+		<a href="/">X</a>
+		by <a href="/user/{{.Latest.Author.ID}}">{{.Latest.Author.Username}}</a>
       <br>
-      <span>2022-01-01</span>
+	  <span>{{.Latest.Created}}</span>
     </td>
   </tr>
   {{ end }}
