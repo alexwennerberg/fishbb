@@ -1,28 +1,60 @@
 :root {
-  --main-bg-color: #000;
-  --text-main: #000;
-  --text-alt: #999;
-  --text-light: #eee;
-  --bg-dark: #111;
-  --bg-alt: #dfdfdf;
+  --text: #000;
+  --text-inverse: #fff;
+  --text-alt: #777;
+  --bg: #fff;
+  --bg-inverse: #222;
+  --bg-alt: #eee;
+  --border: #000;
+}
+
+button {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--bg-inverse);
+  font-size: 16px;
+  margin: 0.2rem;
+}
+
+input {
+  border: 1px solid black;
+}
+
+button:hover {
+  color: var(--text-inverse);
+  background-color: var(--bg-inverse);
 }
 
 body {
-  font-size:18px;
-  color: var(--text-main);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size:16px;
+  color: var(--text);
   margin: auto;
   font-family: "Roboto", Helvetica, Arial, Sans-serif;
   word-wrap: break-word;
   line-height: 1.5;
-  padding: 15px;
   max-width: 1000px;
 }
 
+.form-inline {
+  display:inline;
+}
 #page-header {
-  padding: 0.2rem;
+  padding: 0.5rem;
   display: flex;
+  justify-content: space-between;
   margin-bottom: 1rem;
-  width: 100%;
+  border-bottom: 1px solid black;
+}
+
+footer {
+  padding: 0.4rem;
+  font-size: 14px;
+  border-top: 1px solid var(--border);
+  text-align:center;
+  color: var(--text-alt);
 }
 
 .nav-table th {
@@ -46,15 +78,14 @@ body {
 table.nav-table {
   border-collapse: collapse;
   table-layout: fixed;
-  border: 2px solid black;
 }
 
 a {
-  color: black;
+  color: var(--text);
 }
 
 .nav-table tr:nth-child(even) td{ background-color: var(--bg-alt) }
-.nav-table th { background-color: var(--bg-dark); color: var(--text-light);}
+.nav-table th { background-color: var(--bg-inverse); color: var(--text-inverse);}
 
 
 a:hover {
@@ -71,7 +102,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post {
-  border: 1px solid black;
+  border: 1px solid var(--bg-inverse);
 }
 .post-meta { 
   border-bottom: 1px solid lightgray;

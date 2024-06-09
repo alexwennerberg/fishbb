@@ -2,7 +2,7 @@
 <table class="nav-table" id="forums">
   <tr><th style="width:50%">Thread</th><th>Replies</th><th style="width:30%">Last Post</th></tr>
   {{ if .User }}
-  <a href="/thread/new?forumid={{.ForumID}}">New Thread</a>
+  <a href="/thread/new?forumid={{.ForumID}}"><button>New Thread</button></a>
   {{ end }}
   {{ range .Threads }}
   <tr>

@@ -3,7 +3,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="/style.css">
-<title>fishbb</title>
+<title>{{.Title}}</title>
 <body>
   <header>
   <div id="page-header">
@@ -11,15 +11,19 @@
       <h1><a href="/">{{.Config.BoardName}}</a></h1>
       {{.Config.BoardDescription}}
     </div>
-    <div style="float:right;" id="nav">
-      Search
+    <div id="nav">
       {{ if not .User }}
       <a href="/register">Register</a>
       <a href="/login">Login</a>
       {{ else }}
-      Hello, {{.User.Username}}
-      Logout
+	  Hello, <a href="/me">{{.User.Username}}</a>
+	  <a href="/">Logout</a>
       {{ end }}
+	  <br>
+	<form method="GET" class="form-inline">
+		<input style="width:10rem;"></input>	
+		<button type="Submit">Search</button>
+	</form>
     </div>
   </div>
   </header>
