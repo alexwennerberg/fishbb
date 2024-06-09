@@ -49,8 +49,9 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	limit := config.PageSize
 	offset := 0
-	tmpl["ForumID"] = getForumID(r.PathValue("forum"))
-	tmpl["Threads"] = getThreads(1, limit, offset)
+	fid := getForumID(r.PathValue("forum"))
+	tmpl["ForumID"] = fid
+	tmpl["Threads"] = getThreads(fid, limit, offset)
 	serveHTML(w, r, "forum", tmpl)
 }
 

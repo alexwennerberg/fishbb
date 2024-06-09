@@ -99,7 +99,7 @@ func prepareStatements(db *sql.DB) {
 	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetThreads = prepare(db, `
-		select forumid, threads.authorid, users.username, title, 
+		select threadid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,
 		latest.id, latest.authorid, latest.username, latest.created,
 		latest.replies - 1
