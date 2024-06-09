@@ -1,23 +1,24 @@
 Setup fishbb.org (cloud provider)
 
-Cleanup markdown parsing for thrad body
+
+1. Get permissions story working 
+-> Implement edit and delete
+-> Implement user profiles
+2. Get post pagination working
+3. Get thread pagination working
+
+Cleanup markdown parsing for thrad body CSS
 
 URL Hover to show full TS
 Timestamp into a template snippet
 
-LOGO -> link home
 robots.txt
-
-Figure out times on sqlite
-
-TODO page
-markdown
-
-Setup templates -> implmement basic functionality
 
 -dev is not working properly?
 remove fishbb.db from history
 
+
+LATER:
 panics -> log.Fatal
 come up with good logging story
 better db init / signal handling

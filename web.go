@@ -32,7 +32,22 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	}
 }
 
+func errorPage(w http.ResponseWriter, r *http.Request, code int, message string) {
+	tmpl := make(map[string]any)
+	w.WriteHeader(code)
+	tmpl["Error"] = strconv.Itoa(code) + " " + http.StatusText(code) + " " + message
+	serveHTML(w, r, "error", tmpl)
+}
+
+func notFound(w http.ResponseWriter, r *http.Request) {
+	errorPage(w,r,http.StatusNotFound,"")
+}
+
 func indexPage(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		notFound(w,r)
+		return
+	}
 	tmpl := make(map[string]any)
 	tmpl["Forums"] = getForums()
 	serveHTML(w, r, "index", tmpl)
