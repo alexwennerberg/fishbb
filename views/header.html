@@ -7,8 +7,9 @@
 <body>
   <header>
   <div id="page-header">
-    <div id="header-title">
-      <h1><a href="/">{{.Config.BoardName}}</a></h1>
+	  <div>
+		  <a href="/"><img src="/a?a={{.Config.BoardName}}" width=18px></a>
+		  <a href="/" class="title-link">{{.Config.BoardName}}</a><br>
       {{.Config.BoardDescription}}
     </div>
     <div id="nav">

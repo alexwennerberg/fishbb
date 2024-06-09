@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"crypto/sha512"
+	"fmt"
 	"image"
 	"image/png"
 	"net/http"
+	"time"
 
 	"strings"
 )
@@ -82,4 +84,33 @@ func genAvatar(name string) []byte {
 	var buf bytes.Buffer
 	png.Encode(&buf, img)
 	return buf.Bytes()
+}
+
+const solarYearSecs = 31556926
+
+// timeago if < 1 year, else yyyy-mm-dd
+func timeago(t *time.Time) string {
+	d := time.Since(*t)
+	var metric string
+	var amount int
+	if d.Seconds() < 60 {
+		amount = int(d.Seconds())
+		metric = "second"
+	} else if d.Minutes() < 60 {
+		amount = int(d.Minutes())
+		metric = "minute"
+	} else if d.Hours() < 24 {
+		amount = int(d.Hours())
+		metric = "hour"
+	} else if d.Seconds() < solarYearSecs {
+		amount = int(d.Hours()) / 24
+		metric = "day"
+	} else {
+		return t.Format("2006-02-01")
+	}
+	if amount == 1 {
+		return fmt.Sprintf("%d %s ago", amount, metric)
+	} else {
+		return fmt.Sprintf("%d %ss ago", amount, metric)
+	}
 }
