@@ -23,6 +23,12 @@ button {
   margin: 0.3rem;
 }
 
+.post-entry {
+  width: 90%;
+  height: 200px;
+  margin: 0.3rem;
+}
+
 input {
   border: 1px solid black;
 }
@@ -97,7 +103,9 @@ a {
   font-weight: bold;
   background-color: var(--bg-inverse); color: var(--text-inverse);
 }
-
+.div-header a {
+  color: var(--text-inverse);
+}
 
 a:hover {
   text-decoration: none;

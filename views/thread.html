@@ -9,7 +9,7 @@
   {{ if .Edited }}(edited {{.Edited}}){{end}}
   </div>
   <div class="post-body">
-  {{ .Content }}
+  {{ markup .Content }}
   </div>
 </div>
 {{ end }}

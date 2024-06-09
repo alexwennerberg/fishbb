@@ -113,6 +113,7 @@ func prepareStatements(db *sql.DB) {
 		) latest
 		on latest.threadid = threads.id
 		where forumid = ?
+		order by latest.created desc
 	`)
 	stmtGetThread = prepare(db, `
 		select threads.authorid, title, threads.authorid, users.username, 

@@ -1,13 +1,12 @@
 {{ template "header.html" . }}
 <main>
-  <div class="div-header">Creating Thread in {{.Forum.Name}}</div>
+	<div class="div-header">Creating Thread in <a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a></div>
     <form method="POST">
         <div class="body-form" >
 			<label for="title">Thread Title:</label><br>
 			<input required name="title" type="text" id="Title"><br>
-			<a href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">markdown guide</a>
 			<label for="content">Content:</label><br>
-			<textarea required name="content" id="content" placeholder='I have something to say...'></textarea><br>
+			<textarea class="post-entry" required name="content" id="content" placeholder='I have something to say...'></textarea><br>
             <button type="submit">Create</button>
         </div>
     </form>

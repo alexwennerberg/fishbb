@@ -150,6 +150,7 @@ func loadTemplates() *template.Template {
 	}
 	views, err :=  template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
+		"markup": markup,
 	}).ParseFiles(toload...)
 	if err != nil {
 		panic(err)

@@ -7,4 +7,7 @@ require (
 	humungus.tedunangst.com/r/webs v0.7.17
 )
 
-require golang.org/x/crypto v0.12.0
+require (
+	github.com/yuin/goldmark v1.7.1
+	golang.org/x/crypto v0.12.0
+)
