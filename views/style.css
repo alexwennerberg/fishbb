@@ -85,6 +85,11 @@ a {
 
 .nav-table tr:nth-child(even) td{ background-color: var(--bg-alt) }
 .nav-table th { background-color: var(--bg-inverse); color: var(--text-inverse);}
+.div-header { 
+  padding: 0.2rem;
+  font-weight: bold;
+  background-color: var(--bg-inverse); color: var(--text-inverse);
+}
 
 
 a:hover {
@@ -105,4 +110,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 .post-meta { 
   border-bottom: 1px solid lightgray;
+  background: var(--bg-alt);
+}
+
+.post-body {
+  padding: 0.4rem;
 }

@@ -105,6 +105,13 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/f/%s/%d", slug, tid), http.StatusSeeOther)
 }
 
+// hashes string and builds png avatar
+func avatarHandler(w http.ResponseWriter, r *http.Request) {
+	in := r.FormValue("a")
+	w.Header().Set("Cache-Control", "max-age=604800")
+	w.Write(genAvatar(in))
+}
+
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	u := login.GetUserInfo(r)
@@ -173,6 +180,7 @@ func serve() {
 	mux.HandleFunc("GET /search", dummy)
 	mux.HandleFunc("GET /style.css", serveAsset)
 	mux.HandleFunc("GET /thread/new", newThreadPage)
+	mux.HandleFunc("GET /a", avatarHandler)
 	mux.HandleFunc("POST /thread/new", createNewThread)
 	mux.HandleFunc("GET /post/new", newPostPage)
 	mux.HandleFunc("POST /post/new", createNewPost)
