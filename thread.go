@@ -22,11 +22,14 @@ func getThreads(forumID, limit, offset int) []Thread {
 	rows, _ := stmtGetThreads.Query(forumID)
 	for rows.Next() {
 		var t Thread
+		var created string
 		err := rows.Scan(
 			&t.ID, &t.Author.ID, &t.Author.Username, &t.Title, 
 			&t.Created, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
-			&t.Latest.Created, &t.Replies)
+			&created, &t.Replies)
+		logIfErr(err)
+		t.Latest.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		fmt.Print(t.Replies)
 		threads = append(threads, t)

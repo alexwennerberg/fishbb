@@ -102,7 +102,7 @@ func prepareStatements(db *sql.DB) {
 		select forumid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,
 		latest.id, latest.authorid, latest.username, latest.created,
-		latest.replies
+		latest.replies - 1
 		from threads 
 		join users on users.id = threads.authorid
 		join (

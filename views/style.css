@@ -17,7 +17,10 @@ button {
   color: var(--text);
   border: 1px solid var(--bg-inverse);
   font-size: 16px;
-  margin: 0.2rem;
+}
+
+.top-button {
+  margin: 0.3rem;
 }
 
 input {
@@ -87,7 +90,7 @@ a {
   color: var(--text);
 }
 
-.nav-table tr:nth-child(even) td{ background-color: var(--bg-alt) }
+.nav-table tr:nth-child(even) td { background-color: var(--bg-alt); }
 .nav-table th { background-color: var(--bg-inverse); color: var(--text-inverse);}
 .div-header { 
   padding: 0.2rem;

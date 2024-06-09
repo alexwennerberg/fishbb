@@ -1,21 +1,20 @@
 {{ template "header.html" . }}
-<table class="nav-table" id="forums">
-  <tr><th style="width:50%">Thread</th><th>Replies</th><th style="width:30%">Last Post</th></tr>
+<table class="nav-table" id="threads">
+  <tr><th style="width:50%">Thread</th><th style="text-align:center;">Replies</th><th style="width:35%">Last Post</th></tr>
   {{ if .User }}
-  <a href="/thread/new?forumid={{.ForumID}}"><button>New Thread</button></a>
+  <a href="/thread/new?forumid={{.ForumID}}"><button class="top-button">New Thread</button></a>
   {{ end }}
   {{ range .Threads }}
   <tr>
     <td>
       <a class="title-link" href="/f/general/{{.ID}}">{{.Title}}</a><br>
-      by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> {{.Created}}
+	  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created }}</span>
     </td>
-	<td>{{.Replies}}</td>
+	<td style="text-align:center;">{{.Replies}}</td>
     <td>
 		<a href="/">X</a>
 		by <a href="/user/{{.Latest.Author.ID}}">{{.Latest.Author.Username}}</a>
-      <br>
-	  <span>{{.Latest.Created}}</span>
+	  <span class="text-alt">{{ timeago .Latest.Created }}</span>
     </td>
   </tr>
   {{ end }}
