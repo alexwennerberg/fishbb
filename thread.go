@@ -7,6 +7,7 @@ import (
 
 type Thread struct {
 	ID      int
+	ForumID int
 	Title   string
 	Author  User
 	Created time.Time
@@ -24,7 +25,7 @@ func getThreads(forumID, limit, offset int) []Thread {
 		var t Thread
 		var created string
 		err := rows.Scan(
-			&t.ID, &t.Author.ID, &t.Author.Username, &t.Title, 
+			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title, 
 			&t.Created, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
 			&created, &t.Replies)
@@ -40,7 +41,7 @@ func getThreads(forumID, limit, offset int) []Thread {
 func getThread(threadid int) Thread {
 	row := stmtGetThread.QueryRow(threadid)
 	var t Thread
-	err := row.Scan(&t.ID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Created, &t.Pinned, &t.Locked)
+	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Created, &t.Pinned, &t.Locked)
 	logIfErr(err)
 	return t
 }

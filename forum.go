@@ -20,8 +20,7 @@ func createForum(name, description string) error {
 func getForum(fid int) Forum {
 	row := stmtGetForum.QueryRow(fid)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug,
-)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
 	logIfErr(err)
 	return f
 }

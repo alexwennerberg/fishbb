@@ -1,6 +1,8 @@
 {{ template "header.html" . }}
-<h2>User {{.InfoUser.Username}}</h2><br>
-{{.InfoUser.About}}<br>
-{{.InfoUser.Website}}<br>
-{{.InfoUser.Created}}<br>
+<div class="div-header">User {{.InfoUser.Username}}</div>
+<div class="body-padded">
+About: {{.InfoUser.About}}<br>
+Website: {{.InfoUser.Website}}<br>
+Created: {{.InfoUser.Created}}<br>
+Post Count: {{.InfoUser.Posts}}<br></div></div>
 {{ template "footer.html" . }}

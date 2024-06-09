@@ -95,11 +95,17 @@ func prepareStatements(db *sql.DB) {
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash) values (?, ?, ?)")
-	stmtGetUser = prepare(db, "select id,username,email,role,active,about,website,created from users where id = ?  ")
+	stmtGetUser = prepare(db, `
+		select users.id,username,email,role,active,about,website,users.created, count(1)
+		from users 
+		join posts on users.id = posts.authorid
+		where users.id = ?  
+		group by users.id
+		`)
 	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetThreads = prepare(db, `
-		select threadid, threads.authorid, users.username, title, 
+		select threadid, forumid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,
 		latest.id, latest.authorid, latest.username, latest.created,
 		latest.replies - 1
@@ -116,7 +122,7 @@ func prepareStatements(db *sql.DB) {
 		order by latest.created desc
 	`)
 	stmtGetThread = prepare(db, `
-		select threads.authorid, title, threads.authorid, users.username, 
+		select threads.authorid, forumid, title, threads.authorid, users.username, 
 		threads.created, threads.pinned, threads.locked
 		from threads 
 		join users on users.id = threads.authorid

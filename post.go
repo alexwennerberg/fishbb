@@ -24,10 +24,7 @@ func getPosts(threadid, limit, offset int) []Post {
 	rows, _ := stmtGetPosts.Query(threadid)
 	for rows.Next() {
 		var p Post
-		var created string
-		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &created, &p.Edited)
-		logIfErr(err)
-		p.Created, err = time.Parse(timeISO8601, created)
+		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
 		logIfErr(err)
 		posts = append(posts, p)
 	}

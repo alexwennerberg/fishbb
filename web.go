@@ -58,8 +58,11 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 func threadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	threadID, _ := strconv.Atoi(r.PathValue("threadid"))
+	fid := getForumID(r.PathValue("forum"))
+	forum := getForum(fid)
 	var limit, offset = 0, 0 // TODO
 	tmpl["Thread"] = getThread(threadID)
+	tmpl["Forum"] = forum
 	tmpl["Posts"] = getPosts(threadID, limit, offset)
 	serveHTML(w, r, "thread", tmpl)
 }
@@ -72,8 +75,11 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func newPostPage(w http.ResponseWriter, r *http.Request) {
-	// ...
 	tmpl := make(map[string]any)
+	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
+	thread := getThread(tid)
+	tmpl["Thread"] = thread
+	tmpl["Forum"] = getForum(thread.ForumID)
 	serveHTML(w, r, "new-post", tmpl)
 }
 

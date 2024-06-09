@@ -12,11 +12,13 @@ type User struct {
 	ID       int
 	Username string
 	Email    string
+	// TODO fix null schema
 	Role     *Role
 	Active   *bool
 	About    *string
 	Website  *string
 	Created  time.Time
+	Posts int
 }
 
 var Admin Role = "admin"
@@ -35,7 +37,7 @@ func createUser(username, email, password string, role Role) error {
 func getUser(id int) User {
 	row := stmtGetUser.QueryRow(id)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	logIfErr(err)
 	return u
 }

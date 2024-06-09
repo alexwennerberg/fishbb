@@ -124,14 +124,13 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--bg-inverse);
 }
 .post-meta { 
+  /* TODO -- make perfect */
+  padding-left: 0.3rem;
+  padding-bottom: 0.1rem;
   border-bottom: 1px solid lightgray;
   background: var(--bg-alt);
 }
 
-.post-body {
-  padding: 0.4rem;
-}
-
-.body-form {
+.body-padded {
   padding: 0.4rem;
 }

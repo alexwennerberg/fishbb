@@ -1,11 +1,11 @@
 {{ template "header.html" . }}
-<a href="/post/new?threadid={{.Thread.ID}}"><button>Reply</button></a>
-<div class="div-header">ForumName > {{.Thread.Title}}</div>
+<a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
+<div class="div-header"><a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{.Thread.Title}}</div>
 {{ range .Posts }}
 <div class="post">
   <div class="post-meta">
-  <img src="/a?a={{.Author.Username}}" width=20px>
-  <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> {{.Created}}
+  <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
+  <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created}}</span>
   {{ if .Edited }}(edited {{.Edited}}){{end}}
   </div>
   <div class="post-body">
