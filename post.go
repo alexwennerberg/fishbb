@@ -33,7 +33,7 @@ func getPosts(threadid, limit, offset int) []Post {
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
 	// TODO markdown
-	res, err := stmtCreatePost.Exec(authorid, threadid, body)
+	res, err := stmtCreatePost.Exec(threadid, authorid, body)
 	if err != nil {
 		return 0, err
 	}

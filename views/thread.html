@@ -1,10 +1,10 @@
 {{ template "header.html" . }}
 <a href="/post/new?threadid={{.Thread.ID}}"><button>Reply</button></a>
-<div class="div-header">{{.Thread.Title}}</div>
+<div class="div-header">ForumName > {{.Thread.Title}}</div>
 {{ range .Posts }}
 <div class="post">
   <div class="post-meta">
-  <img src="/a?a={.Author.Username}}" width=20px>
+  <img src="/a?a={{.Author.Username}}" width=20px>
   <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> {{.Created}}
   {{ if .Edited }}(edited {{.Edited}}){{end}}
   </div>
