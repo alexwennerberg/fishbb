@@ -42,7 +42,7 @@ input {
   border: 1px solid black;
 }
 
-button:hover :not([link-button]) {
+button:hover:not(.link-button) {
   color: var(--text-inverse);
   background-color: var(--bg-inverse);
 }

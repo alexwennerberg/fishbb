@@ -20,6 +20,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["User"] = u
 	info["Config"] = config
 	info["Version"] = softwareVersion
+	info["LogoutCSRF"] = login.GetCSRF("logout", r)
 	var title = config.BoardName
 	if name != "index" {
 		title += " > " + name
