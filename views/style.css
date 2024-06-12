@@ -29,6 +29,11 @@ button {
   margin: 0.3rem;
 }
 
+.post-body {
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
 input {
   border: 1px solid black;
 }
@@ -121,16 +126,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post {
-  border: 1px solid var(--bg-inverse);
+  border-top: 1px solid var(--bg-inverse);
 }
 .post-meta { 
   /* TODO -- make perfect */
   padding-left: 0.3rem;
+  padding-right: 0.3rem;
   padding-bottom: 0.1rem;
   border-bottom: 1px solid lightgray;
   background: var(--bg-alt);
+  display: flex;
+  justify-content: space-between;
 }
-
 .body-padded {
   padding: 0.4rem;
 }

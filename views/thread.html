@@ -2,11 +2,17 @@
 <a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
 <div class="div-header"><a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{.Thread.Title}}</div>
 {{ range .Posts }}
-<div class="post">
+<div class="post ">
   <div class="post-meta">
+	  <div>
   <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
   <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created}}</span>
-  {{ if .Edited }}(edited {{.Edited}}){{end}}
+  {{ if .Edited }}(edited {{timeago .Edited}}){{end}}
+	  </div>
+	  <div>
+		  <a href="/edit?postid={{.ID}}">Edit</a>
+		  <a href="/delete">Delete</a>
+	  </div>
   </div>
   <div class="post-body">
   {{ markup .Content }}

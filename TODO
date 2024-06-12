@@ -6,6 +6,9 @@ Setup fishbb.org (cloud provider)
 -> Implement user profiles
 2. Get post pagination working
 3. Get thread pagination working
+4. Admin panel 
+5. Closed Signups
+6. Search
 
 Cleanup markdown parsing for thrad body CSS
 
@@ -20,7 +23,6 @@ remove fishbb.db from history
 
 LATER:
 panics -> log.Fatal
-come up with good logging story
 better db init / signal handling
 
 CSRF protections
