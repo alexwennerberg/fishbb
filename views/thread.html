@@ -2,7 +2,7 @@
 <a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
 <div class="div-header"><a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{.Thread.Title}}</div>
 {{ range .Posts }}
-<div class="post ">
+<div class="post" id={{.ID}}>
   <div class="post-meta">
 	  <div>
   <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
