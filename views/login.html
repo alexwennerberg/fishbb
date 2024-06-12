@@ -1,7 +1,11 @@
 {{ template "header.html" . }}
+<div class="body-padded">
 <form action="/dologin" method="POST">
-<p><input tabindex=1 type="text" name="username" autocomplete=off> - username
-<p><input tabindex=1 type="password" name="password"> - password
-<p><button tabindex=1 name="login" value="login">login</button>
+<label for="username">Username:</label><br>
+<input tabindex=1 type="text" name="username" autocomplete=off><br>
+<label for="password">Password:</label><br>
+<input tabindex=1 type="password" name="password"><br>
+<button tabindex=1 name="login" value="login">Login</button>
 </form>
+</div>
 {{ template "footer.html" . }}

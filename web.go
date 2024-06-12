@@ -215,6 +215,7 @@ func serve() {
 
 	mux.HandleFunc("POST /dologin", login.LoginFunc)
 	mux.HandleFunc("POST /logout", login.LogoutFunc)
+	mux.HandleFunc("POST /register", dummy)
 
 	mux.HandleFunc("POST /post/{id}/delete", dummy)
 	mux.HandleFunc("POST /post/{id}/edit", dummy)
