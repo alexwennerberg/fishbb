@@ -38,7 +38,7 @@ input {
   border: 1px solid black;
 }
 
-button:hover {
+button:hover :not([link-button]) {
   color: var(--text-inverse);
   background-color: var(--bg-inverse);
 }
@@ -128,6 +128,7 @@ h1, h2, h3, h4, h5, h6 {
 .post {
   border-top: 1px solid var(--bg-inverse);
 }
+
 .post-meta { 
   /* TODO -- make perfect */
   padding-left: 0.3rem;
@@ -140,4 +141,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 .body-padded {
   padding: 0.4rem;
+}
+
+.link-button {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  text-decoration: underline;
+}
+.link-button:hover {
+  text-decoration: none;
 }
