@@ -31,6 +31,14 @@ func getPosts(threadid, limit, offset int) []Post {
 	return posts
 }
 
+func getPostAuthorID(postid int) int {
+	row := stmtGetThread.QueryRow(postid)
+	var aid int
+	err := row.Scan(&aid)
+	logIfErr(err)
+	return aid
+}
+
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
 	// TODO markdown

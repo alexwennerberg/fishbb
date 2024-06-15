@@ -12,6 +12,7 @@ type User struct {
 	ID       int
 	Username string
 	Email    string
+	Capabilities int
 	// TODO fix null schema
 	Role     *Role
 	Active   *bool
@@ -37,7 +38,7 @@ func createUser(username, email, password string, role Role) error {
 func getUser(id int) User {
 	row := stmtGetUser.QueryRow(id)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Capabilities, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	logIfErr(err)
 	return u
 }

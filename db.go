@@ -13,7 +13,7 @@ import (
 
 var stmtGetForumID,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
-	stmtGetUser,
+	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
 	stmtCreatePost, stmtGetThread, stmtGetPosts,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
@@ -99,6 +99,8 @@ func prepareStatements(db *sql.DB) {
 		`)
 	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
+	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")
+	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtGetThreads = prepare(db, `
 		select threadid, forumid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,

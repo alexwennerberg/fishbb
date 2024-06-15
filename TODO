@@ -4,12 +4,12 @@ Foreign Keys setup
 https://www.youtube.com/watch?v=XcAYkriuQ1o
 
 FEATURES:
-URL Hover to show full TS + Timestamp into a template snippet
 Implement edit and delete
 Implement user profiles at /me
 Get post pagination working
 Get thread pagination working
 Admin panel 
+URL Hover to show full TS + Timestamp into a template snippet
 Registration / invitations (closed and open signup)
 - open signup: email verification
 - closed signup: combination invitations and approval system

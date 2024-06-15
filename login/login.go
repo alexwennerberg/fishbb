@@ -213,7 +213,7 @@ func Init(args InitArgs) {
 	logger = log.New(os.Stderr, "", log.LstdFlags)
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash, capabilities from users where username = ? and id > 0")
 	if err != nil {
 		logger.Panic(err)
 	}

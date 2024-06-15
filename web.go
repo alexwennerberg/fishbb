@@ -56,7 +56,7 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 
 func userPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	uid, _ := strconv.Atoi(r.PathValue("id"))
+	uid, _ := strconv.Atoi(r.PathValue("userid"))
 	tmpl["InfoUser"] = getUser(uid)
 	serveHTML(w, r, "user", tmpl)
 }
@@ -108,6 +108,26 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 		// handle
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// TODO Function: meOrCapability(foo) -> optimize later
+
+func doDeletePost(w http.ResponseWriter, r *http.Request) {
+	// u := login.GetUserInfo(r)
+	// pid, _ := strconv.Atoi(r.URL.Query().Get("postid"))
+	// // TODO build abstraction
+	// aid = getPostAuthorID(pid)
+	// if u.UserID == aid || can(getUser(iad).Capabilities, deletePosts) {
+
+	// } else {
+	// 	// Unauthorized
+	// }
+}
+
+func editPostPage(w http.ResponseWriter, r *http.Request) {
+}
+
+func doEditPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewThread(w http.ResponseWriter, r *http.Request) {
@@ -201,7 +221,7 @@ func serve() {
 	mux.HandleFunc("/", indexPage)
 	mux.HandleFunc("GET /f/{forum}", forumPage)
 	mux.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
-	mux.HandleFunc("GET /user/{id}", userPage)
+	mux.HandleFunc("GET /user/{userid}", userPage)
 	mux.HandleFunc("GET /login", loginPage)
 	mux.HandleFunc("GET /register", registerPage)
 	mux.HandleFunc("GET /reset-password", dummy)
@@ -212,16 +232,18 @@ func serve() {
 	mux.HandleFunc("POST /thread/new", createNewThread)
 	mux.HandleFunc("GET /post/new", newPostPage)
 	mux.HandleFunc("POST /post/new", createNewPost)
+	mux.HandleFunc("GET /post/new", newPostPage)
 
 	mux.HandleFunc("POST /dologin", login.LoginFunc)
 	mux.HandleFunc("POST /logout", login.LogoutFunc)
 	mux.HandleFunc("POST /register", dummy)
 
-	mux.HandleFunc("POST /post/{id}/delete", dummy)
-	mux.HandleFunc("POST /post/{id}/edit", dummy)
-	mux.HandleFunc("POST /thread/{id}/update-meta", dummy)
-	mux.HandleFunc("POST /user/{id}/update", dummy)
-	mux.HandleFunc("POST /user/{id}/reset-password", dummy)
+	mux.HandleFunc("POST /post/{postid}/delete", doDeletePost)
+	mux.HandleFunc("GET /post/{postid}/edit", editPostPage)
+	mux.HandleFunc("POST /post/{postid}/edit", doEditPost)
+	mux.HandleFunc("POST /thread/{threadid}/update-meta", dummy)
+	mux.HandleFunc("POST /user/{userid}/update", dummy)
+	mux.HandleFunc("POST /user/{userid}/reset-password", dummy)
 
 	// admin functions
 	mux.HandleFunc("POST /ban-user", dummy)
