@@ -1,44 +1,40 @@
 Setup fishbb.org (cloud provider)
 
+Foreign Keys setup
+https://www.youtube.com/watch?v=XcAYkriuQ1o
 
-1. Get permissions story working 
--> Implement edit and delete
--> Implement user profiles
-2. Get post pagination working
-3. Get thread pagination working
-4. Admin panel 
-5. Closed Signups
-6. Search
-
-Cleanup markdown parsing for thrad body CSS
-
-URL Hover to show full TS
-Timestamp into a template snippet
-
+FEATURES:
+URL Hover to show full TS + Timestamp into a template snippet
+Implement edit and delete
+Implement user profiles at /me
+Get post pagination working
+Get thread pagination working
+Admin panel 
+Registration / invitations (closed and open signup)
+- open signup: email verification
+- closed signup: combination invitations and approval system
+Search
+Post previews
+Fine-tune CSS
+Google Oauth
 robots.txt
+Rate limiting
+Notifications (Including integration with PWA)
+2fa with TOTP
+JSON API
+reporting system
 
--dev is not working properly?
-remove fishbb.db from history
-
-
-LATER:
+TECH STUFF:
+remove fishbb.db from history (or check sensitivity)
 panics -> log.Fatal
 better db init / signal handling
-
-CSRF protections
-Google OAuth
-Rate limiting on create thread/post
 Microformats
+
+OPS/DEPLOY:
 RRDtool integration / metrics
-search
-avatars (honk'd)
-user profiles
-Notifications
 JS markdown editor
 relicense to v3
 
 Later goals:
 language selection and localization
-2fa
-json API
 full Email interface / email notifications

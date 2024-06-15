@@ -3,7 +3,7 @@ create table forums (
   name text,
   description text,
   slug text,
-  created datetime default CURRENT_TIMESTAMP
+  created text default CURRENT_TIMESTAMP
 );
 
 create table threads (
@@ -11,9 +11,11 @@ create table threads (
   forumid integer,
   authorid integer,
   title text,
-  locked boolean not null default false,
-  pinned boolean not null default false,
-  created datetime default CURRENT_TIMESTAMP
+  locked int not null default false,
+  pinned int not null default false,
+  created text default CURRENT_TIMESTAMP,
+  foreign key (forumid) references forums(id),
+  foreign key (authorid) references users(id)
 );
 
 create table posts (
@@ -21,10 +23,11 @@ create table posts (
   threadid integer,
   authorid integer,
   content text,
-  reports integer,
-  created datetime default CURRENT_TIMESTAMP,
-  edited datetime
-);
+  created text default CURRENT_TIMESTAMP,
+  edited text,
+  foreign key (authorid) references users(id),
+  foreign key (threadid) references threads(id)
+) strict;
 
 create table users (
   id integer primary key,
@@ -32,28 +35,34 @@ create table users (
   hash text,
   email text,
   role text,
-  active boolean not null default false,
-  emailVerified boolean not null default false,
+  active int not null default false,
+  emailVerified int not null default false,
   about text,
   website text,
-  created datetime default CURRENT_TIMESTAMP
-);
+  created text default CURRENT_TIMESTAMP
+) strict;
 
 create table auth (
   userid integer,
   hash text,
-  expiry text
-);
+  expiry text,
+  foreign key (userid) references users(id)
+) strict;
 
 create table config (
-  csrfkey text 
-);
+  csrfkey text
+) strict;
 
 create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);
 
--- create table invitations (
--- );
-
+-- create table invitations ( );
 -- create table reports
 -- create table notifications
+
+PRAGMA journal_mode = WAL;
+PRAGMA busy_timeout = 5000;
+PRAGMA synchronous = NORMAL;
+PRAGMA cache_size = 1000000000;
+PRAGMA foreign_keys = true;
+PRAGMA temp_store = memory;

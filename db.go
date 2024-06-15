@@ -37,14 +37,9 @@ func initdb() {
 		panic(dbname + "already exists")
 	}
 
-	db, err := sql.Open("sqlite3", dbname)
+	db, err := sql.Open("sqlite3", dbname + "?_txlock=immediate")
 	if err != nil {
 		panic(err)
-	}
-	_, err = db.Exec("PRAGMA journal_mode=WAL")
-	if err != nil {
-		log.Error("unexpected error:", "error", err)
-		return
 	}
 	for _, line := range strings.Split(sqlSchema, ";") {
 		_, err = db.Exec(line)

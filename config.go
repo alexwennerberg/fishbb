@@ -10,10 +10,6 @@ type Config struct {
 	// private instances are only visible to logged in users
 	Private string
 
-	// WARNING: you probably don't want this set to true! only do so if you're
-	// on a small, secure network (ie, not the public internet)
-	AllowAnonymousPosts bool
-
 	// smaller forum settings
 	PageSize int
 
