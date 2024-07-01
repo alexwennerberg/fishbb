@@ -4,6 +4,11 @@ Foreign Keys setup
 https://www.youtube.com/watch?v=XcAYkriuQ1o
 
 FEATURES:
+add title bars to login and register
+
+figure out an idiomatic time parsing strategy
+why is link-button smaller? fix it generally
+
 Implement edit and delete
 Implement user profiles at /me
 Get post pagination working

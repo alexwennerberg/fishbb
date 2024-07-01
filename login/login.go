@@ -352,20 +352,22 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 	return userinfo, ok
 }
 
-func loaduser(username string) (int, []byte, bool) {
+// TODO use struct
+func loaduser(username string) (int, []byte, int, bool) {
 	row := stmtUserName.QueryRow(username)
 	var userid int
 	var hash []byte
-	err := row.Scan(&userid, &hash)
+	var capabilities int 
+	err := row.Scan(&userid, &hash, &capabilities)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Printf("login: no username found")
 		} else {
 			logger.Printf("login: error loading username: %s", err)
 		}
-		return -1, nil, false
+		return -1, nil, 0, false
 	}
-	return userid, hash, true
+	return userid, hash, capabilities, true
 }
 
 var userregex = regexp.MustCompile("^[[:alnum:]]+$")
@@ -395,7 +397,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	userid, hash, ok := loaduser(username)
+	userid, hash, _, ok := loaduser(username)
 	if !ok {
 		loginredirect(w, r)
 		return
@@ -516,7 +518,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	if len(newpass) < 6 {
 		return fmt.Errorf("newpassword is too short")
 	}
-	userid, hash, ok := loaduser(userinfo.Username)
+	userid, hash, _, ok := loaduser(userinfo.Username)
 	if !ok {
 		return fmt.Errorf("error")
 	}

@@ -8,6 +8,8 @@ const (
 	deletePosts
 	updateThreadMeta
 	modifyUser
+	banUser
+	setUserRole
 )
 
 const AdminPerms = (iota << 1) - 1

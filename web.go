@@ -8,6 +8,11 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 )
 
 var views *template.Template
@@ -27,6 +32,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	}
 	info["Title"] = config.BoardName // TODO better
 	err := views.ExecuteTemplate(w, name+".html", info)
+	// ifServerError(err)
 	if err != nil {
 		log.Error(err.Error())
 		// TODO server error
@@ -216,41 +222,51 @@ func serve() {
 	views = loadTemplates()
 	prepareStatements(db)
 
+	r := chi.NewRouter()
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(login.Checker) // TODO -- maybe not every route?
+
 	// Setup Templates
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", indexPage)
-	mux.HandleFunc("GET /f/{forum}", forumPage)
-	mux.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
-	mux.HandleFunc("GET /user/{userid}", userPage)
-	mux.HandleFunc("GET /login", loginPage)
-	mux.HandleFunc("GET /register", registerPage)
-	mux.HandleFunc("GET /reset-password", dummy)
-	mux.HandleFunc("GET /search", dummy)
-	mux.HandleFunc("GET /style.css", serveAsset)
-	mux.HandleFunc("GET /thread/new", newThreadPage)
-	mux.HandleFunc("GET /a", avatarHandler)
-	mux.HandleFunc("POST /thread/new", createNewThread)
-	mux.HandleFunc("GET /post/new", newPostPage)
-	mux.HandleFunc("POST /post/new", createNewPost)
-	mux.HandleFunc("GET /post/new", newPostPage)
+	r.HandleFunc("/", indexPage)
+	r.HandleFunc("GET /f/{forum}", forumPage)
+	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
+	r.HandleFunc("GET /user/{userid}", userPage)
+	r.HandleFunc("GET /login", loginPage)
+	r.HandleFunc("GET /register", registerPage)
+	r.HandleFunc("GET /search", dummy)
+	r.HandleFunc("GET /style.css", serveAsset)
+	r.HandleFunc("GET /thread/new", newThreadPage)
+	r.HandleFunc("GET /a", avatarHandler)
+	r.HandleFunc("POST /thread/new", createNewThread)
+	r.HandleFunc("GET /post/new", newPostPage)
+	r.HandleFunc("POST /post/new", createNewPost)
+	r.HandleFunc("GET /post/new", newPostPage)
 
-	mux.HandleFunc("POST /dologin", login.LoginFunc)
-	mux.HandleFunc("POST /logout", login.LogoutFunc)
-	mux.HandleFunc("POST /register", dummy)
+	r.With(httprate.LimitByIP(10, 1 * time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
+	r.HandleFunc("POST /logout", login.LogoutFunc)
+	r.HandleFunc("POST /register", dummy)
 
-	mux.HandleFunc("POST /post/{postid}/delete", doDeletePost)
-	mux.HandleFunc("GET /post/{postid}/edit", editPostPage)
-	mux.HandleFunc("POST /post/{postid}/edit", doEditPost)
-	mux.HandleFunc("POST /thread/{threadid}/update-meta", dummy)
-	mux.HandleFunc("POST /user/{userid}/update", dummy)
-	mux.HandleFunc("POST /user/{userid}/reset-password", dummy)
+	r.Group(func(r chi.Router) {
+		// TODO loggedin
+		r.Use(login.Required)
+		r.HandleFunc("POST /post/{postid}/delete", doDeletePost)
+		r.HandleFunc("GET /reset-password", dummy)
+		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
+		r.HandleFunc("POST /post/{postid}/edit", doEditPost)
+		r.HandleFunc("POST /thread/{threadid}/update-meta", dummy)
+		r.HandleFunc("POST /user/{userid}/update", dummy)
+		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
+	})
 
 	// admin functions
-	mux.HandleFunc("POST /ban-user", dummy)
-	mux.HandleFunc("POST /set-user-role", dummy)
+	r.HandleFunc("POST /ban-user", dummy)
+	r.HandleFunc("POST /set-user-role", dummy)
 
 	log.Debug("starting server")
-	err := http.ListenAndServe(config.Port, logRequest(login.Checker(mux)))
+	err := http.ListenAndServe(config.Port, r)
 	if err != nil {
 		panic(err)
 	}

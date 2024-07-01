@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -35,7 +36,8 @@ func getForumID(forumSlug string) int {
 
 func getForums() []Forum {
 	var forums []Forum
-	rows, _ := stmtGetForums.Query()
+	rows, err := stmtGetForums.Query()
+	logIfErr(err)
 	for rows.Next() {
 		var f Forum
 		var created string
@@ -47,6 +49,7 @@ func getForums() []Forum {
 		f.LastPost.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		f.Slug = slugify(f.Name)
+		fmt.Println(f)
 		forums = append(forums, f)
 	}
 	return forums

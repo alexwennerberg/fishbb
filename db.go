@@ -53,9 +53,15 @@ func initdb() {
 	// Create admin user
 	// Set csrfkey
 
-	createForum("General", "General discussion")
+	err = createForum("General", "General discussion")
+	if err != nil {
+		panic(err)
+	}
 	if devMode { // create admin / admin
-		createUser("admin", "webmaster@foo", "admin", Admin)
+		err := createUser("admin", "webmaster@foo", "admin", Admin)
+		if err != nil {
+			panic(err) // TODO
+		}
 	}
 
 	db.Close()
@@ -76,7 +82,7 @@ func prepareStatements(db *sql.DB) {
 		threadid, latest.title, latest.id, latest.authorid,
 		latest.username, latest.created
 		from forums
-		join (
+		left join (
 			select threadid, threads.title, posts.id, threads.authorid,
 			users.username, max(posts.created) as created, forumid	
 			from posts 

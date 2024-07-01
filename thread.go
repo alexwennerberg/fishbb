@@ -13,25 +13,28 @@ type Thread struct {
 	Created time.Time
 	Pinned  bool
 	Locked  bool
-	Latest Post
+	Latest  Post
 	Replies int
 }
 
 // TODO paginate
+// TODO fix case when no threads
 func getThreads(forumID, limit, offset int) []Thread {
 	var threads []Thread
 	rows, _ := stmtGetThreads.Query(forumID)
 	for rows.Next() {
 		var t Thread
 		var created string
+		var tcreated string
 		err := rows.Scan(
 			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title, 
-			&t.Created, &t.Pinned, &t.Locked,
+			&tcreated, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
 			&created, &t.Replies)
 		logIfErr(err)
 		t.Latest.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
+		t.Created, err = time.Parse(timeISO8601, tcreated)
 		fmt.Print(t.Replies)
 		threads = append(threads, t)
 	}
@@ -41,7 +44,10 @@ func getThreads(forumID, limit, offset int) []Thread {
 func getThread(threadid int) Thread {
 	row := stmtGetThread.QueryRow(threadid)
 	var t Thread
-	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Created, &t.Pinned, &t.Locked)
+	var created string
+	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &created, &t.Pinned, &t.Locked)
+	logIfErr(err)
+	t.Latest.Created, err = time.Parse(timeISO8601, created)
 	logIfErr(err)
 	return t
 }
