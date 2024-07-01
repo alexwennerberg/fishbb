@@ -162,19 +162,11 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	u := login.GetUserInfo(r)
-	if u != nil {
-		// Redirect home
-	}
 	serveHTML(w, r, "login", tmpl)
 }
 
 func registerPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	u := login.GetUserInfo(r)
-	if u != nil {
-		// Redirect home
-	}
 	serveHTML(w, r, "register", tmpl)
 }
 func serveAsset(w http.ResponseWriter, r *http.Request) {
@@ -207,10 +199,10 @@ func loadTemplates() *template.Template {
 	return views
 }
 
-func authMidddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r)
-	})
+func mePage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	// TODO get user info
+	serveHTML(w, r, "me", tmpl)
 }
 
 // placeholder
@@ -252,6 +244,7 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		// TODO loggedin
 		r.Use(login.Required)
+		r.HandleFunc("GET /me", mePage)
 		r.HandleFunc("POST /post/{postid}/delete", doDeletePost)
 		r.HandleFunc("GET /reset-password", dummy)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
