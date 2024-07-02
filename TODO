@@ -1,7 +1,10 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Implement edit and delete
+Implement delete
+styling error page
+inline form buttons not styled properly
+add request ID to logs
 input validation on all forms
 distinguish notfound db error from other errors
 implement registration

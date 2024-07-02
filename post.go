@@ -48,14 +48,6 @@ func getPost(postid int) (Post, error) {
 	return p, err
 }
 
-func getPostAuthorID(postid int) int {
-	row := stmtGetThread.QueryRow(postid)
-	var aid int
-	err := row.Scan(&aid)
-	logIfErr(err)
-	return aid
-}
-
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
 	res, err := stmtCreatePost.Exec(threadid, authorid, body)
@@ -79,6 +71,6 @@ func editPost(postid int, content string) error {
 }
 
 func deletePost(postid int) error {
-	_, err := stmtEditPost.Exec(postid)
+	_, err := stmtDeletePost.Exec(postid)
 	return err
 }

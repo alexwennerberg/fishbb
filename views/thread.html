@@ -6,12 +6,15 @@
   <div class="post-meta">
 	  <div>
   <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
-  <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created}}</span>
-  {{ if .Edited }}(edited {{timeago .Edited}}){{end}}
+  <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created}}
+	  {{ if .Edited }}<em>(edited {{timeago .Edited}})</em>{{end}}
+</span>
 	  </div>
 	  <div>
 		  <a href="/post/{{.ID}}/edit">Edit</a>
-		  <a href="/delete">Delete</a>
+		  <form style="display:inline" action="/post/{{.ID}}/delete" method="POST"><button class="link-button">Delete</button>
+		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
+		  </form>
 	  </div>
   </div>
   <div class="post-body">

@@ -57,6 +57,10 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 	errorPage(w,r,http.StatusNotFound,"")
 }
 
+func unauthorized(w http.ResponseWriter, r *http.Request) {
+	errorPage(w,r,http.StatusUnauthorized,"You are not authorized to perform this action, sorry!")
+}
+
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		notFound(w,r)
@@ -119,18 +123,29 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// TODO Function: meOrCapability(foo) -> optimize later
-
 func doDeletePost(w http.ResponseWriter, r *http.Request) {
-	// u := login.GetUserInfo(r)
-	// pid, _ := strconv.Atoi(r.URL.Query().Get("postid"))
-	// // TODO build abstraction
-	// aid = getPostAuthorID(pid)
-	// if u.UserID == aid || can(getUser(iad).Capabilities, deletePosts) {
-
-	// } else {
-	// 	// Unauthorized
-	// }
+	u := login.GetUserInfo(r)
+	pid, err := strconv.Atoi(r.PathValue("postid"))
+	if err != nil {
+		notFound(w,r)
+		return
+	}
+	// TODO build abstraction around post controlling?
+	post, err := getPost(pid)
+	if err != nil {
+		serverError(w,r,err)
+		return
+	}
+	aid := post.Author.ID
+	if u.UserID != aid {
+		unauthorized(w,r)
+		return
+	}
+	err = deletePost(pid)
+	if err != nil {
+		serverError(w,r,err)
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func editPostPage(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +159,8 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 	}
 	u := login.GetUserInfo(r)
 	if post.Author.ID != u.UserID {
-		return // TODO unauthorized
+		unauthorized(w,r)
+		return 
 	}
 	if r.Method == "POST" {
 		content := r.FormValue("content")
