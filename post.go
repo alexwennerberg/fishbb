@@ -28,11 +28,32 @@ func postValid(body string) bool {
 	return true
 }
 
+// requires a lot of stuff
+// TODO -- maybe optimize into one query
+func getPostSlug(postid int) (string, error) {
+	var threadid int 
+	var forumname string
+	var count int
+	row := stmtGetPostSlug.QueryRow(postid)
+	err := row.Scan(&threadid, &forumname, &count)
+	if err != nil {
+		return "", err
+	}
+	lastPage := count + 1 / config.PageSize
+	var url string
+	// TODO url builder
+	if lastPage != 1 {
+		url = fmt.Sprintf("/f/%s/%d?page=%d#%d", forumname, threadid, lastPage, postid) 
+	} else {
+		url = fmt.Sprintf("/f/%s/%d#%d", forumname,threadid, postid) 
+	}
+	return url, nil
+}
+
 // page is 1-indexed
 func getPosts(threadid, page int) []Post {
 	var posts []Post
 	limit, offset := paginate(page)
-	fmt.Println(limit, offset)
 	rows, _ := stmtGetPosts.Query(threadid, limit, offset)
 	for rows.Next() {
 		var p Post

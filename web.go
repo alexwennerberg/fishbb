@@ -34,9 +34,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	if name != "index" {
 		title += " > " + name
 	}
-	if info["Title"] == "" {
-		info["Title"] = config.BoardName
-	}
+	info["Title"] = title
 	err := views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
 		serverError(w,r,err)
@@ -130,11 +128,15 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 		return // TODO 4xx
 	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
-	_, err := createPost(u.UserID, int(tid), content)
+	pid, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
-		// handle
+		serverError(w,r,err)
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	slug, err := getPostSlug(int(pid))
+	if err != nil {
+		serverError(w,r,err)
+	}
+	http.Redirect(w, r, slug, http.StatusSeeOther)
 }
 
 func doDeletePost(w http.ResponseWriter, r *http.Request) {

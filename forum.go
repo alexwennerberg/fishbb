@@ -17,6 +17,7 @@ func createForum(name, description string) error {
 	return err
 }
 
+// TODO error handling
 func getForum(fid int) Forum {
 	row := stmtGetForum.QueryRow(fid)
 	var f Forum

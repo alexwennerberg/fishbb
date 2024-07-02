@@ -12,7 +12,7 @@ import (
 )
 
 var stmtGetForumID, stmtUpdateMe,
-	stmtEditPost, stmtGetPost,
+	stmtEditPost, stmtGetPost, stmtGetPostSlug,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
 	stmtCreatePost, stmtGetThread, stmtGetPosts,
@@ -126,10 +126,11 @@ func prepareStatements(db *sql.DB) {
 	`)
 	stmtGetThread = prepare(db, `
 		select threads.id, forumid, title, threads.authorid, users.username, 
-		threads.created, threads.pinned, threads.locked, count(1) - 1 as replies
+		threads.created, threads.pinned, threads.locked, count(1) - 1 as replies 
 		from threads 
 		join users on users.id = threads.authorid
 		join posts on threads.id = posts.threadid
+		join forums on threads.forumid = forums.id
 		where threads.id = ?`)
 	stmtGetPosts = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
@@ -144,6 +145,17 @@ func prepareStatements(db *sql.DB) {
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
+	// get stuff we need for a post slug
+	stmtGetPostSlug = prepare(db, `
+		select 
+		threads.id, 
+		forums.slug,
+		(select count(1) from threads where threads.id = threads.id) as count
+		from posts
+		join threads on posts.threadid = threads.id
+		join forums on threads.forumid = forums.id
+		where posts.id = ?
+	`)
 	login.Init(login.InitArgs{
 		Db: db,
 	})
