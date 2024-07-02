@@ -71,11 +71,17 @@ body {
 .form-inline {
   display:inline;
 }
+
 #page-header {
   padding: 0.5rem;
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid black;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
 }
 
 footer {

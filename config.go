@@ -28,7 +28,7 @@ func NewConfig() Config {
 		Port:             ":8080",
 		BoardName:        "fishbb",
 		BoardDescription: "A discussion board",
-		PageSize:         100,
+		PageSize:         2,
 		ViewDir:          "./views/",
 		DBPath:           "fishbb.db",
 	}

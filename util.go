@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/png"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/yuin/goldmark"
@@ -17,6 +18,23 @@ import (
 )
 
 var timeISO8601 = "2006-01-02 15:04:05"
+
+// returns limit, offset
+// 1-indexed
+func paginate(page int) (int, int) { 
+	limit := config.PageSize
+	offset := (page - 1) * limit
+	return limit, offset
+}
+
+// pulls page from url param. 1-indexed
+func page(r *http.Request) int {
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page == 0 { // 1-indexing
+		page = 1
+	}
+	return page
+}
 
 // generic log err function
 // non-blocking

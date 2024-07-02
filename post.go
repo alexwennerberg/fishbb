@@ -28,10 +28,12 @@ func postValid(body string) bool {
 	return true
 }
 
-// TODO paginate
-func getPosts(threadid, limit, offset int) []Post {
+// page is 1-indexed
+func getPosts(threadid, page int) []Post {
 	var posts []Post
-	rows, _ := stmtGetPosts.Query(threadid)
+	limit, offset := paginate(page)
+	fmt.Println(limit, offset)
+	rows, _ := stmtGetPosts.Query(threadid, limit, offset)
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)

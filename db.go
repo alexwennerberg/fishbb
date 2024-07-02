@@ -122,19 +122,20 @@ func prepareStatements(db *sql.DB) {
 		) latest
 		on latest.threadid = threads.id
 		where forumid = ?
-		order by latest.created desc
+		order by latest.created desc limit ? offset ?
 	`)
 	stmtGetThread = prepare(db, `
-		select threads.authorid, forumid, title, threads.authorid, users.username, 
-		threads.created, threads.pinned, threads.locked
+		select threads.id, forumid, title, threads.authorid, users.username, 
+		threads.created, threads.pinned, threads.locked, count(1) - 1 as replies
 		from threads 
 		join users on users.id = threads.authorid
+		join posts on threads.id = posts.threadid
 		where threads.id = ?`)
 	stmtGetPosts = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 
 		join users on posts.authorid = users.id 
-		where threadid = ?`)
+		where threadid = ? limit ? offset ?`)
 	stmtGetPost = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 

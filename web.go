@@ -34,7 +34,9 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	if name != "index" {
 		title += " > " + name
 	}
-	info["Title"] = config.BoardName // TODO better
+	if info["Title"] == "" {
+		info["Title"] = config.BoardName
+	}
 	err := views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
 		serverError(w,r,err)
@@ -73,23 +75,31 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	limit := config.PageSize
-	offset := 0
 	fid := getForumID(r.PathValue("forum"))
 	tmpl["ForumID"] = fid
-	tmpl["Threads"] = getThreads(fid, limit, offset)
+	tmpl["Threads"] = getThreads(fid, page(r))
 	serveHTML(w, r, "forum", tmpl)
 }
 
 func threadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	threadID, _ := strconv.Atoi(r.PathValue("threadid"))
+	threadID, err := strconv.Atoi(r.PathValue("threadid"))
+	if err != nil {
+		notFound(w,r)
+		return
+	}
 	fid := getForumID(r.PathValue("forum"))
 	forum := getForum(fid)
-	var limit, offset = 0, 0 // TODO
-	tmpl["Thread"] = getThread(threadID)
+	page := page(r)
+	thread, err := getThread(threadID)
+	if err != nil {
+		serverError(w,r,err)
+		return
+	}
+	tmpl["Thread"] = thread
+	tmpl["Page"] = page
 	tmpl["Forum"] = forum
-	tmpl["Posts"] = getPosts(threadID, limit, offset)
+	tmpl["Posts"] = getPosts(threadID, page)
 	serveHTML(w, r, "thread", tmpl)
 }
 
@@ -103,7 +113,11 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 func newPostPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
-	thread := getThread(tid)
+	thread, err := getThread(tid)
+	if err != nil {
+		serverError(w,r,err)
+		return
+	}
 	tmpl["Thread"] = thread
 	tmpl["Forum"] = getForum(thread.ForumID)
 	serveHTML(w, r, "new-post", tmpl)

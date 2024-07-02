@@ -1,17 +1,16 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Implement delete
+implement registration
 styling error page
+rate limiting -- add limit handler (go to error page) and limit certain actions by user
 inline form buttons not styled properly
 add request ID to logs
 input validation on all forms
 distinguish notfound db error from other errors
-implement registration
 login package should merge
 cleanup err handling on db calls (over time)
 implement change password
-timestamp weirdness
 
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally

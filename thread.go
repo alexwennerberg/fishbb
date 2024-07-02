@@ -17,11 +17,22 @@ type Thread struct {
 	Replies int
 }
 
-// TODO paginate
+// returns page list
+func (t Thread) Pages() []int {
+	// + 1 + 1
+	c := ((t.Replies + 2) / config.PageSize)
+	p := make([]int, c)
+	for i := range c {
+		p[i] = i+1
+	}
+	return p
+}
+
 // TODO fix case when no threads
-func getThreads(forumID, limit, offset int) []Thread {
+func getThreads(forumID, page int) []Thread {
 	var threads []Thread
-	rows, _ := stmtGetThreads.Query(forumID)
+	limit, offset := paginate(page)
+	rows, _ := stmtGetThreads.Query(forumID, limit, offset)
 	for rows.Next() {
 		var t Thread
 		var created string
@@ -41,15 +52,11 @@ func getThreads(forumID, limit, offset int) []Thread {
 	return threads
 }
 
-func getThread(threadid int) Thread {
+func getThread(threadid int) (Thread, error) {
 	row := stmtGetThread.QueryRow(threadid)
 	var t Thread
-	var created string
-	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &created, &t.Pinned, &t.Locked)
-	logIfErr(err)
-	t.Latest.Created, err = time.Parse(timeISO8601, created)
-	logIfErr(err)
-	return t
+	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Latest.Created, &t.Pinned, &t.Locked, &t.Replies)
+	return t, err
 }
 
 // returns inserted thread ID
