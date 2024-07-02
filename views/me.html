@@ -1,5 +1,22 @@
 {{ template "header.html" . }}
-<div class="div-header">Editing your profile</div>
-<form>
+<div class="div-header">Editing your <a href="/user/{{.User.UserID}}">profile</a></div>
+<div class="body-padded">
+	<form method="POST">
+<label for="about">About:</label><br>
+<input 
+	   tabindex=1 
+	   maxlength=250 
+	   type="text"
+	   name="about" 
+	   id="about" 
+	   value="{{.UserInfo.About}}"
+	   autocomplete=off ><br>
+<label for="website">Website:</label><br>
+<input tabindex=1 maxlength=250 id="website" name="website" value="{{.UserInfo.Website}}"><br>
+<button tabindex=1 name="update" value="update">Update</button>
+{{ if .Notice }}
+	<div class="notice">{{.Notice}}</div>
+	{{ end }}
 </form>
+</div>
 {{ template "footer.html" . }}

@@ -1,9 +1,7 @@
 create table forums (
   id integer primary key,
-  name text,
-  description text,
-  slug text,
-  created text default CURRENT_TIMESTAMP
+  name text, description text, slug text,
+  created text default current_timestamp
 );
 
 create table threads (
@@ -13,7 +11,7 @@ create table threads (
   title text,
   locked int not null default false,
   pinned int not null default false,
-  created text default CURRENT_TIMESTAMP,
+  created text default current_timestamp,
   foreign key (forumid) references forums(id),
   foreign key (authorid) references users(id)
 );
@@ -23,7 +21,7 @@ create table posts (
   threadid integer,
   authorid integer,
   content text,
-  created text default CURRENT_TIMESTAMP,
+  created text default current_timestamp,
   edited text,
   foreign key (authorid) references users(id),
   foreign key (threadid) references threads(id)
@@ -33,13 +31,13 @@ create table users (
   id integer primary key,
   username text,
   hash text,
-  email text,
+  email text not null,
   role text not null default 'user',
   active int not null default false,
-  emailVerified int not null default false,
-  about text,
-  website text,
-  created text default CURRENT_TIMESTAMP
+  emailverified int not null default false,
+  about text not null default 'someone',
+  website text not null default '',
+  created text default current_timestamp
 ) strict;
 
 create table auth (
@@ -60,9 +58,9 @@ create index idxposts_threadid on posts(threadid);
 -- create table reports
 -- create table notifications
 
-PRAGMA journal_mode = WAL;
-PRAGMA busy_timeout = 5000;
-PRAGMA synchronous = NORMAL;
-PRAGMA cache_size = 1000000000;
-PRAGMA foreign_keys = true;
-PRAGMA temp_store = memory;
+pragma journal_mode = wal;
+pragma busy_timeout = 5000;
+pragma synchronous = normal;
+pragma cache_size = 1000000000;
+pragma foreign_keys = true;
+pragma temp_store = memory;

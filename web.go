@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fishbb/login"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +8,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"fishbb/login"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -35,10 +36,9 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	}
 	info["Title"] = config.BoardName // TODO better
 	err := views.ExecuteTemplate(w, name+".html", info)
-	// ifServerError(err)
 	if err != nil {
 		log.Error(err.Error())
-		// TODO server error
+		serverError(w,r)
 	}
 }
 
@@ -47,6 +47,10 @@ func errorPage(w http.ResponseWriter, r *http.Request, code int, message string)
 	w.WriteHeader(code)
 	tmpl["Error"] = strconv.Itoa(code) + " " + http.StatusText(code) + " " + message
 	serveHTML(w, r, "error", tmpl)
+}
+
+func serverError(w http.ResponseWriter, r *http.Request) {
+	errorPage(w,r,http.StatusInternalServerError, "")
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
@@ -61,13 +65,6 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	tmpl["Forums"] = getForums()
 	serveHTML(w, r, "index", tmpl)
-}
-
-func userPage(w http.ResponseWriter, r *http.Request) {
-	tmpl := make(map[string]any)
-	uid, _ := strconv.Atoi(r.PathValue("userid"))
-	tmpl["InfoUser"] = getUser(uid)
-	serveHTML(w, r, "user", tmpl)
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
@@ -172,6 +169,12 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	serveHTML(w, r, "register", tmpl)
 }
+
+func doRegister(w http.ResponseWriter, r *http.Request) {
+	// TODO
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func serveAsset(w http.ResponseWriter, r *http.Request) {
 	if !devMode {
 		w.Header().Set("Cache-Control", "max-age=604800")
@@ -202,11 +205,57 @@ func loadTemplates() *template.Template {
 	return views
 }
 
+func userPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+
+	uid, _ := strconv.Atoi(r.PathValue("userid"))
+	// TODO err handling
+	info, _ := getUser(uid)
+	tmpl["InfoUser"] = info
+	// TODO specific DNE error
+	serveHTML(w, r, "user", tmpl)
+}
+
 func mePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	// TODO get user info
+	u := login.GetUserInfo(r)
+	info, err := getUser(u.UserID)
+	if err != nil {
+		log.Error("error getting user", "error", err.Error())
+		serverError(w,r)
+		return
+	}
+	tmpl["UserInfo"] = info
 	serveHTML(w, r, "me", tmpl)
 }
+
+func resetPasswordPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	serveHTML(w,r, "reset-password", tmpl)
+}
+
+func doUpdateMe(w http.ResponseWriter, r *http.Request) {
+	u := login.GetUserInfo(r)
+	about := r.FormValue("about")
+	website := r.FormValue("website")
+	if len(about) > 250 || len(website) > 250 {
+		return // TODO err
+	}
+	err := updateMe(u.UserID, r.FormValue("about"), r.FormValue("website"))
+	if err != nil {
+		serverError(w,r)
+		return 
+	}
+	tmpl := make(map[string]any)
+	info, _ := getUser(u.UserID)
+	tmpl["UserInfo"] = info	
+	tmpl["Notice"] = "Updated!"
+	serveHTML(w, r, "me", tmpl)
+}
+
+func doResetPassword(w http.ResponseWriter, r *http.Request) {
+}
+
 
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
@@ -242,14 +291,15 @@ func serve() {
 
 	r.With(httprate.LimitByIP(10, 1 * time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
 	r.HandleFunc("POST /logout", login.LogoutFunc)
-	r.HandleFunc("POST /register", dummy)
+	r.HandleFunc("POST /register", doRegister)
 
 	r.Group(func(r chi.Router) {
 		// TODO loggedin
 		r.Use(login.Required)
 		r.HandleFunc("GET /me", mePage)
+		r.HandleFunc("POST /me", doUpdateMe)
 		r.HandleFunc("POST /post/{postid}/delete", doDeletePost)
-		r.HandleFunc("GET /reset-password", dummy)
+		r.HandleFunc("GET /reset-password", resetPasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 		r.HandleFunc("POST /post/{postid}/edit", doEditPost)
 		r.HandleFunc("POST /thread/{threadid}/update-meta", dummy)

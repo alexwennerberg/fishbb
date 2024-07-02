@@ -4,7 +4,7 @@
   --text-alt: #677;
   --bg: #fff;
   --bg-inverse: #222;
-  --bg-alt: #eee;
+  --bg-alt: #ddd;
   --border: #000;
 }
 
@@ -17,8 +17,15 @@ button:not(.link-button) {
   background-color: var(--bg);
   color: var(--text);
   border: 1px solid var(--bg-inverse);
-  font-size: 16px;
+  font-size: 14px;
 }
+
+.notice {
+  background-color: var(--bg-alt);
+  display: inline-block;
+  padding: 0.1rem;
+  font-size: 14px;
+}   
 
 .top-button {
   margin: 0.3rem;
@@ -157,4 +164,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .link-button:hover {
   text-decoration: none;
+}
+
+.notice {
 }

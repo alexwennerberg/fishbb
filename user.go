@@ -14,10 +14,10 @@ type User struct {
 	Email    string
 	Capabilities int
 	// TODO fix null schema
-	Role     *Role
-	Active   *bool
-	About    *string
-	Website  *string
+	Role     Role
+	Active   bool
+	About    string
+	Website  string
 	Created  time.Time
 	Posts int
 }
@@ -35,10 +35,20 @@ func createUser(username, email, password string, role Role) error {
 	return err
 }
 
-func getUser(id int) User {
+func getUser(id int) (User, error) {
 	row := stmtGetUser.QueryRow(id)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Capabilities, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
-	logIfErr(err)
-	return u
+	var created string
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &created, &u.Posts)
+	if err != nil {
+		return u, err
+	}
+	u.Created, err = time.Parse(timeISO8601, created)
+	return u, err
+}
+
+// used for self configuration
+func updateMe(id int, about, website string) (error) {
+	_, err := stmtUpdateMe.Exec(about, website, id)
+   return err
 }

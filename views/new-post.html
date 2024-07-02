@@ -1,6 +1,9 @@
 {{ template "header.html" . }}
 <main>
 	<div class="div-header">New Post in <a href="/f/{{.Forum.Slug}}/{{.Thread.ID}}">{{.Thread.Title}}</a></div>
+	{{ if .Notice }}
+		<div class="notice">{{.Notice}}</div>
+	{{ end }}
     <form method="POST">
         <div class="body-padded" >
 			<label for="content">Content:</label><br>

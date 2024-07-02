@@ -11,7 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var stmtGetForumID,
+var stmtGetForumID, stmtUpdateMe,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
 	stmtCreatePost, stmtGetThread, stmtGetPosts,
@@ -135,6 +135,7 @@ func prepareStatements(db *sql.DB) {
 		from posts 
 		join users on posts.authorid = users.id 
 		where threadid = ?`)
+	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
 	login.Init(login.InitArgs{
 		Db: db,
 	})
