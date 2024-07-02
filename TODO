@@ -1,11 +1,11 @@
 Setup fishbb.org (cloud provider)
 
-Foreign Keys setup
-https://www.youtube.com/watch?v=XcAYkriuQ1o
-
 FEATURES:
-Implement user profiles at /me
+Migrate to argon2 (x/crypto/argon2) with OWASP settings
 add title bars to login and register
+Implement user profiles at /me
+structured logging for log middleware
+
 
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally

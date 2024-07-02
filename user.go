@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/alexedwards/argon2id"
 )
 
 type Role string
@@ -24,14 +24,14 @@ type User struct {
 
 var Admin Role = "admin"
 var Mod Role = "mod"
-var Regular Role = ""
+var Regular Role = "user"
 
 func createUser(username, email, password string, role Role) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
-	_, err = stmtCreateUser.Exec(username, email, hash)
+	_, err = stmtCreateUser.Exec(username, email, hash, role)
 	return err
 }
 

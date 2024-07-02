@@ -33,7 +33,7 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/alexedwards/argon2id"
 	"humungus.tedunangst.com/r/webs/cache"
 )
 
@@ -213,7 +213,7 @@ func Init(args InitArgs) {
 	logger = log.New(os.Stderr, "", log.LstdFlags)
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash, capabilities from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0")
 	if err != nil {
 		logger.Panic(err)
 	}
@@ -353,21 +353,21 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 }
 
 // TODO use struct
-func loaduser(username string) (int, []byte, int, bool) {
+func loaduser(username string) (int, string, string, bool) {
 	row := stmtUserName.QueryRow(username)
 	var userid int
-	var hash []byte
-	var capabilities int 
-	err := row.Scan(&userid, &hash, &capabilities)
+	var hash string
+	var role string
+	err := row.Scan(&userid, &hash, &role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Printf("login: no username found")
 		} else {
 			logger.Printf("login: error loading username: %s", err)
 		}
-		return -1, nil, 0, false
+		return -1, "", "", false
 	}
-	return userid, hash, capabilities, true
+	return userid, hash, role, true
 }
 
 var userregex = regexp.MustCompile("^[[:alnum:]]+$")
@@ -412,8 +412,9 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := bcrypt.CompareHashAndPassword(hash, []byte(password))
-	if err != nil {
+	match, err := argon2id.ComparePasswordAndHash(password, hash)
+	// TODO better error handling
+	if !match || err != nil {
 		logger.Printf("login: incorrect password")
 		if gettoken {
 			http.Error(w, "incorrect", http.StatusForbidden)
@@ -523,12 +524,16 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("error")
 	}
 
-	err := bcrypt.CompareHashAndPassword(hash, []byte(oldpass))
+	match, err := argon2id.ComparePasswordAndHash(oldpass, hash)
 	if err != nil {
+		logger.Printf("error comparing password and hash: %s", err)
+		return fmt.Errorf("error")
+	}
+	if !match {
 		logger.Printf("login: incorrect password")
 		return fmt.Errorf("bad password")
 	}
-	hash, err = bcrypt.GenerateFromPassword([]byte(newpass), 12)
+	hash, err = argon2id.CreateHash(newpass, argon2id.DefaultParams)
 	if err != nil {
 		logger.Printf("error generating hash: %s", err)
 		return fmt.Errorf("error")
@@ -575,7 +580,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 
 // Set password for a user.
 func SetPassword(userid int, newpass string) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(newpass), 12)
+	hash, err := argon2id.CreateHash(newpass, argon2id.DefaultParams)
 	if err != nil {
 		logger.Printf("error generating hash: %s", err)
 		return fmt.Errorf("error")

@@ -32,10 +32,9 @@ create table posts (
 create table users (
   id integer primary key,
   username text,
-  hash blob,
+  hash text,
   email text,
-  role text,
-  capabilities integer not null default 0,
+  role text not null default 'user',
   active int not null default false,
   emailVerified int not null default false,
   about text,
