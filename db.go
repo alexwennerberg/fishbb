@@ -12,6 +12,7 @@ import (
 )
 
 var stmtGetForumID, stmtUpdateMe,
+	stmtEditPost, stmtGetPost,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
 	stmtCreatePost, stmtGetThread, stmtGetPosts,
@@ -106,7 +107,6 @@ func prepareStatements(db *sql.DB) {
 	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")
-	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtGetThreads = prepare(db, `
 		select threadid, forumid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,
@@ -135,6 +135,13 @@ func prepareStatements(db *sql.DB) {
 		from posts 
 		join users on posts.authorid = users.id 
 		where threadid = ?`)
+	stmtGetPost = prepare(db, `
+		select posts.id, content, users.id, users.username, posts.created, posts.edited 
+		from posts 
+		join users on posts.authorid = users.id 
+		where posts.id = ?`)
+	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
+	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
 	login.Init(login.InitArgs{
 		Db: db,

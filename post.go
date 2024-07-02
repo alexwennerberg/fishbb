@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Post struct {
 	ID      int
@@ -18,21 +21,31 @@ type PostSummary struct {
 	Created   time.Time
 }
 
+func postValid(body string) bool {
+	if len(body) > 10000 {
+		return false
+	}	
+	return true
+}
+
 // TODO paginate
 func getPosts(threadid, limit, offset int) []Post {
 	var posts []Post
 	rows, _ := stmtGetPosts.Query(threadid)
 	for rows.Next() {
 		var p Post
-		var created string
-		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &created, &p.Edited)
+		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
 		logIfErr(err)
-		p.Created, err = time.Parse(timeISO8601, created)
-		logIfErr(err)
-
 		posts = append(posts, p)
 	}
 	return posts
+}
+
+func getPost(postid int) (Post, error) {
+	var p Post
+	row := stmtGetPost.QueryRow(postid)
+	err := row.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
+	return p, err
 }
 
 func getPostAuthorID(postid int) int {
@@ -45,7 +58,6 @@ func getPostAuthorID(postid int) int {
 
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
-	// TODO markdown
 	res, err := stmtCreatePost.Exec(threadid, authorid, body)
 
 	if err != nil {
@@ -54,13 +66,19 @@ func createPost(authorid int, threadid int, body string) (int64, error) {
 	return res.LastInsertId()
 }
 
-func editPost() {
+func editPost(postid int, content string) error {
+	res, err := stmtEditPost.Exec(content, postid)
+	aff, err :=res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if aff != 1 {
+		return fmt.Errorf("unexpected number of rows affected, should be 1, was %d", aff)
+	}
+	return err
 }
 
-func deletePost(id int) error {
-	return nil
-}
-
-func reportPost(id int) error {
-	return nil
+func deletePost(postid int) error {
+	_, err := stmtEditPost.Exec(postid)
+	return err
 }

@@ -1,17 +1,18 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-add CSRF
--> implement change password
+Implement edit and delete
 input validation on all forms
+distinguish notfound db error from other errors
 implement registration
 login package should merge
 cleanup err handling on db calls (over time)
+implement change password
+timestamp weirdness
 
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally
 
-Implement edit and delete
 Get post pagination working
 Get thread pagination working
 Admin panel 

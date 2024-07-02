@@ -1,7 +1,7 @@
 create table forums (
   id integer primary key,
   name text, description text, slug text,
-  created text default current_timestamp
+  created datetime default current_timestamp
 );
 
 create table threads (
@@ -11,7 +11,7 @@ create table threads (
   title text,
   locked int not null default false,
   pinned int not null default false,
-  created text default current_timestamp,
+  created datetime default current_timestamp,
   foreign key (forumid) references forums(id),
   foreign key (authorid) references users(id)
 );
@@ -21,11 +21,11 @@ create table posts (
   threadid integer,
   authorid integer,
   content text,
-  created text default current_timestamp,
-  edited text,
+  created datetime default current_timestamp,
+  edited datetime,
   foreign key (authorid) references users(id),
   foreign key (threadid) references threads(id)
-) strict;
+);
 
 create table users (
   id integer primary key,
@@ -37,19 +37,19 @@ create table users (
   emailverified int not null default false,
   about text not null default 'someone',
   website text not null default '',
-  created text default current_timestamp
-) strict;
+  created datetime default current_timestamp
+);
 
 create table auth (
   userid integer,
   hash text,
   expiry text,
   foreign key (userid) references users(id)
-) strict;
+);
 
 create table config (
   csrfkey text
-) strict;
+);
 
 create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);

@@ -37,8 +37,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["Title"] = config.BoardName // TODO better
 	err := views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
-		log.Error(err.Error())
-		serverError(w,r)
+		serverError(w,r,err)
 	}
 }
 
@@ -49,7 +48,8 @@ func errorPage(w http.ResponseWriter, r *http.Request, code int, message string)
 	serveHTML(w, r, "error", tmpl)
 }
 
-func serverError(w http.ResponseWriter, r *http.Request) {
+func serverError(w http.ResponseWriter, r *http.Request, err error) {
+	log.Error("unexpected error", "err", err.Error())
 	errorPage(w,r,http.StatusInternalServerError, "")
 }
 
@@ -108,6 +108,9 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 func createNewPost(w http.ResponseWriter, r *http.Request) {
 	u := login.GetUserInfo(r)
 	content := r.FormValue("content")
+	if !postValid(content) {
+		return // TODO 4xx
+	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
 	_, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
@@ -131,9 +134,33 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func editPostPage(w http.ResponseWriter, r *http.Request) {
-}
-
-func doEditPost(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	pid, _ := strconv.Atoi(r.PathValue("postid"))
+	post, err := getPost(pid)
+	if err != nil {
+		panic(err)
+		// TODO distinguish notfound
+		return
+	}
+	u := login.GetUserInfo(r)
+	if post.Author.ID != u.UserID {
+		return // TODO unauthorized
+	}
+	if r.Method == "POST" {
+		content := r.FormValue("content")
+		if !postValid(content) {
+			// TODO
+		}
+		err = editPost(pid, content)
+		if err != nil {
+			serverError(w,r,err)
+			return
+		}
+		post.Content = content
+		// TODO redirect to post
+	}
+	tmpl["Post"] = post
+	serveHTML(w, r, "edit-post", tmpl)
 }
 
 func createNewThread(w http.ResponseWriter, r *http.Request) {
@@ -221,8 +248,7 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 	u := login.GetUserInfo(r)
 	info, err := getUser(u.UserID)
 	if err != nil {
-		log.Error("error getting user", "error", err.Error())
-		serverError(w,r)
+		serverError(w,r,err)
 		return
 	}
 	tmpl["UserInfo"] = info
@@ -243,7 +269,7 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	}
 	err := updateMe(u.UserID, r.FormValue("about"), r.FormValue("website"))
 	if err != nil {
-		serverError(w,r)
+		serverError(w,r,err)
 		return 
 	}
 	tmpl := make(map[string]any)
@@ -300,7 +326,7 @@ func serve() {
 		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
 		r.HandleFunc("GET /reset-password", resetPasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
-		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", doEditPost)
+		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
 		r.With(login.CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
 	})

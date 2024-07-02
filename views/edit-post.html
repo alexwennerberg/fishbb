@@ -1,13 +1,14 @@
 {{ template "header.html" . }}
 <main>
-	<div class="div-header">Editing Post</div>
+	<div class="div-header">Editing Post {{.Post.ID}}</div>
 	<form method="POST">
 		<div class="body-padded" >
 			<label for="content">Content:</label><br>
-			<textarea class="post-entry" required name="content" id="content" placeholder='I have something to say...'></textarea><br>
+			<textarea class="post-entry" required name="content" id="content" placeholder='I have something to say...'>{{.Post.Content}}</textarea><br>
 			<a href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">markdown guide</a><br>
 				
-			<button type="submit">Create</button>
+			<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
+			<button type="submit">Save</button>
 		</div>
 	</form>
 </main>

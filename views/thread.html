@@ -10,7 +10,7 @@
   {{ if .Edited }}(edited {{timeago .Edited}}){{end}}
 	  </div>
 	  <div>
-		  <a href="/edit?postid={{.ID}}">Edit</a>
+		  <a href="/post/{{.ID}}/edit">Edit</a>
 		  <a href="/delete">Delete</a>
 	  </div>
   </div>
