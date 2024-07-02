@@ -1,9 +1,11 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-cleanup err handling on db calls
 add title bars to login and register
+implement registration
 Implement user profiles at /me
+login package should merge
+cleanup err handling on db calls (over time)
 
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally
