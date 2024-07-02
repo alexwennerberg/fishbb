@@ -1,8 +1,9 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Get thread pagination working
 next, first, last, previous links 
+
+Get thread pagination working
 links on home and thread list should go to the post
 implement registration
 proper page titles

@@ -96,6 +96,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl["Thread"] = thread
 	tmpl["Page"] = page
+	tmpl["Pages"] = thread.Pages()
 	tmpl["Forum"] = forum
 	tmpl["Posts"] = getPosts(threadID, page)
 	serveHTML(w, r, "thread", tmpl)
@@ -257,6 +258,13 @@ func loadTemplates() *template.Template {
 	views, err :=  template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
 		"markup": markup,
+		"inc": func(i int) int {
+            return i + 1
+		
+		},
+		"dec": func(i int) int {
+			return i - 1
+		},
 	}).ParseFiles(toload...)
 	if err != nil {
 		panic(err)

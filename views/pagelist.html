@@ -1,0 +1,16 @@
+{{ $length := len .Pages }}
+{{ if ne $length 1 }}
+<span style="padding-right:0.3rem;">
+		{{ if ne $.Page 1 }}
+		<a href=?page={{ dec $.Page }}>&lt;</a>
+		{{ end }}
+		{{ range .Pages }} 
+		{{ if eq . $.Page }} <b>{{.}}</b>
+		{{ else }}
+		<a href="?page={{.}}">{{.}}</a>
+		{{ end }}{{ end }}
+		{{ if ne $.Page $length }}
+		<a href=?page={{ inc $.Page }}>&gt;</a>
+		{{ end }}
+</span>
+{{ end }}

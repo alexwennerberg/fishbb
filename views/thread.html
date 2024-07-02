@@ -1,15 +1,7 @@
 {{ template "header.html" . }}
 <div class="flex-between">
 <a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
-{{ $length := len .Thread.Pages }}
-{{ if ne $length 1 }}
-<span>
-		{{ range .Thread.Pages }} 
-		{{ if eq . $.Page }} {{.}}
-		{{ else }}
-		<a href="?page={{.}}">{{.}}</a>
-		{{ end }}{{ end }}</span>
-{{ end }}
+{{ template "pagelist.html" . }}
 </div>
 <div class="div-header"><a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{.Thread.Title}}
 </div>
