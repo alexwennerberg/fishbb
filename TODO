@@ -1,11 +1,8 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Implement user profiles at /me
--> implement change profile
--> implement change password
 add CSRF
-clean up logs
+-> implement change password
 input validation on all forms
 implement registration
 login package should merge

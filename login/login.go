@@ -99,7 +99,7 @@ func GetUserInfo(r *http.Request) *UserInfo {
 	return userinfo
 }
 
-func calculateCSRF(salt, action, auth string) string {
+func calculateCSRF(salt, auth string) string {
 	hasher := sha512.New512_256()
 	zero := []byte{0}
 	hasher.Write(zero)
@@ -109,15 +109,13 @@ func calculateCSRF(salt, action, auth string) string {
 	hasher.Write(zero)
 	hasher.Write([]byte(salt))
 	hasher.Write(zero)
-	hasher.Write([]byte(action))
-	hasher.Write(zero)
 	hash := hexsum(hasher)
 
 	return salt + hash
 }
 
-// Get a CSRF token for given action.
-func GetCSRF(action string, r *http.Request) string {
+// Get a CSRF token 
+func GetCSRF(r *http.Request) string {
 	_, ok := checkauthcookie(r)
 	if !ok {
 		return ""
@@ -130,11 +128,11 @@ func GetCSRF(action string, r *http.Request) string {
 	io.CopyN(hasher, rand.Reader, 32)
 	salt := hexsum(hasher)
 
-	return calculateCSRF(salt, action, auth)
+	return calculateCSRF(salt, auth)
 }
 
 // Checks that CSRF value is correct.
-func CheckCSRF(action string, r *http.Request) bool {
+func CheckCSRF(r *http.Request) bool {
 	auth := getauthcookie(r)
 	if auth == "" {
 		return false
@@ -144,15 +142,15 @@ func CheckCSRF(action string, r *http.Request) bool {
 		return false
 	}
 	salt := csrf[0:authlen]
-	rv := calculateCSRF(salt, action, auth)
+	rv := calculateCSRF(salt, auth)
 	ok := subtle.ConstantTimeCompare([]byte(rv), []byte(csrf)) == 1
 	return ok
 }
 
 // Wrap a handler with CSRF checking.
-func CSRFWrap(action string, handler http.Handler) http.Handler {
+func CSRFWrap(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ok := CheckCSRF(action, r)
+		ok := CheckCSRF(r)
 		if !ok {
 			http.Error(w, "invalid csrf", 403)
 			return
@@ -161,8 +159,8 @@ func CSRFWrap(action string, handler http.Handler) http.Handler {
 	})
 }
 
-func CSRFWrapFunc(action string, fn http.HandlerFunc) http.Handler {
-	return CSRFWrap(action, fn)
+func CSRFWrapFunc(fn http.HandlerFunc) http.Handler {
+	return CSRFWrap(fn)
 }
 
 func loginredirect(w http.ResponseWriter, r *http.Request) {
@@ -475,7 +473,7 @@ func deleteoneauth(auth string) error {
 // Handler for /dologout route.
 func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 	userinfo, ok := checkauthcookie(r)
-	if ok && CheckCSRF("logout", r) {
+	if ok && CheckCSRF(r) {
 		err := deleteauth(userinfo.UserID)
 		if err != nil {
 			logger.Printf("login: error deleting old auth: %s", err)
@@ -504,7 +502,7 @@ func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 // Requires logout csrf token.
 func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	userinfo, ok := checkauthcookie(r)
-	if !ok || !CheckCSRF("logout", r) {
+	if !ok || !CheckCSRF(r) {
 		return fmt.Errorf("unauthorized")
 	}
 

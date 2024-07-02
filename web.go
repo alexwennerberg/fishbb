@@ -29,7 +29,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["User"] = u
 	info["Config"] = config
 	info["Version"] = softwareVersion
-	info["LogoutCSRF"] = login.GetCSRF("logout", r)
+	info["CSRFToken"] = login.GetCSRF(r)
 	var title = config.BoardName
 	if name != "index" {
 		title += " > " + name
@@ -282,28 +282,26 @@ func serve() {
 	r.HandleFunc("GET /register", registerPage)
 	r.HandleFunc("GET /search", dummy)
 	r.HandleFunc("GET /style.css", serveAsset)
-	r.HandleFunc("GET /thread/new", newThreadPage)
 	r.HandleFunc("GET /a", avatarHandler)
-	r.HandleFunc("POST /thread/new", createNewThread)
-	r.HandleFunc("GET /post/new", newPostPage)
-	r.HandleFunc("POST /post/new", createNewPost)
-	r.HandleFunc("GET /post/new", newPostPage)
-
 	r.With(httprate.LimitByIP(10, 1 * time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
+	r.With(httprate.LimitByIP(1, 24 * time.Hour)).HandleFunc("POST /register", doRegister)
+	// TODO add CSRF protection
 	r.HandleFunc("POST /logout", login.LogoutFunc)
-	r.HandleFunc("POST /register", doRegister)
 
 	r.Group(func(r chi.Router) {
-		// TODO loggedin
 		r.Use(login.Required)
+
+		r.HandleFunc("GET /post/new", newPostPage)
+		r.HandleFunc("POST /post/new", createNewPost)
+		r.HandleFunc("GET /thread/new", newThreadPage)
+		r.With(login.CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
 		r.HandleFunc("GET /me", mePage)
-		r.HandleFunc("POST /me", doUpdateMe)
-		r.HandleFunc("POST /post/{postid}/delete", doDeletePost)
+		r.With(login.CSRFWrap).HandleFunc("POST /me", doUpdateMe)
+		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
 		r.HandleFunc("GET /reset-password", resetPasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
-		r.HandleFunc("POST /post/{postid}/edit", doEditPost)
-		r.HandleFunc("POST /thread/{threadid}/update-meta", dummy)
-		r.HandleFunc("POST /user/{userid}/update", dummy)
+		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", doEditPost)
+		r.With(login.CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
 	})
 
