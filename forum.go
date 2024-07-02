@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -49,7 +48,6 @@ func getForums() []Forum {
 		f.LastPost.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		f.Slug = slugify(f.Name)
-		fmt.Println(f)
 		forums = append(forums, f)
 	}
 	return forums

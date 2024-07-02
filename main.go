@@ -13,7 +13,7 @@ var softwareVersion = "0.1.0"
 var config Config
 var devMode = true
 var programLevel = new(slog.LevelVar)
-var log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel}))
+var log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel, AddSource: true}))
 
 func main() {
 	config = NewConfig() // TODO config story

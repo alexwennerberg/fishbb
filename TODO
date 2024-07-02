@@ -1,11 +1,9 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Migrate to argon2 (x/crypto/argon2) with OWASP settings
+cleanup err handling on db calls
 add title bars to login and register
 Implement user profiles at /me
-structured logging for log middleware
-
 
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally
@@ -30,6 +28,7 @@ JSON API
 reporting system
 
 TECH STUFF:
+switch out slog-chi (it sucks) and configure better
 remove fishbb.db from history (or check sensitivity)
 panics -> log.Fatal
 better db init / signal handling

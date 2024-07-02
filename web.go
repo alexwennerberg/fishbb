@@ -12,7 +12,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	// I don't love this
 	"github.com/go-chi/httprate"
+	slogchi "github.com/samber/slog-chi"
 )
 
 var views *template.Template
@@ -216,7 +219,7 @@ func serve() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
+	r.Use(slogchi.New(log))
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(login.Checker) // TODO -- maybe not every route?
@@ -262,5 +265,5 @@ func serve() {
 	err := http.ListenAndServe(config.Port, r)
 	if err != nil {
 		panic(err)
-	}
+}
 }
