@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,10 +14,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 
 	// I don't love this
-	"github.com/go-chi/httprate"
-	slogchi "github.com/samber/slog-chi"
+	"github.com/go-chi/httplog/v2"
 )
 
 var views *template.Template
@@ -50,7 +51,8 @@ func errorPage(w http.ResponseWriter, r *http.Request, code int, message string)
 }
 
 func serverError(w http.ResponseWriter, r *http.Request, err error) {
-	log.Error("unexpected error", "err", err.Error())
+	l := httplog.LogEntry(r.Context())
+	*l = *l.With(httplog.ErrAttr(err))
 	errorPage(w,r,http.StatusInternalServerError, "")
 }
 
@@ -348,10 +350,17 @@ func serve() {
 	views = loadTemplates()
 	prepareStatements(db)
 
+	logger := httplog.NewLogger("fishbb", httplog.Options{
+		LogLevel: slog.LevelDebug,
+		Concise: true,
+		RequestHeaders: false,
+		ResponseHeaders: false,
+	})
+	logger.Logger = log
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(slogchi.New(log)) // TODO look into other logger
+	r.Use(httplog.RequestLogger(logger)) // TODO look into other logger
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(login.Checker) // TODO -- maybe not every route?

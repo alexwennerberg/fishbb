@@ -1,6 +1,8 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
+implement registration
+
 Search
 Admin panel 
 
@@ -9,7 +11,6 @@ PAGINATION
   links on home and thread list should go to the post
   fix bugs
 
-implement registration
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
 styling error page
