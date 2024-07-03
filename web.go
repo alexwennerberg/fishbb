@@ -349,8 +349,9 @@ func serve() {
 	prepareStatements(db)
 
 	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(slogchi.New(log))
+	r.Use(slogchi.New(log)) // TODO look into other logger
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(login.Checker) // TODO -- maybe not every route?

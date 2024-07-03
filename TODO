@@ -1,15 +1,19 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Get thread pagination working
-cleanup pagination (whitespace where > is) and add to top and bottom
-links on home and thread list should go to the post
+Search
+Admin panel 
+
+PAGINATION
+  cleanup pagination (whitespace where > is) and add to top and bottom
+  links on home and thread list should go to the post
+  fix bugs
+
 implement registration
 proper page titles
-styling error page
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
+styling error page
 inline form buttons not styled properly
-add request ID to logs
 input validation on all forms
 distinguish notfound db error from other errors
 login package should merge
@@ -19,12 +23,10 @@ implement change password
 figure out an idiomatic time parsing strategy
 why is link-button smaller? fix it generally
 
-Admin panel 
 URL Hover to show full TS + Timestamp into a template snippet
 Registration / invitations (closed and open signup)
 - open signup: email verification
 - closed signup: combination invitations and approval system
-Search
 Post previews
 Fine-tune CSS
 Google Oauth
