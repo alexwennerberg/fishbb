@@ -37,12 +37,10 @@ func createUser(username, email, password string, role Role) error {
 func getUser(id int) (User, error) {
 	row := stmtGetUser.QueryRow(id)
 	var u User
-	var created string
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &created, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	if err != nil {
 		return u, err
 	}
-	u.Created, err = time.Parse(timeISO8601, created)
 	return u, err
 }
 
