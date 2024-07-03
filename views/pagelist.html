@@ -1,10 +1,11 @@
-{{ $length := len .Pages }}
+{{ $pages := pageArr .ItemCount }}
+{{ $length := len $pages }}
 {{ if ne $length 1 }}
 <span style="padding-right:0.3rem;">
 		{{ if ne $.Page 1 }}
 		<a href=?page={{ dec $.Page }}>&lt;</a>
 		{{ end }}
-		{{ range .Pages }} 
+		{{ range $pages }} 
 		{{ if eq . $.Page }} <b>{{.}}</b>
 		{{ else }}
 		<a href="?page={{.}}">{{.}}</a>

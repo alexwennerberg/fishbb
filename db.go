@@ -15,7 +15,7 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
-	stmtCreatePost, stmtGetThread, stmtGetPosts,
+	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
@@ -132,6 +132,7 @@ func prepareStatements(db *sql.DB) {
 		join posts on threads.id = posts.threadid
 		join forums on threads.forumid = forums.id
 		where threads.id = ?`)
+	stmtGetThreadCount = prepare(db, "select count(1) from threads where forumid = ?")
 	stmtGetPosts = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 

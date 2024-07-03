@@ -18,9 +18,8 @@ type Thread struct {
 }
 
 // returns page list
-func (t Thread) Pages() []int {
-	// + 1 + 1
-	c := ((t.Replies + 2) / config.PageSize)
+func pageArray(n int) []int {
+	c := ((n + 1) / config.PageSize)
 	p := make([]int, c)
 	for i := range c {
 		p[i] = i+1
@@ -28,8 +27,15 @@ func (t Thread) Pages() []int {
 	return p
 }
 
+func getThreadCount(forumID int ) (int, error) {
+	var c int
+	row := stmtGetThreadCount.QueryRow(forumID)
+	err := row.Scan(&c)
+	return c, err
+}
+
 // TODO fix case when no threads
-func getThreads(forumID, page int) []Thread {
+func getThreads(forumID, page int) ([]Thread, error) {
 	var threads []Thread
 	limit, offset := paginate(page)
 	rows, _ := stmtGetThreads.Query(forumID, limit, offset)
@@ -49,7 +55,7 @@ func getThreads(forumID, page int) []Thread {
 		fmt.Print(t.Replies)
 		threads = append(threads, t)
 	}
-	return threads
+	return threads, nil
 }
 
 func getThread(threadid int) (Thread, error) {
