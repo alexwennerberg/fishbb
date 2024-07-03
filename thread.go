@@ -47,6 +47,7 @@ func getThreads(forumID, page int) ([]Thread, error) {
 			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title, 
 			&tcreated, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
+			&t.Latest.Content,
 			&created, &t.Replies)
 		logIfErr(err)
 		t.Latest.Created, err = time.Parse(timeISO8601, created)

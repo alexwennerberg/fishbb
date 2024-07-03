@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"github.com/k3a/html2text"
 )
 
 type Post struct {
@@ -13,12 +15,26 @@ type Post struct {
 	Edited  *time.Time
 }
 
+// TODO reconcile these somehow maybe
 type PostSummary struct {
 	ID          int
 	Author      User
 	ThreadID string
 	ThreadTitle string
 	Created   time.Time
+	Content string
+}
+
+// generate a preview for a post
+// TODO more sophisticated
+const previewLength = 10
+
+func (p Post) Preview() string {
+	text := html2text.HTML2Text(p.Content)
+	if len(text) > previewLength-3 {
+		return text[:previewLength] + "..."
+	}
+	return text
 }
 
 func postValid(body string) bool {

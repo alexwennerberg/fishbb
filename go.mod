@@ -12,6 +12,7 @@ require (
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/httplog/v2 v2.0.11
 	github.com/go-chi/httprate v0.9.0
+	github.com/k3a/html2text v1.2.1
 	github.com/yuin/goldmark v1.7.1
 )
 

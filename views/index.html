@@ -8,7 +8,7 @@
       {{.Description}}
     </td>
     <td>
-		in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}?p={{.LastPost.ID}}">{{.LastPost.ThreadTitle}}</a><br>
+		<a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}?p={{.LastPost.ID}}">↗</a> in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
 		by <a href="/user/{{.LastPost.Author.ID}}">{{.LastPost.Author.Username}}</a>
 	  <span class="text-alt">{{ timeago .LastPost.Created }}</span>
     </td>

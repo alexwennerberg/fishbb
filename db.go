@@ -110,12 +110,12 @@ func prepareStatements(db *sql.DB) {
 	stmtGetThreads = prepare(db, `
 		select threadid, forumid, threads.authorid, users.username, title, 
 		threads.created, threads.pinned, threads.locked,
-		latest.id, latest.authorid, latest.username, latest.created,
-		latest.replies - 1
+		latest.id, latest.authorid, latest.username, latest.content,
+		latest.created, latest.replies - 1
 		from threads 
 		join users on users.id = threads.authorid
 		join (
-			select threadid, posts.id, authorid, users.username, max(posts.created) as created, count(1) as replies
+			select threadid, posts.id, authorid, users.username, posts.content, max(posts.created) as created, count(1) as replies
 			from posts 
 			join users on users.id = posts.authorid
 			group by threadid
