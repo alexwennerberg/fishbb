@@ -45,7 +45,6 @@ func postValid(body string) bool {
 }
 
 // requires a lot of stuff
-// TODO -- maybe optimize into one query
 func getPostSlug(postid int) (string, error) {
 	var threadid int 
 	var forumname string
@@ -56,7 +55,8 @@ func getPostSlug(postid int) (string, error) {
 		return "", err
 	}
 	// TODO fix bug here
-	lastPage := (count + 1)/ config.PageSize
+	lastPage := ((count + 1)/ config.PageSize) - 1
+	fmt.Println(lastPage, count)
 	var url string
 	// TODO url builder
 	if lastPage != 1 {

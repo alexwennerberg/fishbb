@@ -10,7 +10,7 @@
 		{{ else }}
 		<a href="?page={{.}}">{{.}}</a>
 		{{ end }}{{ end }}
-		{{ if ne $.Page $length }}
+		{{ if lt $.Page $length }}
 		<a href=?page={{ inc $.Page }}>&gt;</a>
 		{{ end }}
 </span>

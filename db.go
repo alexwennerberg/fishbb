@@ -153,8 +153,8 @@ func prepareStatements(db *sql.DB) {
 		forums.slug,
 		(select count(1) from threads where threads.id = threads.id) as count
 		from posts
-		join threads on posts.threadid = threads.id
-		join forums on threads.forumid = forums.id
+		left join threads on posts.threadid = threads.id
+		left join forums on threads.forumid = forums.id
 		where posts.id = ?
 	`)
 	login.Init(login.InitArgs{

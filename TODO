@@ -3,8 +3,7 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 implement registration
 - OAuth
-- Uname/password + email only used for pw reset?
-- Optional: Require approval
+- Configurable: Require approval
 
 Search
 Admin panel 
@@ -17,21 +16,15 @@ PAGINATION
 little boring stuff:
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
-inline form buttons not styled properly
+
+Good form library?
 input validation on all forms
 distinguish notfound db error from other errors
 login package should merge
 cleanup err handling on db calls (over time)
 implement change password
 
-figure out an idiomatic time parsing strategy
-why is link-button smaller? fix it generally
-
-URL Hover to show full TS + Timestamp into a template snippet
-Registration / invitations (closed and open signup)
-- open signup: email verification
-- closed signup: combination invitations and approval system
-Post previews
+ts hover to show full TS + Timestamp into a template snippet
 Fine-tune CSS
 Google Oauth
 robots.txt

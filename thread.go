@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -42,18 +41,15 @@ func getThreads(forumID, page int) ([]Thread, error) {
 	for rows.Next() {
 		var t Thread
 		var created string
-		var tcreated string
 		err := rows.Scan(
 			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title, 
-			&tcreated, &t.Pinned, &t.Locked,
+			&t.Created, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
 			&t.Latest.Content,
 			&created, &t.Replies)
 		logIfErr(err)
 		t.Latest.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
-		t.Created, err = time.Parse(timeISO8601, tcreated)
-		fmt.Print(t.Replies)
 		threads = append(threads, t)
 	}
 	return threads, nil
