@@ -1,22 +1,29 @@
 :root {
   --text: #000;
   --text-inverse: #fff;
-  --text-alt: #677;
+  --text-alt: #777;
   --bg: #fff;
   --bg-inverse: #222;
   --bg-alt: #ddd;
   --border: #000;
 }
 
-.text-alt {
-    color: var(--text-alt)
+@media(prefers-color-scheme: dark) {
+:root {
+  --text: #e7e7e7;
+  --text-inverse: #000;
+  --text-alt: #999;
+  --bg: #0d0d0d;
+  --bg-inverse: #ccc;
+  --bg-alt: #161616;
+  --border: #444;
 }
 
 button:not(.link-button) {
-  box-shadow: black 2px 2px;
+  /* box-shadow: var(--border) 2px 2px; */
   background-color: var(--bg);
   color: var(--text);
-  border: 1px solid var(--bg-inverse);
+  border: 1px solid var(--border);
   font-size: 14px;
 }
 
@@ -52,7 +59,8 @@ button:not(.link-button) {
 }
 
 input {
-  border: 1px solid black;
+  border: 1px solid var(--border);
+  background: var(--bg);
 }
 
 button:hover:not(.link-button) {
@@ -65,6 +73,7 @@ body {
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   font-size:16px;
+  background: var(--bg);
   color: var(--text);
   margin: auto;
   font-family: "Roboto", Helvetica, Arial, Sans-serif;
@@ -81,7 +90,7 @@ body {
   padding: 0.5rem;
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--border);
 }
 
 .flex-between {
@@ -149,7 +158,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post {
-  border-top: 1px solid var(--bg-inverse);
+  border-top: 1px solid var(--border);
 }
 
 .post-meta { 
@@ -157,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
   padding-left: 0.3rem;
   padding-right: 0.3rem;
   padding-bottom: 0.1rem;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid var(--border);
   background: var(--bg-alt);
   display: flex;
   justify-content: space-between;
@@ -171,6 +180,8 @@ h1, h2, h3, h4, h5, h6 {
   border: none;
   padding: 0!important;
   text-decoration: underline;
+  font-size: inherit;
+  color:inherit;
 }
 
 .link-button:hover {

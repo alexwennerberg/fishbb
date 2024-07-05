@@ -65,10 +65,6 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		notFound(w,r)
-		return
-	}
 	tmpl := make(map[string]any)
 	tmpl["Forums"] = getForums()
 	serveHTML(w, r, "index", tmpl)
@@ -400,6 +396,8 @@ func serve() {
 	// admin functions
 	r.HandleFunc("POST /ban-user", dummy)
 	r.HandleFunc("POST /set-user-role", dummy)
+
+	r.HandleFunc("/*", notFound)
 
 	log.Debug("starting server")
 	err := http.ListenAndServe(config.Port, r)
