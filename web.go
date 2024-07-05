@@ -23,6 +23,7 @@ import (
 var views *template.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
+	l := httplog.LogEntry(r.Context())
 	u := login.GetUserInfo(r)
 	if u == nil && !devMode {
 		w.Header().Set("Cache-control", "max-age=60")
@@ -38,7 +39,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["Title"] = title
 	err := views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
-		log.Error("unexpected error", "err", err.Error())
+		*l = *l.With(httplog.ErrAttr(err))
 		w.Write([]byte("<h1>TEMPLATE ERROR</h1>"))
 	}
 }
@@ -240,12 +241,39 @@ func loginPage(w http.ResponseWriter, r *http.Request) {
 
 func registerPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	serveHTML(w, r, "register", tmpl)
-}
+	if r.Method == "POST" {
+		username := r.FormValue("username")
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+		password2 := r.FormValue("password2")
 
-func doRegister(w http.ResponseWriter, r *http.Request) {
-	// TODO
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+		formErr := func(s string) {
+			w.WriteHeader(http.StatusBadRequest)
+			tmpl["Flash"] = s
+			serveHTML(w, r, "register", tmpl)
+		}
+
+		if password != password2 {
+			formErr("Passwords do not match.")
+			return
+		}
+		if !validUsername(username) {
+			formErr("Invalid username. Must contain only letters and numbers and be maximum of 25 characters.")
+			return
+		}
+		if !validEmail(email) {
+			formErr("Invalid email.")
+			return
+		}
+
+		err := createUser(username, email, password, RoleUser)
+		if err != nil {
+			serverError(w,r,err)
+		}
+		// log in with new account
+		login.LoginFunc(w,r)
+	}
+	serveHTML(w, r, "register", tmpl)
 }
 
 func serveAsset(w http.ResponseWriter, r *http.Request) {
@@ -367,13 +395,13 @@ func serve() {
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /user/{userid}", userPage)
 	r.HandleFunc("GET /login", loginPage)
-	r.HandleFunc("GET /register", registerPage)
+	// TODO limit registration successes
+	// TODO csrf wrap
+	r.HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", dummy)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /a", avatarHandler)
 	r.With(httprate.LimitByIP(10, 1 * time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
-	r.With(httprate.LimitByIP(1, 24 * time.Hour)).HandleFunc("POST /register", doRegister)
-	// TODO add CSRF protection
 	r.HandleFunc("POST /logout", login.LogoutFunc)
 
 	r.Group(func(r chi.Router) {

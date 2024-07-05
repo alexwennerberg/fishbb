@@ -58,9 +58,20 @@ button:not(.link-button) {
   font-size: 16px;
 }
 
+.error {
+  font-weight: bold;
+}
+
 input {
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: inherit;
+  color: inherit;
+}
+
+textarea {
+  color: inherit;
+  background: inherit;
+  border: 1px solid var(--border);
 }
 
 button:hover:not(.link-button) {

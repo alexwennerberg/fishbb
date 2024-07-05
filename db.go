@@ -59,7 +59,7 @@ func initdb() {
 		panic(err)
 	}
 	if devMode { // create admin / admin
-		err := createUser("admin", "webmaster@foo", "admin", Admin)
+		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 		if err != nil {
 			panic(err) // TODO
 		}
@@ -104,7 +104,7 @@ func prepareStatements(db *sql.DB) {
 		where users.id = ?  
 		group by users.id
 		`)
-	stmtCreateThread = prepare(db, "insert into threads (forumid, authorid, title) values (?, ?, ?);")
+	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")
 	stmtGetThreads = prepare(db, `

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/mail"
+	"regexp"
 	"time"
 
 	"github.com/alexedwards/argon2id"
@@ -21,9 +23,24 @@ type User struct {
 	Posts int
 }
 
-var Admin Role = "admin"
-var Mod Role = "mod"
-var Regular Role = "user"
+var RoleAdmin Role = "admin"
+var RoleMod Role = "mod"
+var RoleUser Role = "user"
+
+var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
+
+func validUsername(u string) bool {
+	return unameRegex.MatchString(u)
+}
+
+func validEmail(e string) bool {
+	_, err := mail.ParseAddress(e)
+	return err == nil
+}
+
+func validPassword(p string) bool {
+	return len(p) >= 8
+}
 
 func createUser(username, email, password string, role Role) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
