@@ -11,6 +11,19 @@ import (
 
 type Role string
 
+func (role Role) Capability(c int) bool {
+	return role.Capabilities()&c != 0
+}
+
+func (role Role) Capabilities() int {
+	if role == RoleAdmin {
+		return AdminPerms
+	} else if role == RoleMod {
+		return ModPerms
+	}
+	return UserPerms
+}
+
 type User struct {
 	ID       int
 	Username string

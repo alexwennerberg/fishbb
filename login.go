@@ -39,6 +39,7 @@ import (
 type UserInfo struct {
 	UserID   int
 	Username string
+	Role     Role
 }
 
 type keytype struct{}
@@ -66,6 +67,18 @@ func Required(handler http.Handler) http.Handler {
 		ok := GetUserInfo(r) != nil
 		if !ok {
 			loginredirect(w, r)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
+}
+
+// Gates a route by a given capability
+func Capability(handler http.Handler, capability int) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		u := GetUserInfo(r)
+		if u == nil || u.Role.Capability(capability) {
+			loginredirect(w, r) // TODO unauth?
 			return
 		}
 		handler.ServeHTTP(w, r)
@@ -208,7 +221,7 @@ func LoginInit(args LoginInitArgs) {
 	if err != nil {
 		panic(err)
 	}
-	stmtUserAuth, err = db.Prepare("select users.id, username, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
+	stmtUserAuth, err = db.Prepare("select users.id, username, role, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
 		panic(err)
 	}
@@ -305,7 +318,7 @@ var validcookies = cache.New(cache.Options{Filler: func(cookie string) (*UserInf
 	row := stmtUserAuth.QueryRow(authhash, now.Format(dbtimeformat))
 	var userinfo UserInfo
 	var stamp string
-	err := row.Scan(&userinfo.UserID, &userinfo.Username, &stamp)
+	err := row.Scan(&userinfo.UserID, &userinfo.Username, &userinfo.Role, &stamp)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no auth found")

@@ -8,6 +8,9 @@ implement registration
 Search
 Admin panel 
 
+auth based on roles vs capabilities
+csrf key and config management
+
 Get some good svg icons (pinned, locked)
 Edit save should return to post
 links on home and thread list should go to the post
@@ -21,12 +24,8 @@ distinguish notfound db error from other errors
 login package should merge
 cleanup err handling on db calls (over time)
 implement change password
-
 ts hover to show full TS + Timestamp into a template snippet
-Fine-tune CSS
-Google Oauth
 robots.txt
-Rate limiting
 Notifications (Including integration with PWA)
 2fa with TOTP
 JSON API
