@@ -16,16 +16,6 @@ type Thread struct {
 	Replies int
 }
 
-// returns page list
-func pageArray(n int) []int {
-	c := ((n - 1) / config.PageSize) + 1
-	p := make([]int, c)
-	for i := range c {
-		p[i] = i + 1
-	}
-	return p
-}
-
 func getThreadCount(forumID int) (int, error) {
 	var c int
 	row := stmtGetThreadCount.QueryRow(forumID)
@@ -37,7 +27,10 @@ func getThreadCount(forumID int) (int, error) {
 func getThreads(forumID, page int) ([]Thread, error) {
 	var threads []Thread
 	limit, offset := paginate(page)
-	rows, _ := stmtGetThreads.Query(forumID, limit, offset)
+	rows, err := stmtGetThreads.Query(forumID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
 	for rows.Next() {
 		var t Thread
 		var created string
@@ -47,7 +40,10 @@ func getThreads(forumID, page int) ([]Thread, error) {
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username,
 			&t.Latest.Content,
 			&created, &t.Replies)
-		logIfErr(err)
+		if err != nil {
+			return nil, err
+		}
+		// TODO?
 		t.Latest.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		threads = append(threads, t)

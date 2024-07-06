@@ -337,6 +337,11 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "me", tmpl)
 }
 
+func adminPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	serveHTML(w, r, "admin", tmpl)
+}
+
 func changePasswordPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	serveHTML(w, r, "change-password", tmpl)
@@ -418,9 +423,12 @@ func serve() {
 		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
 		r.With(login.CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
+		// Delete account
 	})
 
 	// admin functions
+	// TODO admin auth
+	r.HandleFunc("/admin", adminPage)
 	r.HandleFunc("POST /ban-user", dummy)
 	r.HandleFunc("POST /set-user-role", dummy)
 

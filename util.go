@@ -19,6 +19,16 @@ import (
 
 var timeISO8601 = "2006-01-02 15:04:05"
 
+// returns page list
+func pageArray(n int) []int {
+	c := ((n - 1) / config.PageSize) + 1
+	p := make([]int, c)
+	for i := range c {
+		p[i] = i + 1
+	}
+	return p
+}
+
 // returns limit, offset
 // 1-indexed
 func paginate(page int) (int, int) {
