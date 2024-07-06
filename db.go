@@ -123,7 +123,7 @@ func prepareStatements(db *sql.DB) {
 		) latest
 		on latest.threadid = threads.id
 		where forumid = ?
-		order by latest.created desc limit ? offset ?
+		order by pinned desc, latest.created desc limit ? offset ?
 	`)
 	stmtGetThread = prepare(db, `
 		select threads.id, forumid, title, threads.authorid, users.username, 

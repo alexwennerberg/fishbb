@@ -8,12 +8,10 @@ implement registration
 Search
 Admin panel 
 
-PAGINATION
-  cleanup pagination (whitespace where > is) and add to top and bottom
-  links on home and thread list should go to the post
-  fix bugs
+Get some good svg icons (pinned, locked )
+Edit save should return to post
+links on home and thread list should go to the post
 
-little boring stuff:
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
 
