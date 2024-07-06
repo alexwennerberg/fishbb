@@ -15,6 +15,7 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
+	stmtThreadPin, stmtThreadLock,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
@@ -146,6 +147,8 @@ func prepareStatements(db *sql.DB) {
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
+	stmtThreadPin = prepare(db, "update threads set pinned = ? where id = ?")
+	stmtThreadLock = prepare(db, "update threads set locked = ? where id = ?")
 	// get stuff we need for a post slug
 	stmtGetPostSlug = prepare(db, `
 		select 

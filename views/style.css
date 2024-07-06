@@ -21,6 +21,7 @@
 
 button:not(.link-button) {
   /* box-shadow: var(--border) 2px 2px; */
+  font-weight: bold;
   background-color: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
@@ -90,7 +91,7 @@ body {
   font-family: "Roboto", Helvetica, Arial, Sans-serif;
   word-wrap: break-word;
   line-height: 1.5;
-  max-width: 1000px;
+  max-width: 950px;
 }
 
 .form-inline {
