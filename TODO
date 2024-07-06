@@ -1,8 +1,6 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-Pagination Bugs
-
 implement registration
 - OAuth
 - Configurable: Require approval

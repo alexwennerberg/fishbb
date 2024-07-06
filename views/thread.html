@@ -1,5 +1,5 @@
 {{ template "header.html" . }}
-<div class="flex-between">
+<div class="body-header">
 <a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
 {{ template "pagelist.html" . }}
 </div>
@@ -26,4 +26,7 @@
   </div>
 </div>
 {{ end }}
+<div class="body-footer">
+{{ template "pagelist.html" . }}
+</div>
 {{ template "footer.html" . }}

@@ -105,9 +105,17 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.flex-between {
+.body-header {
   display: flex;
   justify-content: space-between;
+  line-height: 1.8rem;
+}
+
+.body-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  padding: 0.2rem;
 }
 
 footer {
