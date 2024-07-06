@@ -18,7 +18,7 @@ type Thread struct {
 
 // returns page list
 func pageArray(n int) []int {
-	c := ((n + 1) / config.PageSize)
+	c := ((n - 1) / config.PageSize) + 1
 	p := make([]int, c)
 	for i := range c {
 		p[i] = i+1
