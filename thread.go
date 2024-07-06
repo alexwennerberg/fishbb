@@ -21,12 +21,12 @@ func pageArray(n int) []int {
 	c := ((n - 1) / config.PageSize) + 1
 	p := make([]int, c)
 	for i := range c {
-		p[i] = i+1
+		p[i] = i + 1
 	}
 	return p
 }
 
-func getThreadCount(forumID int ) (int, error) {
+func getThreadCount(forumID int) (int, error) {
 	var c int
 	row := stmtGetThreadCount.QueryRow(forumID)
 	err := row.Scan(&c)
@@ -42,9 +42,9 @@ func getThreads(forumID, page int) ([]Thread, error) {
 		var t Thread
 		var created string
 		err := rows.Scan(
-			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title, 
+			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title,
 			&t.Created, &t.Pinned, &t.Locked,
-			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username, 
+			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username,
 			&t.Latest.Content,
 			&created, &t.Replies)
 		logIfErr(err)
@@ -55,16 +55,15 @@ func getThreads(forumID, page int) ([]Thread, error) {
 	return threads, nil
 }
 
-func threadPin(threadid int, pinned bool) (error) {
+func threadPin(threadid int, pinned bool) error {
 	_, err := stmtThreadPin.Exec(pinned, threadid)
 	return err
 }
 
-func threadLock(threadid int, locked bool) (error) {
+func threadLock(threadid int, locked bool) error {
 	_, err := stmtThreadLock.Exec(locked, threadid)
 	return err
 }
-
 
 func getThread(threadid int) (Thread, error) {
 	row := stmtGetThread.QueryRow(threadid)

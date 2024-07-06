@@ -40,4 +40,3 @@ func encode(src []byte) string {
 func decode(src string) ([]byte, error) {
 	return base64.URLEncoding.DecodeString(src)
 }
-

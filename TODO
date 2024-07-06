@@ -15,6 +15,15 @@ links on home and thread list should go to the post
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
 
+
+high effort, high priority:
+
+high effort, low priority:
+
+low effort, low priority:
+
+high effort, low priorit:
+
 Good form library?
 input validation on all forms
 distinguish notfound db error from other errors
@@ -33,7 +42,6 @@ JSON API
 reporting system
 
 TECH STUFF:
-remove fishbb.db from history (or check sensitivity)
 panics -> log.Fatal
 better db init / signal handling
 Microformats

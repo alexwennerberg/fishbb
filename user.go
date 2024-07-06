@@ -15,12 +15,12 @@ type User struct {
 	Username string
 	Email    string
 	// TODO fix null schema
-	Role     Role
-	Active   bool
-	About    string
-	Website  string
-	Created  time.Time
-	Posts int
+	Role    Role
+	Active  bool
+	About   string
+	Website string
+	Created time.Time
+	Posts   int
 }
 
 var RoleAdmin Role = "admin"
@@ -62,7 +62,7 @@ func getUser(id int) (User, error) {
 }
 
 // used for self configuration
-func updateMe(id int, about, website string) (error) {
+func updateMe(id int, about, website string) error {
 	_, err := stmtUpdateMe.Exec(about, website, id)
-   return err
+	return err
 }

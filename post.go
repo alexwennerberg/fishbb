@@ -11,7 +11,7 @@ type Post struct {
 	ID      int
 	Content string // TODO markdown
 	Author  User
-	Created time.Time 
+	Created time.Time
 	Edited  *time.Time
 }
 
@@ -19,10 +19,10 @@ type Post struct {
 type PostSummary struct {
 	ID          int
 	Author      User
-	ThreadID string
+	ThreadID    string
 	ThreadTitle string
-	Created   time.Time
-	Content string
+	Created     time.Time
+	Content     string
 }
 
 // generate a preview for a post
@@ -40,13 +40,13 @@ func (p Post) Preview() string {
 func postValid(body string) bool {
 	if len(body) > 10000 {
 		return false
-	}	
+	}
 	return true
 }
 
 // requires a lot of stuff
 func getPostSlug(postid int) (string, error) {
-	var threadid int 
+	var threadid int
 	var forumname string
 	var count int
 	row := stmtGetPostSlug.QueryRow(postid)
@@ -55,14 +55,14 @@ func getPostSlug(postid int) (string, error) {
 		return "", err
 	}
 	// TODO fix bug here
-	lastPage := ((count + 1)/ config.PageSize) - 1
+	lastPage := ((count + 1) / config.PageSize) - 1
 	fmt.Println(lastPage, count)
 	var url string
 	// TODO url builder
 	if lastPage != 1 {
-		url = fmt.Sprintf("/f/%s/%d?page=%d#%d", forumname, threadid, lastPage, postid) 
+		url = fmt.Sprintf("/f/%s/%d?page=%d#%d", forumname, threadid, lastPage, postid)
 	} else {
-		url = fmt.Sprintf("/f/%s/%d#%d", forumname,threadid, postid) 
+		url = fmt.Sprintf("/f/%s/%d#%d", forumname, threadid, postid)
 	}
 	return url, nil
 }
@@ -100,7 +100,7 @@ func createPost(authorid int, threadid int, body string) (int64, error) {
 
 func editPost(postid int, content string) error {
 	res, err := stmtEditPost.Exec(content, postid)
-	aff, err :=res.RowsAffected()
+	aff, err := res.RowsAffected()
 	if err != nil {
 		return err
 	}

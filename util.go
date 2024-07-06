@@ -21,7 +21,7 @@ var timeISO8601 = "2006-01-02 15:04:05"
 
 // returns limit, offset
 // 1-indexed
-func paginate(page int) (int, int) { 
+func paginate(page int) (int, int) {
 	limit := config.PageSize
 	offset := (page - 1) * limit
 	return limit, offset
@@ -55,7 +55,6 @@ func logRequest(handler http.Handler) http.Handler {
 		handler.ServeHTTP(w, r)
 	})
 }
-
 
 // Generate a simple avatar based on a hash of your name
 //
@@ -149,7 +148,7 @@ func markup(md string) template.HTML {
 	err := gm.Convert([]byte(md), &buf)
 	if err != nil {
 		// TODO error handling? Bluemonday as backup?
-		return template.HTML("(Error rendering post)!") 
+		return template.HTML("(Error rendering post)!")
 	}
 	return template.HTML(buf.String())
 }

@@ -39,7 +39,7 @@ func initdb() {
 		panic(dbname + "already exists")
 	}
 
-	db, err := sql.Open("sqlite3", dbname + "?_txlock=immediate")
+	db, err := sql.Open("sqlite3", dbname+"?_txlock=immediate")
 	if err != nil {
 		panic(err)
 	}

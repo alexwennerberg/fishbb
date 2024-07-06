@@ -54,15 +54,15 @@ func errorPage(w http.ResponseWriter, r *http.Request, code int, message string)
 func serverError(w http.ResponseWriter, r *http.Request, err error) {
 	l := httplog.LogEntry(r.Context())
 	*l = *l.With(httplog.ErrAttr(err))
-	errorPage(w,r,http.StatusInternalServerError, "")
+	errorPage(w, r, http.StatusInternalServerError, "")
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
-	errorPage(w,r,http.StatusNotFound,"")
+	errorPage(w, r, http.StatusNotFound, "")
 }
 
 func unauthorized(w http.ResponseWriter, r *http.Request) {
-	errorPage(w,r,http.StatusUnauthorized,"You are not authorized to perform this action, sorry!")
+	errorPage(w, r, http.StatusUnauthorized, "You are not authorized to perform this action, sorry!")
 }
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
@@ -75,14 +75,14 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	fid := getForumID(r.PathValue("forum"))
 	page := page(r)
-	threads, err := getThreads(fid, page) 
+	threads, err := getThreads(fid, page)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 	}
 	count, err := getThreadCount(fid)
 	if err != nil {
-		serverError(w,r,err)
-	}	
+		serverError(w, r, err)
+	}
 	tmpl["ForumID"] = fid
 	tmpl["Threads"] = threads
 	// pagination
@@ -96,7 +96,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	threadID, err := strconv.Atoi(r.PathValue("threadid"))
 	if err != nil {
-		notFound(w,r)
+		notFound(w, r)
 		return
 	}
 	fid := getForumID(r.PathValue("forum"))
@@ -104,7 +104,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 	page := page(r)
 	thread, err := getThread(threadID)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 		return
 	}
 	tmpl["Thread"] = thread
@@ -128,7 +128,7 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
 	thread, err := getThread(tid)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 		return
 	}
 	tmpl["Thread"] = thread
@@ -145,11 +145,11 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
 	pid, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 	}
 	slug, err := getPostSlug(int(pid))
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 	}
 	http.Redirect(w, r, slug, http.StatusSeeOther)
 }
@@ -158,23 +158,23 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 	u := login.GetUserInfo(r)
 	pid, err := strconv.Atoi(r.PathValue("postid"))
 	if err != nil {
-		notFound(w,r)
+		notFound(w, r)
 		return
 	}
 	// TODO build abstraction around post controlling?
 	post, err := getPost(pid)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 		return
 	}
 	aid := post.Author.ID
 	if u.UserID != aid {
-		unauthorized(w,r)
+		unauthorized(w, r)
 		return
 	}
 	err = deletePost(pid)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -190,8 +190,8 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 	}
 	u := login.GetUserInfo(r)
 	if post.Author.ID != u.UserID {
-		unauthorized(w,r)
-		return 
+		unauthorized(w, r)
+		return
 	}
 	if r.Method == "POST" {
 		content := r.FormValue("content")
@@ -200,7 +200,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 		}
 		err = editPost(pid, content)
 		if err != nil {
-			serverError(w,r,err)
+			serverError(w, r, err)
 			return
 		}
 		post.Content = content
@@ -268,10 +268,10 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 
 		err := createUser(username, email, password, RoleUser)
 		if err != nil {
-			serverError(w,r,err)
+			serverError(w, r, err)
 		}
 		// log in with new account
-		login.LoginFunc(w,r)
+		login.LoginFunc(w, r)
 	}
 	serveHTML(w, r, "register", tmpl)
 }
@@ -296,13 +296,13 @@ func loadTemplates() *template.Template {
 			toload = append(toload, viewDir+name)
 		}
 	}
-	views, err :=  template.New("main").Funcs(template.FuncMap{
+	views, err := template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
 		"pageArr": pageArray,
-		"markup": markup,
+		"markup":  markup,
 		"inc": func(i int) int {
-            return i + 1
-		
+			return i + 1
+
 		},
 		"dec": func(i int) int {
 			return i - 1
@@ -330,16 +330,16 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 	u := login.GetUserInfo(r)
 	info, err := getUser(u.UserID)
 	if err != nil {
-		serverError(w,r,err)
+		serverError(w, r, err)
 		return
 	}
 	tmpl["UserInfo"] = info
 	serveHTML(w, r, "me", tmpl)
 }
 
-func resetPasswordPage(w http.ResponseWriter, r *http.Request) {
+func changePasswordPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	serveHTML(w,r, "reset-password", tmpl)
+	serveHTML(w, r, "change-password", tmpl)
 }
 
 func doUpdateMe(w http.ResponseWriter, r *http.Request) {
@@ -351,19 +351,18 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	}
 	err := updateMe(u.UserID, r.FormValue("about"), r.FormValue("website"))
 	if err != nil {
-		serverError(w,r,err)
-		return 
+		serverError(w, r, err)
+		return
 	}
 	tmpl := make(map[string]any)
 	info, _ := getUser(u.UserID)
-	tmpl["UserInfo"] = info	
+	tmpl["UserInfo"] = info
 	tmpl["Notice"] = "Updated!"
 	serveHTML(w, r, "me", tmpl)
 }
 
-func doResetPassword(w http.ResponseWriter, r *http.Request) {
+func doChangePassword(w http.ResponseWriter, r *http.Request) {
 }
-
 
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
@@ -375,9 +374,9 @@ func serve() {
 	prepareStatements(db)
 
 	logger := httplog.NewLogger("fishbb", httplog.Options{
-		LogLevel: slog.LevelDebug,
-		Concise: true,
-		RequestHeaders: false,
+		LogLevel:        slog.LevelDebug,
+		Concise:         true,
+		RequestHeaders:  false,
 		ResponseHeaders: false,
 	})
 	logger.Logger = log
@@ -401,7 +400,7 @@ func serve() {
 	r.HandleFunc("GET /search", dummy)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /a", avatarHandler)
-	r.With(httprate.LimitByIP(10, 1 * time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
+	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
 	r.HandleFunc("POST /logout", login.LogoutFunc)
 
 	r.Group(func(r chi.Router) {
@@ -414,7 +413,7 @@ func serve() {
 		r.HandleFunc("GET /me", mePage)
 		r.With(login.CSRFWrap).HandleFunc("POST /me", doUpdateMe)
 		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
-		r.HandleFunc("GET /reset-password", resetPasswordPage)
+		r.HandleFunc("GET /change-password", changePasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
 		r.With(login.CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
@@ -431,5 +430,5 @@ func serve() {
 	err := http.ListenAndServe(config.Port, r)
 	if err != nil {
 		panic(err)
-}
+	}
 }
