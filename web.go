@@ -10,8 +10,6 @@ import (
 	"text/template"
 	"time"
 
-	"fishbb/login"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
@@ -24,14 +22,14 @@ var views *template.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	l := httplog.LogEntry(r.Context())
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	if u == nil && !devMode {
 		w.Header().Set("Cache-control", "max-age=60")
 	}
 	info["User"] = u
 	info["Config"] = config
 	info["Version"] = softwareVersion
-	info["CSRFToken"] = login.GetCSRF(r)
+	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
 	if name != "index" {
 		title += " > " + name
@@ -137,7 +135,7 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewPost(w http.ResponseWriter, r *http.Request) {
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	content := r.FormValue("content")
 	if !postValid(content) {
 		return // TODO 4xx
@@ -155,7 +153,7 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func doDeletePost(w http.ResponseWriter, r *http.Request) {
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	pid, err := strconv.Atoi(r.PathValue("postid"))
 	if err != nil {
 		notFound(w, r)
@@ -188,7 +186,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 		// TODO distinguish notfound
 		return
 	}
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	if post.Author.ID != u.UserID {
 		unauthorized(w, r)
 		return
@@ -211,7 +209,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func createNewThread(w http.ResponseWriter, r *http.Request) {
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
@@ -266,12 +264,16 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := createUser(username, email, password, RoleUser)
+		err := createUser(username, email, password, RoleUser, config.RequiresApproval)
 		if err != nil {
 			serverError(w, r, err)
 		}
-		// log in with new account
-		login.LoginFunc(w, r)
+		if !config.RequiresApproval {
+			LoginFunc(w, r)
+		} else {
+			// TODO flash
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 	}
 	serveHTML(w, r, "register", tmpl)
 }
@@ -327,7 +329,7 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 
 func mePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	info, err := getUser(u.UserID)
 	if err != nil {
 		serverError(w, r, err)
@@ -339,6 +341,12 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 
 func adminPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
+	var err error
+	tmpl["Users"], err = getUsers()
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	serveHTML(w, r, "admin", tmpl)
 }
 
@@ -348,7 +356,7 @@ func changePasswordPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func doUpdateMe(w http.ResponseWriter, r *http.Request) {
-	u := login.GetUserInfo(r)
+	u := GetUserInfo(r)
 	about := r.FormValue("about")
 	website := r.FormValue("website")
 	if len(about) > 250 || len(website) > 250 {
@@ -391,7 +399,7 @@ func serve() {
 	r.Use(httplog.RequestLogger(logger)) // TODO look into other logger
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
-	r.Use(login.Checker) // TODO -- maybe not every route?
+	r.Use(Checker) // TODO -- maybe not every route?
 
 	// Setup Templates
 	r.HandleFunc("/", indexPage)
@@ -405,23 +413,23 @@ func serve() {
 	r.HandleFunc("GET /search", dummy)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /a", avatarHandler)
-	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", login.LoginFunc)
-	r.HandleFunc("POST /logout", login.LogoutFunc)
+	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)
+	r.HandleFunc("POST /logout", LogoutFunc)
 
 	r.Group(func(r chi.Router) {
-		r.Use(login.Required)
+		r.Use(Required)
 
 		r.HandleFunc("GET /post/new", newPostPage)
 		r.HandleFunc("POST /post/new", createNewPost)
 		r.HandleFunc("GET /thread/new", newThreadPage)
-		r.With(login.CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
+		r.With(CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
 		r.HandleFunc("GET /me", mePage)
-		r.With(login.CSRFWrap).HandleFunc("POST /me", doUpdateMe)
-		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
+		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
+		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
 		r.HandleFunc("GET /change-password", changePasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
-		r.With(login.CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
-		r.With(login.CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
+		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
+		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
 		// Delete account
 	})

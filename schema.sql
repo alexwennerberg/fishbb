@@ -33,7 +33,7 @@ create table users (
   hash text,
   email text not null,
   role text not null default 'user',
-  active int not null default false,
+  active int not null default true,
   emailverified int not null default false,
   about text not null default 'someone',
   website text not null default '',

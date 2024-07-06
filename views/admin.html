@@ -1,4 +1,8 @@
 {{ template "header.html" . }}
 <div class="div-header">Admin Panel</div>
-TBD...
+<div class="body-padded">
+	{{ range .Users }}
+	{{ .Username }} <br>
+	{{ end }}
+</div>
 {{ template "footer.html" . }}

@@ -2,8 +2,8 @@ package main
 
 // most of these don't work yet
 type Config struct {
-	// allow signups without approval
-	OpenSignups              bool
+	// Signups require admin approval
+	RequiresApproval         bool
 	BoardName                string
 	BoardDescription         string
 	RequireEmailVerification bool
@@ -31,5 +31,6 @@ func NewConfig() Config {
 		PageSize:         5,
 		ViewDir:          "./views/",
 		DBPath:           "fishbb.db",
+		RequiresApproval: true,
 	}
 }

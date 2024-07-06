@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fishbb/login"
 	"os"
 	"strings"
 
@@ -14,7 +13,7 @@ import (
 var stmtGetForumID, stmtUpdateMe,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
-	stmtGetUser, stmtGetPostAuthorID, stmtDeletePost,
+	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
@@ -60,7 +59,7 @@ func initdb() {
 		panic(err)
 	}
 	if devMode { // create admin / admin
-		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin)
+		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin, true)
 		if err != nil {
 			panic(err) // TODO
 		}
@@ -97,12 +96,18 @@ func prepareStatements(db *sql.DB) {
 	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
-	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role) values (?, ?, ?, ?)")
+	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, active) values (?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
 		select users.id,username,email,role,active,about,website,users.created, count(1)
 		from users 
 		join posts on users.id = posts.authorid
 		where users.id = ?  
+		group by users.id
+		`)
+	stmtGetUsers = prepare(db, `
+		select users.id,username,email,role,active,about,website,users.created, count(1)
+		from users 
+		join posts on users.id = posts.authorid
 		group by users.id
 		`)
 	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
@@ -160,7 +165,7 @@ func prepareStatements(db *sql.DB) {
 		left join forums on threads.forumid = forums.id
 		where posts.id = ?
 	`)
-	login.Init(login.InitArgs{
+	LoginInit(LoginInitArgs{
 		Db: db,
 	})
 }

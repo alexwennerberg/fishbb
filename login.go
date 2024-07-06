@@ -14,7 +14,7 @@
 
 // Simple cookie and password based logins.
 // See Init for required schema.
-package login
+package main
 
 import (
 	"context"
@@ -25,9 +25,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 	"sync"
@@ -48,8 +46,6 @@ type keytype struct{}
 var thekey keytype
 
 var dbtimeformat = "2006-01-02 15:04:05"
-
-var logger *log.Logger
 
 // Check for auth cookie. Allows failure.
 func Checker(handler http.Handler) http.Handler {
@@ -114,7 +110,7 @@ func calculateCSRF(salt, auth string) string {
 	return salt + hash
 }
 
-// Get a CSRF token 
+// Get a CSRF token
 func GetCSRF(r *http.Request) string {
 	_, ok := checkauthcookie(r)
 	if !ok {
@@ -194,9 +190,8 @@ func getconfig(db *sql.DB, key string, value interface{}) error {
 	return err
 }
 
-type InitArgs struct {
+type LoginInitArgs struct {
 	Db             *sql.DB
-	Logger         *log.Logger
 	Insecure       bool
 	SameSiteStrict bool
 	SafariWorks    bool
@@ -206,38 +201,36 @@ type InitArgs struct {
 // Requires a users table with (id, username, hash) columns and a
 // auth table with (userid, hash, expiry) columns.
 // Requires a config table with (key, value) ('csrfkey', some secret).
-func Init(args InitArgs) {
-	// TODO logger
-	logger = log.New(os.Stderr, "", log.LstdFlags)
+func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
 	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtUserAuth, err = db.Prepare("select users.id, username, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtUpdateUser, err = db.Prepare("update users set hash = ? where id = ?")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtSaveAuth, err = db.Prepare("insert into auth (userid, hash, expiry) values (?, ?, ?)")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtDeleteAuth, err = db.Prepare("delete from auth where userid = ?")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtUpdateExpiry, err = db.Prepare("update auth set expiry = ? where hash = ?")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	stmtDeleteOneAuth, err = db.Prepare("delete from auth where hash = ?")
 	if err != nil {
-		logger.Panic(err)
+		panic(err)
 	}
 	securecookies = !args.Insecure
 	if args.SameSiteStrict {
@@ -273,7 +266,6 @@ func getauthcookie(r *http.Request) string {
 	}
 	auth := cookie.Value
 	if !(len(auth) == authlen && authregex.MatchString(auth)) {
-		logger.Printf("login: bad auth: %s", auth)
 		return ""
 	}
 	return auth
@@ -299,7 +291,7 @@ func getformtoken(r *http.Request) string {
 		return ""
 	}
 	if !(len(token) == authlen && authregex.MatchString(token)) {
-		logger.Printf("login: bad token: %s", token)
+		log.Info("login: bad token: %s", token)
 		return ""
 	}
 	return token
@@ -316,9 +308,9 @@ var validcookies = cache.New(cache.Options{Filler: func(cookie string) (*UserInf
 	err := row.Scan(&userinfo.UserID, &userinfo.Username, &stamp)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			logger.Printf("login: no auth found")
+			log.Info("login: no auth found")
 		} else {
-			logger.Printf("login: error scanning auth row: %s", err)
+			log.Info("login: error scanning auth row: %s", err)
 		}
 		return nil, false
 	}
@@ -359,9 +351,9 @@ func loaduser(username string) (int, string, string, bool) {
 	err := row.Scan(&userid, &hash, &role)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			logger.Printf("login: no username found")
+			log.Info("login: no username found")
 		} else {
-			logger.Printf("login: error loading username: %s", err)
+			log.Info("login: error loading username: %s", err)
 		}
 		return -1, "", "", false
 	}
@@ -387,7 +379,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	if len(username) == 0 || len(username) > userlen ||
 		!userregex.MatchString(username) || len(password) == 0 ||
 		len(password) > passlen {
-		logger.Printf("login: invalid password attempt")
+		log.Info("login: invalid password attempt")
 		if gettoken {
 			http.Error(w, "incorrect", http.StatusForbidden)
 		} else {
@@ -413,7 +405,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	match, err := argon2id.ComparePasswordAndHash(password, hash)
 	// TODO better error handling
 	if !match || err != nil {
-		logger.Printf("login: incorrect password")
+		log.Info("login: incorrect password")
 		if gettoken {
 			http.Error(w, "incorrect", http.StatusForbidden)
 		} else {
@@ -444,10 +436,10 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
 	_, err = stmtSaveAuth.Exec(userid, authhash, expiry)
 	if err != nil {
-		logger.Printf("error saving auth: %s", err)
+		log.Info("error saving auth: %s", err)
 	}
 
-	logger.Printf("login: successful login")
+	log.Info("login: successful login")
 	if gettoken {
 		w.Write([]byte(auth))
 	} else {
@@ -476,7 +468,7 @@ func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 	if ok && CheckCSRF(r) {
 		err := deleteauth(userinfo.UserID)
 		if err != nil {
-			logger.Printf("login: error deleting old auth: %s", err)
+			log.Info("login: error deleting old auth: %s", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
@@ -511,7 +503,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 
 	if len(oldpass) == 0 || len(oldpass) > passlen ||
 		len(newpass) == 0 || len(newpass) > passlen {
-		logger.Printf("login: invalid password attempt")
+		log.Info("login: invalid password attempt")
 		return fmt.Errorf("bad password")
 	}
 	if len(newpass) < 6 {
@@ -524,27 +516,27 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 
 	match, err := argon2id.ComparePasswordAndHash(oldpass, hash)
 	if err != nil {
-		logger.Printf("error comparing password and hash: %s", err)
+		log.Info("error comparing password and hash: %s", err)
 		return fmt.Errorf("error")
 	}
 	if !match {
-		logger.Printf("login: incorrect password")
+		log.Info("login: incorrect password")
 		return fmt.Errorf("bad password")
 	}
 	hash, err = argon2id.CreateHash(newpass, argon2id.DefaultParams)
 	if err != nil {
-		logger.Printf("error generating hash: %s", err)
+		log.Info("error generating hash: %s", err)
 		return fmt.Errorf("error")
 	}
 	_, err = stmtUpdateUser.Exec(hash, userinfo.UserID)
 	if err != nil {
-		logger.Printf("login: error updating user: %s", err)
+		log.Info("login: error updating user: %s", err)
 		return fmt.Errorf("error")
 	}
 
 	err = deleteauth(userid)
 	if err != nil {
-		logger.Printf("login: error deleting old auth: %s", err)
+		log.Info("login: error deleting old auth: %s", err)
 		return fmt.Errorf("error")
 	}
 
@@ -570,7 +562,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
 	_, err = stmtSaveAuth.Exec(userid, authhash, expiry)
 	if err != nil {
-		logger.Printf("error saving auth: %s", err)
+		log.Info("error saving auth: %s", err)
 	}
 
 	return nil
@@ -580,18 +572,18 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 func SetPassword(userid int, newpass string) error {
 	hash, err := argon2id.CreateHash(newpass, argon2id.DefaultParams)
 	if err != nil {
-		logger.Printf("error generating hash: %s", err)
+		log.Info("error generating hash: %s", err)
 		return fmt.Errorf("error")
 	}
 	_, err = stmtUpdateUser.Exec(hash, userid)
 	if err != nil {
-		logger.Printf("login: error updating user: %s", err)
+		log.Info("login: error updating user: %s", err)
 		return fmt.Errorf("error")
 	}
 
 	err = deleteauth(userid)
 	if err != nil {
-		logger.Printf("login: error deleting old auth: %s", err)
+		log.Info("login: error deleting old auth: %s", err)
 		return fmt.Errorf("error")
 	}
 	return nil

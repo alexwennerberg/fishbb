@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/mail"
 	"regexp"
 	"time"
@@ -20,7 +21,7 @@ type User struct {
 	About   string
 	Website string
 	Created time.Time
-	Posts   int
+	Posts   int // TODO perf
 }
 
 var RoleAdmin Role = "admin"
@@ -42,12 +43,12 @@ func validPassword(p string) bool {
 	return len(p) >= 8
 }
 
-func createUser(username, email, password string, role Role) error {
+func createUser(username, email, password string, role Role, active bool) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
-	_, err = stmtCreateUser.Exec(username, email, hash, role)
+	_, err = stmtCreateUser.Exec(username, email, hash, role, active)
 	return err
 }
 
@@ -59,6 +60,24 @@ func getUser(id int) (User, error) {
 		return u, err
 	}
 	return u, err
+}
+
+func getUsers() ([]User, error) {
+	var users []User
+	rows, err := stmtGetUsers.Query()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, u)
+	}
+	fmt.Println(users)
+	return users, nil
 }
 
 // used for self configuration
