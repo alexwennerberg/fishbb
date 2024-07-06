@@ -14,7 +14,7 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug,
 	stmtGetForum, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
-	stmtThreadPin, stmtThreadLock,
+	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
@@ -109,7 +109,9 @@ func prepareStatements(db *sql.DB) {
 		from users 
 		join posts on users.id = posts.authorid
 		group by users.id
+		order by active, username desc
 		`)
+	stmtActivateUser = prepare(db, "update users set active = true where id = ?;")
 	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")

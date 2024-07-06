@@ -98,7 +98,10 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fid := getForumID(r.PathValue("forum"))
-	forum := getForum(fid)
+	forum, err := getForum(fid)
+	if err != nil {
+		serverError(w, r, err)
+	}
 	page := page(r)
 	thread, err := getThread(threadID)
 	if err != nil {
@@ -117,7 +120,12 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 func newThreadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
-	tmpl["Forum"] = getForum(forumID)
+	var err error
+	tmpl["Forum"], err = getForum(forumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	serveHTML(w, r, "new-thread", tmpl)
 }
 
@@ -130,7 +138,11 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tmpl["Thread"] = thread
-	tmpl["Forum"] = getForum(thread.ForumID)
+	tmpl["Forum"], err = getForum(thread.ForumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	serveHTML(w, r, "new-post", tmpl)
 }
 
@@ -219,9 +231,14 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = createPost(u.UserID, int(tid), content)
 	if err != nil {
+		serverError(w, r, err)
 		// handle
 	}
-	slug := getForum(forumID).Slug
+	f, err := getForum(forumID)
+	if err != nil {
+		serverError(w, r, err)
+	}
+	slug := f.Slug
 	http.Redirect(w, r, fmt.Sprintf("/f/%s/%d", slug, tid), http.StatusSeeOther)
 }
 

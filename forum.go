@@ -18,12 +18,11 @@ func createForum(name, description string) error {
 }
 
 // TODO error handling
-func getForum(fid int) Forum {
+func getForum(fid int) (Forum, error) {
 	row := stmtGetForum.QueryRow(fid)
 	var f Forum
 	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
-	logIfErr(err)
-	return f
+	return f, err
 }
 
 func getForumID(forumSlug string) int {

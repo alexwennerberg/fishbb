@@ -80,6 +80,11 @@ func getUsers() ([]User, error) {
 	return users, nil
 }
 
+func activateUser(id int) error {
+	_, err := stmtActivateUser.Exec(id)
+	return err
+}
+
 // used for self configuration
 func updateMe(id int, about, website string) error {
 	_, err := stmtUpdateMe.Exec(about, website, id)

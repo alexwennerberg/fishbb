@@ -2,7 +2,10 @@
 <div class="div-header">Admin Panel</div>
 <div class="body-padded">
 	{{ range .Users }}
-	{{ .Username }} <br>
+	{{ .Username }} {{ .Active }} {{ if not .Active }}
+	<form style="display:inline" action="/activate-user" method="POST"><button>Activate</button>
+	{{ end }}
+	<br>
 	{{ end }}
 </div>
 {{ template "footer.html" . }}
