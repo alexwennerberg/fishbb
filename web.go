@@ -394,6 +394,12 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 func doChangePassword(w http.ResponseWriter, r *http.Request) {
 }
 
+func searchPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	tmpl["Query"] = r.URL.Query().Get("q")
+	serveHTML(w, r, "search", tmpl)
+}
+
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
 }
@@ -427,7 +433,7 @@ func serve() {
 	// TODO limit registration successes
 	// TODO csrf wrap
 	r.HandleFunc("/register", registerPage)
-	r.HandleFunc("GET /search", dummy)
+	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /a", avatarHandler)
 	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)

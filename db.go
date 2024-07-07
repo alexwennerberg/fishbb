@@ -16,6 +16,7 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
+	stmtQueryPosts,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
@@ -167,6 +168,8 @@ func prepareStatements(db *sql.DB) {
 		left join forums on threads.forumid = forums.id
 		where posts.id = ?
 	`)
+	// very dumb atm. maybe improve?
+	stmtQueryPosts = prepare(db, "select 1")
 	LoginInit(LoginInitArgs{
 		Db: db,
 	})
