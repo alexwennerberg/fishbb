@@ -33,10 +33,12 @@ func getForumID(forumSlug string) int {
 	return id
 }
 
-func getForums() []Forum {
+func getForums() ([]Forum, error) {
 	var forums []Forum
 	rows, err := stmtGetForums.Query()
-	logIfErr(err)
+	if err != nil {
+		return nil, err
+	}
 	for rows.Next() {
 		var f Forum
 		var created string
@@ -44,11 +46,13 @@ func getForums() []Forum {
 			&f.LastPost.ThreadID, &f.LastPost.ThreadTitle,
 			&f.LastPost.ID,
 			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created)
-		logIfErr(err)
+		if err != nil {
+			return nil, err
+		}
 		f.LastPost.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		f.Slug = slugify(f.Name)
 		forums = append(forums, f)
 	}
-	return forums
+	return forums, nil
 }

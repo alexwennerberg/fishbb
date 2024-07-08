@@ -1,6 +1,14 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
+Admin Actions:
+Create/edit forums
+User management:
+- Ban
+- Unban
+- Delete
+- Change Role
+
 
 implement registration
 - OAuth

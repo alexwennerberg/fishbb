@@ -1,14 +1,34 @@
 {{ template "header.html" . }}
 <div class="div-header">Control Panel</div>
 <div class="body-padded">
+	<h2>Config TODO</h2>
+	<h2>Forums TODO</h2>
+	{{ range .Forums }}
+	{{ .ID }} {{ .Name }} {{ .Description }}
+	{{ end }}
+	<form><input id="name" name="name"></input></form>
+	<h2>Users</h2>
+	<table>
+		<th>ID</th><th>Username</th><th>Active</th><th>Actions</th>
 	{{ range .Users }}
-	{{ .Username }} {{ .Active }} {{ if not .Active }}
+	<tr><td>{{.ID}}<td>{{ .Username }}</td><td>{{ if not .Active }}
 	<form style="display:inline" action="/activate-user" method="POST">
 		<input type="hidden" name="userid" value="{{.ID}}">
 		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
 		<button>Activate</button>
+		{{ else }}
+		{{ .Active }}</td>
+			<td><select>
+				<option value="ban">Ban</option>
+				<option value="unban">Unban</option>
+				<option value="delete">Delete</option>
+				<option value="make-mod">Make Mod</option>
+				<option value="make-admin">Make Admin</option>
+				<option value="make-user">Make Regular User</option>
+				</select>
 	{{ end }}
-	<br>
+	</tr>
 	{{ end }}
+	</table>
 </div>
 {{ template "footer.html" . }}

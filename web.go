@@ -65,7 +65,12 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	tmpl["Forums"] = getForums()
+	var err error
+	tmpl["Forums"], err = getForums()
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	serveHTML(w, r, "index", tmpl)
 }
 
@@ -76,10 +81,12 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 	threads, err := getThreads(fid, page)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 	count, err := getThreadCount(fid)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 	tmpl["ForumID"] = fid
 	tmpl["Threads"] = threads
@@ -376,6 +383,11 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	var err error
 	tmpl["Users"], err = getUsers()
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["Forums"], err = getForums()
 	if err != nil {
 		serverError(w, r, err)
 		return
