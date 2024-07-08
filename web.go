@@ -309,12 +309,28 @@ func loadTemplates() *template.Template {
 	if err != nil {
 		panic(err)
 	}
+
 	for _, temp := range temps {
 		name := temp.Name()
 		if strings.HasSuffix(name, ".html") {
 			toload = append(toload, viewDir+name)
 		}
 	}
+
+	// TODO reduce code duplication
+
+	iconDir := config.ViewDir + "icons/"
+	icons, err := os.ReadDir(iconDir)
+	if err != nil {
+		panic(err)
+	}
+	for _, temp := range icons {
+		name := temp.Name()
+		if strings.HasSuffix(name, ".svg") {
+			toload = append(toload, iconDir+name)
+		}
+	}
+
 	views, err := template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
 		"pageArr": pageArray,
@@ -356,7 +372,7 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "me", tmpl)
 }
 
-func adminPage(w http.ResponseWriter, r *http.Request) {
+func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	var err error
 	tmpl["Users"], err = getUsers()
@@ -364,7 +380,7 @@ func adminPage(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	serveHTML(w, r, "admin", tmpl)
+	serveHTML(w, r, "control", tmpl)
 }
 
 func changePasswordPage(w http.ResponseWriter, r *http.Request) {
@@ -459,9 +475,16 @@ func serve() {
 
 	// admin functions
 	// TODO admin auth
-	r.HandleFunc("/admin", adminPage)
-	r.HandleFunc("POST /ban-user", dummy)
-	r.HandleFunc("POST /set-user-role", dummy)
+	r.Group(func(r chi.Router) {
+		r.Use(Mod)
+		r.HandleFunc("/control", controlPanelPage)
+		r.HandleFunc("POST /ban-user", dummy) // TODO administrators can't ban
+	})
+
+	r.Group(func(r chi.Router) {
+		r.Use(Admin)
+		r.HandleFunc("POST /set-user-role", dummy)
+	})
 
 	r.HandleFunc("/*", notFound)
 

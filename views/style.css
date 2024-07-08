@@ -19,6 +19,13 @@
   --border: #444;
 }
 
+svg {
+  fill: var(--text);
+  height: auto;
+  vertical-align:middle;
+  display: inline;
+}
+
 button:not(.link-button) {
   /* box-shadow: var(--border) 2px 2px; */
   font-weight: bold;

@@ -8,6 +8,8 @@
   {{ range .Threads }}
   <tr>
     <td>
+		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
+		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
       <a class="title-link" href="/f/general/{{.ID}}">{{.Title}}</a><br>
 	  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created }}</span>
     </td>

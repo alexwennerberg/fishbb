@@ -27,6 +27,7 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -73,16 +74,27 @@ func Required(handler http.Handler) http.Handler {
 	})
 }
 
-// Gates a route by a given capability
-func Capability(handler http.Handler, capability int) http.Handler {
+// Only accessible to certain roles
+func Roles(handler http.Handler, roles []Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u := GetUserInfo(r)
-		if u == nil || u.Role.Capability(capability) {
+		if u == nil || slices.Contains(roles, u.Role) {
 			loginredirect(w, r) // TODO unauth?
 			return
 		}
 		handler.ServeHTTP(w, r)
 	})
+}
+
+// May need to rework these if I think permissions need extention
+
+// Minimum level of mod (mod or admin)
+func Mod(handler http.Handler) http.Handler {
+	return Roles(handler, []Role{RoleAdmin, RoleMod})
+}
+
+func Admin(handler http.Handler) http.Handler {
+	return Roles(handler, []Role{RoleAdmin})
 }
 
 // Check that the form value "token" is valid auth token
