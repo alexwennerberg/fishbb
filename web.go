@@ -416,6 +416,20 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "search", tmpl)
 }
 
+func doActivateUser(w http.ResponseWriter, r *http.Request) {
+	uid, err := strconv.Atoi(r.FormValue("userid"))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	err = activateUser(uid)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/control", http.StatusSeeOther)
+}
+
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
 }
@@ -478,7 +492,8 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
 		r.HandleFunc("/control", controlPanelPage)
-		r.HandleFunc("POST /ban-user", dummy) // TODO administrators can't ban
+		r.HandleFunc("POST /ban-user", dummy) // TODO ban-order
+		r.HandleFunc("POST /activate-user", doActivateUser)
 	})
 
 	r.Group(func(r chi.Router) {
