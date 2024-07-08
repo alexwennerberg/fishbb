@@ -34,3 +34,12 @@ func NewConfig() Config {
 		RequiresApproval: true,
 	}
 }
+
+func GetConfig() (Config, error) {
+	return Config{}, nil
+}
+
+func SaveConfig() error {
+	// update global config value as well
+	return nil
+}

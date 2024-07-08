@@ -18,7 +18,7 @@
       <a href="/login">Login</a>
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>
-	  {{ if .User.Role.ModLevel }}<a href="control">control</a>{{ end }}
+	  {{ if .User.Role.ModLevel }}<a href="/control">control</a>{{ end }}
 	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">Logout</button>
 	<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 	  </form>

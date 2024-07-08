@@ -48,7 +48,8 @@ create table auth (
 );
 
 create table config (
-  csrfkey text
+  key text
+  value text
 );
 
 create index idxforums_slug on forums(slug);

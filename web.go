@@ -484,18 +484,28 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Required)
 
+		// TODO /f/... ?
 		r.HandleFunc("GET /post/new", newPostPage)
+		// TODO POST -> PUT
+		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
+		// TODO POST /post
 		r.HandleFunc("POST /post/new", createNewPost)
+		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
 		r.HandleFunc("GET /thread/new", newThreadPage)
+		// TODO POST /thread
+		// TODO POST /f/{forumid}/thread
 		r.With(CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
 		r.HandleFunc("GET /me", mePage)
+		// TODO POST -> PUT /user/{id} unify user updates
 		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
-		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
+		// TODO POST -> DELETE
 		r.HandleFunc("GET /change-password", changePasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
-		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
+
+		// TODO POST -> PATCH
 		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
-		r.HandleFunc("POST /user/{userid}/reset-password", dummy)
+		// TODO POST-> PATCH
+		r.HandleFunc("POST /user/{userid}/change-password", dummy)
 		// Delete account
 	})
 
@@ -504,12 +514,14 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
 		r.HandleFunc("/control", controlPanelPage)
+		// TODO POST -> PATCH
 		r.HandleFunc("POST /ban-user", dummy) // TODO ban-order
 		r.HandleFunc("POST /activate-user", doActivateUser)
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(Admin)
+		// TODO CSRF
 		r.HandleFunc("POST /set-user-role", dummy)
 	})
 
