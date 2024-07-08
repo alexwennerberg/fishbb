@@ -78,7 +78,7 @@ func Required(handler http.Handler) http.Handler {
 func Roles(handler http.Handler, roles []Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u := GetUserInfo(r)
-		if u == nil || slices.Contains(roles, u.Role) {
+		if u == nil || !slices.Contains(roles, u.Role) {
 			loginredirect(w, r) // TODO unauth?
 			return
 		}
