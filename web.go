@@ -429,12 +429,40 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func doActivateUser(w http.ResponseWriter, r *http.Request) {
-	uid, err := strconv.Atoi(r.FormValue("userid"))
+	uid, err := strconv.Atoi(r.PathValue("uid"))
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
 	err = activateUser(uid)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/control", http.StatusSeeOther)
+}
+
+func doAdminister(w http.ResponseWriter, r *http.Request) {
+	action := r.FormValue("action")
+	uid, err := strconv.Atoi(r.PathValue("uid"))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	if action == "ban" {
+		err = updateUserBanStatus(uid, true)
+	} else if action == "unban" {
+		err = updateUserBanStatus(uid, false)
+	} else if action == "delete" {
+		// TODO not complete yet
+		err = deleteUser(uid)
+	} else if action == "make-mod" {
+		err = updateUserRole(uid, RoleMod)
+	} else if action == "make-admin" {
+		err = updateUserRole(uid, RoleAdmin)
+	} else if action == "make-user" {
+		err = updateUserRole(uid, RoleUser)
+	}
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -502,9 +530,9 @@ func serve() {
 		r.HandleFunc("GET /change-password", changePasswordPage)
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 
-		// TODO POST -> PATCH
+		// TODO PATCH /thread/{threadid}
 		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
-		// TODO POST-> PATCH
+		// TODO POST
 		r.HandleFunc("POST /user/{userid}/change-password", dummy)
 		// Delete account
 	})
@@ -514,14 +542,14 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
 		r.HandleFunc("/control", controlPanelPage)
-		// TODO POST -> PATCH
-		r.HandleFunc("POST /ban-user", dummy) // TODO ban-order
-		r.HandleFunc("POST /activate-user", doActivateUser)
+		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
+		r.HandleFunc("POST /user/{uid}/activate", doActivateUser)
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(Admin)
 		// TODO CSRF
+		// TODO POST /user/{id}/set-role
 		r.HandleFunc("POST /set-user-role", dummy)
 	})
 

@@ -9,24 +9,25 @@
 	<form><input id="name" name="name"></input></form>
 	<h2>Users</h2>
 	<table>
-		<th>ID</th><th>Username</th><th>Active</th><th>Actions</th>
+		<th>ID</th><th>Username</th><th>Role</th><th>Active</th><th>Actions</th>
 	{{ range .Users }}
-	<tr><td>{{.ID}}<td>{{ .Username }}</td><td>{{ if not .Active }}
-	<form style="display:inline" action="/activate-user" method="POST">
-		<input type="hidden" name="userid" value="{{.ID}}">
-		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
-		<button>Activate</button>
-		{{ else }}
-		{{ .Active }}</td>
-			<td><select>
-				<option value="ban">Ban</option>
-				<option value="unban">Unban</option>
+	<tr>
+		<td>{{.ID}}<td>{{ .Username }}</td>
+		<td>{{.Role}}</td>
+		<td> {{ .Active }}</td>
+			<td>
+				<form method="POST" action="/user/{{.ID}}/administer">
+				<select name="action" id="action">
+				<option value="ban">Ban (deactivate)</option>
+				<option value="unban">Unban (activate)</option>
 				<option value="delete">Delete</option>
 				<option value="make-mod">Make Mod</option>
 				<option value="make-admin">Make Admin</option>
 				<option value="make-user">Make Regular User</option>
 				</select>
-	{{ end }}
+				<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
+				<button type="submit" id="submit">Submit</button>
+				</form>
 	</tr>
 	{{ end }}
 	</table>

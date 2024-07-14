@@ -93,6 +93,21 @@ func activateUser(id int) error {
 	return err
 }
 
+func updateUserBanStatus(id int, banned bool) error {
+	_, err := stmtUpdateBanStatus.Exec(!banned, id)
+	return err
+}
+
+func deleteUser(id int) error {
+	_, err := stmtDeleteUser.Exec(id)
+	return err
+}
+
+func updateUserRole(id int, role Role) error {
+	_, err := stmtUpdateUserRole.Exec(role, id)
+	return err
+}
+
 // used for self configuration
 func updateMe(id int, about, website string) error {
 	_, err := stmtUpdateMe.Exec(about, website, id)

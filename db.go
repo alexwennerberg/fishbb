@@ -16,7 +16,7 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
-	stmtQueryPosts,
+	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
@@ -110,7 +110,7 @@ func prepareStatements(db *sql.DB) {
 		from users 
 		join posts on users.id = posts.authorid
 		group by users.id
-		order by active, username desc
+		order by active, role, username desc
 		`)
 	stmtActivateUser = prepare(db, "update users set active = true where id = ?;")
 	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
@@ -155,6 +155,12 @@ func prepareStatements(db *sql.DB) {
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
+	// TODO also delete posts and threads
+	stmtDeleteUser = prepare(db, "delete from users where id = ?")
+	// TODO if this ends up being more complex, maybe alter it
+	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
+	stmtUpdateBanStatus = prepare(db, "update users set active = ? where id = ?")
+
 	stmtThreadPin = prepare(db, "update threads set pinned = ? where id = ?")
 	stmtThreadLock = prepare(db, "update threads set locked = ? where id = ?")
 	// get stuff we need for a post slug

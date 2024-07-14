@@ -15,7 +15,7 @@
 <input tabindex=1 maxlength=250 id="website" name="website" value="{{.UserInfo.Website}}"><br>
 <input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 <a href="/">Change Password</a><br>
-<button tabindex=1 name="update" value="update">Update</button>
+<button type="submit" tabindex=1 name="update" value="update">Update</button>
 {{ if .Notice }}
 	<div class="notice">{{.Notice}}</div>
 	{{ end }}
