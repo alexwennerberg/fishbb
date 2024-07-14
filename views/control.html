@@ -7,7 +7,7 @@
 		<tr><th>ID</th><th>Name</th></th><th>Description</th><th>Permissions</th></tr>
 	{{ range .Forums }}
 	<tr><td>{{ .ID }}</td><td>{{ .Name }}</td><td>{{ .Description }}</td>
-		<td>{{ if eq .Permissions ""}}-{{else}}{{ .Permissions }}{{end}}</td>
+		<td>{{ if eq .Permissions ""}}public{{else}}{{ .Permissions }}{{end}}</td>
 		<td><a href="/f/{{.Slug}}/edit">edit</a></td></tr>
 	{{ end }}
 	</table>
@@ -15,6 +15,7 @@
 	<form method="POST" action="/forum/new"><input id="name" name="name"></input>
 		<button type="submit">Create</button>
 	</form>
+	<br>
 	<h2>Users</h2>
 	<table>
 		<th>ID</th><th>Username</th><th>Role</th><th>Active</th><th>Actions</th>

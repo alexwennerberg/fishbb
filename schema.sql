@@ -2,7 +2,7 @@ create table forums (
   id integer primary key,
   name text, 
   description text, 
-  slug text,
+  slug text not null unique, 
   permissions text not null default '',
   created datetime default current_timestamp
 );

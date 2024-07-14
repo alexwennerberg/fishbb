@@ -459,12 +459,30 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	var err error
 	fs := r.PathValue("forum")
-	tmpl["Forum"], err = getForumBySlug(fs)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
+	id := getForumID(fs)
+	if r.Method == "POST" {
+		// TODO field validation
+		err := updateForum(id, r.FormValue("name"), r.FormValue("description"), Role(r.FormValue("permissions")))
+		if err != nil {
+			serverError(w, r, err)
+		}
+	}
+	tmpl["Forum"], err = getForumBySlug(fs)
 	serveHTML(w, r, "edit-forum", tmpl)
+}
+
+func doCreateForum(w http.ResponseWriter, r *http.Request) {
+	name := r.FormValue("name")
+	err := createForum(name, "Default Description")
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
 
 // placeholder
@@ -537,6 +555,7 @@ func serve() {
 		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
 		r.HandleFunc("/f/{forum}/edit", editForumPage)
+		r.HandleFunc("POST /forum/new", doCreateForum)
 	})
 
 	r.HandleFunc("/*", notFound)

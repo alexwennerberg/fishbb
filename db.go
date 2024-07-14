@@ -12,7 +12,7 @@ import (
 
 var stmtGetForumID, stmtUpdateMe,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
-	stmtGetForumBySlug, stmtCreateUser, stmtGetForums,
+	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
@@ -79,10 +79,11 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 }
 
 func prepareStatements(db *sql.DB) {
+	// TODO maybe do this in code?
 	stmtGetForums = prepare(db, `
 		select forums.id, name, description, permissions,
-		threadid, latest.title, latest.id, latest.authorid,
-		latest.username, latest.created
+		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
+		coalesce(latest.username, ''), coalesce(latest.created, '')
 		from forums
 		left join (
 			select threadid, threads.title, posts.id, threads.authorid,
@@ -94,9 +95,10 @@ func prepareStatements(db *sql.DB) {
 		) latest on latest.forumid = forums.id
 
 `)
-	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
-	stmtGetForumBySlug = prepare(db, "select id, name, description, slug from forums where slug = ?")
+	stmtGetForum = prepare(db, "select id, name, description, slug, permissions from forums where id = ?")
+	stmtGetForumBySlug = prepare(db, "select id, name, description, slug, permissions from forums where slug = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
+	stmtUpdateForum = prepare(db, "update forums set name = ?, description = ?, permissions = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, active) values (?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `

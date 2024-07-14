@@ -1,11 +1,21 @@
 {{ template "header.html" . }}
-<main>
-	<div class="div-header">Editing Properties for Forum {{.Forum.ID}}</div>
+	<div class="div-header">Editing Properties for Forum {{.Forum.Name}}</div>
 	<form method="POST">
 		<div class="body-padded" >
+			Name:
+			<input id="name" name="name" value="{{.Forum.Name}}"></input><br>
+			Description:
+			<input id="description" name="description" value="{{.Forum.Description}}"></input><br>
+			Permissions: 
+			<select id="permissions" name="permissions">
+				<option value="admin" {{ if eq .Forum.Permissions "admin"}}selected{{end}}>Admin-Only</option>
+				<option value="mod" {{ if eq .Forum.Permissions "mod"}}selected{{end}}>Moderator-Only</option>
+				<option value="user" {{ if eq .Forum.Permissions "user"}}selected{{end}}>User-Only</option>
+				<option value=""{{ if eq .Forum.Permissions ""}}selected{{end}}>Anyone</option>
+			</select><br>
 			<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 			<button type="submit">Save</button>
+			<a href="/control">Back</a>
 		</div>
 	</form>
-</main>
 {{ template "footer.html" . }}

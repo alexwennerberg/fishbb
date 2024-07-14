@@ -16,8 +16,13 @@ implement registration
 Search
 Admin panel 
 
+
+favicon working
 auth based on roles vs capabilities
 csrf key and config management
+
+Delete and archive forums
+Split out read and write permissions
 
 Get some good svg icons (pinned, locked)
 Edit save should return to post

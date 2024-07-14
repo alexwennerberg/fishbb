@@ -22,14 +22,19 @@ func createForum(name, description string) error {
 func getForum(id int) (Forum, error) {
 	row := stmtGetForum.QueryRow(id)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.Permissions)
 	return f, err
+}
+
+func updateForum(id int, name, description string, role Role) error {
+	_, err := stmtUpdateForum.Exec(name, description, role, id)
+	return err
 }
 
 func getForumBySlug(slug string) (Forum, error) {
 	row := stmtGetForumBySlug.QueryRow(slug)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.Permissions)
 	return f, err
 }
 
