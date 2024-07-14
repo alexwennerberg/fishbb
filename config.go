@@ -3,9 +3,10 @@ package main
 // most of these don't work yet
 type Config struct {
 	// Signups require admin approval
-	RequiresApproval         bool
-	BoardName                string
-	BoardDescription         string
+	RequiresApproval bool
+	BoardName        string
+	BoardDescription string
+	// TODO does nothing yet
 	RequireEmailVerification bool
 	// private instances are only visible to logged in users
 	Private string

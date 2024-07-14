@@ -104,8 +104,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	}
-	fid := getForumID(r.PathValue("forum"))
-	forum, err := getForum(fid)
+	forum, err := getForumBySlug(r.PathValue("forum"))
 	if err != nil {
 		serverError(w, r, err)
 	}
@@ -456,6 +455,18 @@ func doAdminister(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
 
+func editForumPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	var err error
+	fs := r.PathValue("forum")
+	tmpl["Forum"], err = getForumBySlug(fs)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	serveHTML(w, r, "edit-forum", tmpl)
+}
+
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
 }
@@ -525,6 +536,7 @@ func serve() {
 		// TODO mod authorization
 		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
+		r.HandleFunc("/f/{forum}/edit", editForumPage)
 	})
 
 	r.HandleFunc("/*", notFound)

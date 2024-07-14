@@ -1,0 +1,11 @@
+{{ template "header.html" . }}
+<main>
+	<div class="div-header">Editing Properties for Forum {{.Forum.ID}}</div>
+	<form method="POST">
+		<div class="body-padded" >
+			<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
+			<button type="submit">Save</button>
+		</div>
+	</form>
+</main>
+{{ template "footer.html" . }}

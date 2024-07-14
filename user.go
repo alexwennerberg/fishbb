@@ -36,6 +36,9 @@ var RoleAdmin Role = "admin"
 var RoleMod Role = "mod"
 var RoleUser Role = "user"
 
+// Logged out, non-user
+var RoleNone Role = ""
+
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
 
 func validUsername(u string) bool {

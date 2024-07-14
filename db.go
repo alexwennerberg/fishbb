@@ -11,8 +11,8 @@ import (
 )
 
 var stmtGetForumID, stmtUpdateMe,
-	stmtEditPost, stmtGetPost, stmtGetPostSlug,
-	stmtGetForum, stmtCreateUser, stmtGetForums,
+	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
+	stmtGetForumBySlug, stmtCreateUser, stmtGetForums,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
@@ -80,7 +80,7 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 
 func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
-		select forums.id, name, description,
+		select forums.id, name, description, permissions,
 		threadid, latest.title, latest.id, latest.authorid,
 		latest.username, latest.created
 		from forums
@@ -95,6 +95,7 @@ func prepareStatements(db *sql.DB) {
 
 `)
 	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
+	stmtGetForumBySlug = prepare(db, "select id, name, description, slug from forums where slug = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, active) values (?, ?, ?, ?, ?)")

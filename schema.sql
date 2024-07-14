@@ -1,6 +1,9 @@
 create table forums (
   id integer primary key,
-  name text, description text, slug text,
+  name text, 
+  description text, 
+  slug text,
+  permissions text not null default '',
   created datetime default current_timestamp
 );
 
