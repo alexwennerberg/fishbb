@@ -428,20 +428,6 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "search", tmpl)
 }
 
-func doActivateUser(w http.ResponseWriter, r *http.Request) {
-	uid, err := strconv.Atoi(r.PathValue("uid"))
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	err = activateUser(uid)
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	http.Redirect(w, r, "/control", http.StatusSeeOther)
-}
-
 func doAdminister(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("action")
 	uid, err := strconv.Atoi(r.PathValue("uid"))
@@ -493,6 +479,8 @@ func serve() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(Checker) // TODO -- maybe not every route?
+	// This allows us to use non-POST methods in our routes
+	r.Use(ChangePostToHiddenMethod)
 
 	// Setup Templates
 	r.HandleFunc("/", indexPage)
@@ -501,7 +489,7 @@ func serve() {
 	r.HandleFunc("GET /user/{userid}", userPage)
 	r.HandleFunc("GET /login", loginPage)
 	// TODO limit registration successes
-	// TODO csrf wrap
+	// TODO csrf wrap?
 	r.HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
@@ -512,45 +500,31 @@ func serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Required)
 
-		// TODO /f/... ?
+		// TODO maybe improve resource handling?
 		r.HandleFunc("GET /post/new", newPostPage)
-		// TODO POST -> PUT
-		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
-		// TODO POST /post
-		r.HandleFunc("POST /post/new", createNewPost)
-		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/delete", doDeletePost)
+		r.With(CSRFWrap).HandleFunc("POST /post/new", createNewPost)
 		r.HandleFunc("GET /thread/new", newThreadPage)
-		// TODO POST /thread
-		// TODO POST /f/{forumid}/thread
 		r.With(CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
-		r.HandleFunc("GET /me", mePage)
-		// TODO POST -> PUT /user/{id} unify user updates
-		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
-		// TODO POST -> DELETE
-		r.HandleFunc("GET /change-password", changePasswordPage)
-		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 
-		// TODO PATCH /thread/{threadid}
+		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
+		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
+		r.With(CSRFWrap).HandleFunc("DELETE /post/{postid}", doDeletePost)
+		r.HandleFunc("GET /me", mePage)
+		// TODO POST -> PUT /user/{id} unify user updates?
+		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
+		r.HandleFunc("GET /change-password", changePasswordPage)
+
 		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
-		// TODO POST
 		r.HandleFunc("POST /user/{userid}/change-password", dummy)
-		// Delete account
 	})
 
 	// admin functions
 	// TODO admin auth
 	r.Group(func(r chi.Router) {
-		r.Use(Mod)
+		r.Use(Admin)
+		// TODO mod authorization
 		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
-		r.HandleFunc("POST /user/{uid}/activate", doActivateUser)
-	})
-
-	r.Group(func(r chi.Router) {
-		r.Use(Admin)
-		// TODO CSRF
-		// TODO POST /user/{id}/set-role
-		r.HandleFunc("POST /set-user-role", dummy)
 	})
 
 	r.HandleFunc("/*", notFound)
