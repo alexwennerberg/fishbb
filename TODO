@@ -3,54 +3,47 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 
 Login/Reigster:
-
-2fa  pquerna/otp
-Delete own account
-Delete account: dont delete posts, replace with "(deleted)"?
-
-implement registration
-- OAuth
-- Configurable: Require approval
-
-Search
-Admin panel 
-double main oops
-
+finish up oauth integration
+test and audit code -- check csrf and rate limit
+rate limit registration
+flash on inactive account
 favicon working
 csrf key and config management
-
-Delete and archive forums
-Split out read and write permissions
-
-Get some good svg icons (pinned, locked)
+pin and lock threads
+admin/mod ability to delete / edit posts
 Edit save should return to post
 links on home and thread list should go to the post
-
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
-
 input validation on all forms
-distinguish notfound db error from other errors
-login package should merge
-cleanup err handling on db calls (over time)
-implement change password
 ts hover to show full TS + Timestamp into a template snippet
 robots.txt
-Notifications (Including integration with PWA)
-2fa with TOTP
-JSON API
-reporting system
+Notifications (Including integration with PWA / browser API)
+relicense to v3? Check license
 
-TECH STUFF:
+----- alpha waterline -----
+
+# DEFINITELY
+implement change password / reset password
+Search
+2fa  pquerna/otp
+Delete account: dont delete posts, replace with "(deleted)"?
+get anti spam good enough for open signups
+Archive forums
+distinguish notfound db error from other errors
+login package should merge
+JSON API
+full Email interface / email notifications
+
+# MAYBE 
+Delete own account
+Split out read and write permissions
+reporting system
 panics -> log.Fatal
 better db init / signal handling
 Microformats
+language selection and localization
+
 
 OPS/DEPLOY:
 RRDtool integration / metrics
-JS markdown editor
-relicense to v3
-
-Later goals:
-language selection and localization
-full Email interface / email notifications
