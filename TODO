@@ -3,13 +3,12 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 
 Login/Reigster:
+config management
+csrf key
 finish up oauth integration
 test and audit code -- check csrf and rate limit
 rate limit registration
-flash on inactive account
 favicon working
-csrf key and config management
-pin and lock threads
 admin/mod ability to delete / edit posts
 Edit save should return to post
 links on home and thread list should go to the post
@@ -20,12 +19,13 @@ ts hover to show full TS + Timestamp into a template snippet
 robots.txt
 Notifications (Including integration with PWA / browser API)
 relicense to v3? Check license
+Search
 
------ alpha waterline -----
+----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+split out config management for admins
 implement change password / reset password
-Search
 2fa  pquerna/otp
 Delete account: dont delete posts, replace with "(deleted)"?
 get anti spam good enough for open signups
@@ -33,6 +33,7 @@ Archive forums
 distinguish notfound db error from other errors
 login package should merge
 JSON API
+flash on inactive account
 full Email interface / email notifications
 
 # MAYBE 

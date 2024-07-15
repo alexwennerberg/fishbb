@@ -51,8 +51,9 @@ create table auth (
 );
 
 create table config (
-  key text
-  value text
+  id integer primary key,
+  -- toml blob
+  value text 
 );
 
 create index idxforums_slug on forums(slug);

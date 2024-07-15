@@ -1,5 +1,16 @@
 package main
 
+import (
+	"bytes"
+
+	"github.com/BurntSushi/toml"
+)
+
+// non user-configurable config
+var Port = ":8080"
+var ViewDir = "./views/"
+var DBPath = "fishbb.db"
+
 // most of these don't work yet
 type Config struct {
 	// Signups require admin approval
@@ -14,14 +25,8 @@ type Config struct {
 	// smaller forum settings
 	PageSize int
 
-	// Internal Config (not exposed to forum admins for security reasons)
-	// Directory where views (templates and static data) live.
-	// include trailing slash
-	ViewDir string
-	// Path to backend database
-	DBPath string
-	// port to run the server on
-	Port string
+	// A secret key used for generating CSRF tokens
+	CSRFKey string
 
 	// optional (for oauth)
 	Domain                  string // todo not exactly
@@ -29,14 +34,20 @@ type Config struct {
 	GoogleOAuthClientSecret string
 }
 
-func NewConfig() Config {
+func (c Config) TOMLString() string {
+	var b bytes.Buffer
+	err := toml.NewEncoder(&b).Encode(c)
+	if err != nil {
+		panic(err) // TODO
+	}
+	return b.String()
+}
+
+func DefaultConfig() Config {
 	return Config{
-		Port:                    ":8080",
 		BoardName:               "fishbb",
 		BoardDescription:        "A discussion board",
 		PageSize:                5,
-		ViewDir:                 "./views/",
-		DBPath:                  "fishbb.db",
 		RequiresApproval:        true,
 		Domain:                  "http://localhost:8080",
 		GoogleOAuthClientID:     "",
@@ -45,10 +56,27 @@ func NewConfig() Config {
 }
 
 func GetConfig() (Config, error) {
-	return Config{}, nil
+	row := stmtGetConfig.QueryRow()
+	var val string
+	err := row.Scan(&val)
+	if err != nil {
+		return Config{}, err
+	}
+	var c Config
+	_, err = toml.Decode(val, &c)
+	if err != nil {
+		return Config{}, err
+	}
+	return c, nil
 }
 
-func SaveConfig() error {
-	// update global config value as well
-	return nil
+// keeps a record of previous configs... TODO maybe remove
+// includes cache
+func UpdateConfig(c Config) error {
+	_, err := stmtUpdateConfig.Exec(c.TOMLString())
+	if err == nil {
+		// update global config
+		config = c
+	}
+	return err
 }

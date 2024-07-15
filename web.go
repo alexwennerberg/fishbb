@@ -10,6 +10,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/BurntSushi/toml"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
@@ -308,12 +309,12 @@ func serveAsset(w http.ResponseWriter, r *http.Request) {
 	if !devMode {
 		w.Header().Set("Cache-Control", "max-age=604800")
 	}
-	http.ServeFile(w, r, config.ViewDir+r.URL.Path)
+	http.ServeFile(w, r, ViewDir+r.URL.Path)
 }
 
 func loadTemplates() *template.Template {
 	var toload []string
-	viewDir := config.ViewDir
+	viewDir := ViewDir
 	temps, err := os.ReadDir(viewDir)
 	if err != nil {
 		panic(err)
@@ -328,7 +329,7 @@ func loadTemplates() *template.Template {
 
 	// TODO reduce code duplication
 
-	iconDir := config.ViewDir + "icons/"
+	iconDir := ViewDir + "icons/"
 	icons, err := os.ReadDir(iconDir)
 	if err != nil {
 		panic(err)
@@ -394,7 +395,29 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
+	cfg, err := GetConfig()
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["ConfigTOML"] = cfg.TOMLString()
 	serveHTML(w, r, "control", tmpl)
+}
+
+func doUpdateConfig(w http.ResponseWriter, r *http.Request) {
+	var c Config
+	_, err := toml.Decode(r.FormValue("config"), &c)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	fmt.Println(c)
+	err = UpdateConfig(c)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
 
 func changePasswordPage(w http.ResponseWriter, r *http.Request) {
@@ -494,8 +517,13 @@ func dummy(w http.ResponseWriter, r *http.Request) {
 
 func serve() {
 	db = opendb()
-	views = loadTemplates()
 	prepareStatements(db)
+	var err error
+	config, err = GetConfig()
+	if err != nil {
+		panic(err)
+	}
+	views = loadTemplates()
 
 	logger := httplog.NewLogger("fishbb", httplog.Options{
 		LogLevel:        slog.LevelDebug,
@@ -556,6 +584,7 @@ func serve() {
 		r.Use(Admin)
 		// TODO mod authorization
 		r.HandleFunc("/control", controlPanelPage)
+		r.HandleFunc("POST /update-config", doUpdateConfig)
 		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
 		r.HandleFunc("/f/{forum}/edit", editForumPage)
 		r.HandleFunc("POST /forum/new", doCreateForum)
@@ -571,7 +600,7 @@ func serve() {
 	r.HandleFunc("/*", notFound)
 
 	log.Debug("starting server")
-	err := http.ListenAndServe(config.Port, r)
+	err = http.ListenAndServe(Port, r)
 	if err != nil {
 		panic(err)
 	}

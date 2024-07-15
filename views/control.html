@@ -1,8 +1,15 @@
 {{ template "header.html" . }}
 <div class="div-header">Control Panel</div>
 <div class="body-padded">
-	<h2>Config TODO</h2>
-	<h2>Forums TODO</h2>
+	<h2>Config</h2>
+	<form method="POST" action="/update-config">
+		Configuration is done via TOML.
+		<textarea id="config" name="config" class="post-entry">{{.ConfigTOML}}</textarea>
+		<input type="hidden" name="CSRF" value="{{.CSRFToken}}"><br>
+		<button type="submit">Save</button>
+	</form>
+
+	<h2>Forums</h2>
 	<table>
 		<tr><th>ID</th><th>Name</th></th><th>Description</th><th>Permissions</th></tr>
 	{{ range .Forums }}

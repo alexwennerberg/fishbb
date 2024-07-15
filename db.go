@@ -16,12 +16,12 @@ var stmtGetForumID, stmtUpdateMe,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
-	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus,
+	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
 func opendb() *sql.DB {
-	db, err := sql.Open("sqlite3", "fishbb.db")
+	db, err := sql.Open("sqlite3", DBPath)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +33,7 @@ var sqlSchema string
 
 func initdb() {
 	// set csrf key
-	dbname := config.DBPath
+	dbname := DBPath
 	_, err := os.Stat(dbname)
 	if err == nil {
 		panic(dbname + "already exists")
@@ -66,6 +66,12 @@ func initdb() {
 		}
 	}
 
+	config := DefaultConfig()
+	err = UpdateConfig(config)
+	if err != nil {
+		panic(err)
+	}
+	// default config
 	db.Close()
 	os.Exit(0)
 }
@@ -179,6 +185,8 @@ func prepareStatements(db *sql.DB) {
 	`)
 	// very dumb atm. maybe improve?
 	stmtQueryPosts = prepare(db, "select 1")
+	stmtUpdateConfig = prepare(db, "insert into config(value) values(?)")
+	stmtGetConfig = prepare(db, "select value from config order by id desc limit 1")
 	LoginInit(LoginInitArgs{
 		Db: db,
 	})
