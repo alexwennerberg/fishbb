@@ -17,6 +17,7 @@ var log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: pr
 
 func main() {
 	config = NewConfig() // TODO config story
+	SetupGoogleOAuth()
 	flag.BoolVar(&devMode, "dev", devMode, "dev mode")
 	flag.Parse()
 	args := flag.Args()

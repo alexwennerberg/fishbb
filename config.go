@@ -22,17 +22,25 @@ type Config struct {
 	DBPath string
 	// port to run the server on
 	Port string
+
+	// optional (for oauth)
+	Domain                  string // todo not exactly
+	GoogleOAuthClientID     string
+	GoogleOAuthClientSecret string
 }
 
 func NewConfig() Config {
 	return Config{
-		Port:             ":8080",
-		BoardName:        "fishbb",
-		BoardDescription: "A discussion board",
-		PageSize:         5,
-		ViewDir:          "./views/",
-		DBPath:           "fishbb.db",
-		RequiresApproval: true,
+		Port:                    ":8080",
+		BoardName:               "fishbb",
+		BoardDescription:        "A discussion board",
+		PageSize:                5,
+		ViewDir:                 "./views/",
+		DBPath:                  "fishbb.db",
+		RequiresApproval:        true,
+		Domain:                  "http://localhost:8080",
+		GoogleOAuthClientID:     "",
+		GoogleOAuthClientSecret: "",
 	}
 }
 

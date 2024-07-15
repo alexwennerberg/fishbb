@@ -278,6 +278,9 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			formErr("Passwords do not match.")
 			return
 		}
+		if len(password) < 8 {
+			formErr("Passwords must be at least 8 characters.")
+		}
 		if !validUsername(username) {
 			formErr("Invalid username. Must contain only letters and numbers and be maximum of 25 characters.")
 			return
@@ -557,6 +560,13 @@ func serve() {
 		r.HandleFunc("/f/{forum}/edit", editForumPage)
 		r.HandleFunc("POST /forum/new", doCreateForum)
 	})
+
+	// Google OAuth URLs if enabled
+	if config.GoogleOAuthClientID != "" {
+		// TODO
+		r.HandleFunc("/auth/google/login", oauthGoogleLogin)
+		r.HandleFunc("/auth/google/callback", oauthGoogleCallback)
+	}
 
 	r.HandleFunc("/*", notFound)
 

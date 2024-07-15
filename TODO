@@ -1,13 +1,12 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
-password strength
-2fa
 
-Admin Actions:
-Create/edit forums
+Login/Reigster:
 
+2fa  pquerna/otp
 Delete own account
+Delete account: dont delete posts, replace with "(deleted)"?
 
 implement registration
 - OAuth
@@ -15,10 +14,9 @@ implement registration
 
 Search
 Admin panel 
-
+double main oops
 
 favicon working
-auth based on roles vs capabilities
 csrf key and config management
 
 Delete and archive forums
@@ -31,7 +29,6 @@ links on home and thread list should go to the post
 proper page titles
 rate limiting -- add limit handler (go to error page) and limit certain actions by user
 
-Good form library?
 input validation on all forms
 distinguish notfound db error from other errors
 login package should merge
