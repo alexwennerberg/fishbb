@@ -67,6 +67,10 @@ func initdb() {
 	}
 
 	config := DefaultConfig()
+	config.CSRFKey, err = GenerateRandomString(16)
+	if err != nil {
+		panic(err)
+	}
 	err = UpdateConfig(config)
 	if err != nil {
 		panic(err)

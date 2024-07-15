@@ -3,8 +3,7 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 
 Login/Reigster:
-config management
-csrf key
+csrf key 
 finish up oauth integration
 test and audit code -- check csrf and rate limit
 rate limit registration
