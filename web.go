@@ -362,11 +362,19 @@ func loadTemplates() *template.Template {
 func userPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 
-	uid, _ := strconv.Atoi(r.PathValue("userid"))
-	// TODO err handling
-	info, _ := getUser(uid)
+	uid, err := strconv.Atoi(r.PathValue("userid"))
+	if err != nil {
+		err = fmt.Errorf("failed to parse user ID from path: %w", err)
+		serverError(w, r, err)
+		return
+	}
+	info, err := getUser(uid)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	tmpl["InfoUser"] = info
-	// TODO specific DNE error
+	// TODO specific DNE error?
 	serveHTML(w, r, "user", tmpl)
 }
 
@@ -375,6 +383,7 @@ func mePage(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	info, err := getUser(u.UserID)
 	if err != nil {
+		err = fmt.Errorf("failed to get user %d: %w", u.UserID, err)
 		serverError(w, r, err)
 		return
 	}
