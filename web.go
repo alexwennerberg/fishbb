@@ -13,7 +13,6 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/httprate"
 
 	// I don't love this
 	"github.com/go-chi/httplog/v2"
@@ -54,6 +53,10 @@ func serverError(w http.ResponseWriter, r *http.Request, err error) {
 	l := httplog.LogEntry(r.Context())
 	*l = *l.With(httplog.ErrAttr(err))
 	errorPage(w, r, http.StatusInternalServerError, "")
+}
+
+func tooManyRequests(w http.ResponseWriter, r *http.Request) {
+	errorPage(w, r, http.StatusTooManyRequests, "Slow down!")
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {
@@ -572,17 +575,16 @@ func serve() {
 		w.Write(genAvatar(config.BoardName))
 	})
 	r.HandleFunc("GET /a", avatarHandler)
-	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)
+	r.With(LimitByRealIP(20, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)
 	r.HandleFunc("POST /logout", LogoutFunc)
 
 	r.Group(func(r chi.Router) {
 		r.Use(Required)
 
-		// TODO maybe improve resource handling?
 		r.HandleFunc("GET /post/new", newPostPage)
-		r.With(CSRFWrap).HandleFunc("POST /post/new", createNewPost)
+		r.With(CSRFWrap).With(LimitByUser(10, 5*time.Minute)).HandleFunc("POST /post/new", createNewPost)
 		r.HandleFunc("GET /thread/new", newThreadPage)
-		r.With(CSRFWrap).HandleFunc("POST /thread/new", createNewThread)
+		r.With(CSRFWrap).With(LimitByUser(10, 5*time.Minute)).HandleFunc("POST /thread/new", createNewThread)
 
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
