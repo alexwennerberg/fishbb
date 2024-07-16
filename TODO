@@ -3,18 +3,20 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 rate limit registration
 links on home and thread list should go to the post
+proper page titles
 
 Login/Reigster:
 finish up oauth integration
 admin/mod ability to delete / edit posts
-proper page titles
 ts hover to show full TS + Timestamp into a template snippet
 Notifications (Including integration with PWA / browser API)
 Search
+time is link
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+block renaming of form
 IP blocking / other antispam
 split out config management for admins
 implement change password / reset password

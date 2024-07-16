@@ -23,7 +23,6 @@ func getThreadCount(forumID int) (int, error) {
 	return c, err
 }
 
-// TODO fix case when no threads
 func getThreads(forumID, page int) ([]Thread, error) {
 	var threads []Thread
 	limit, offset := paginate(page)

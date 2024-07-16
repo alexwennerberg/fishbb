@@ -27,7 +27,7 @@ func getForum(id int) (Forum, error) {
 }
 
 func updateForum(id int, name, description string, role Role) error {
-	_, err := stmtUpdateForum.Exec(name, description, role, id)
+	_, err := stmtUpdateForum.Exec(name, description, role, slugify(name), id)
 	return err
 }
 

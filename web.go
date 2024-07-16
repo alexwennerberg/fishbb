@@ -516,6 +516,7 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			serverError(w, r, err)
 		}
+		http.Redirect(w, r, "/control", http.StatusSeeOther)
 	}
 	tmpl["Forum"], err = getForumBySlug(fs)
 	serveHTML(w, r, "edit-forum", tmpl)

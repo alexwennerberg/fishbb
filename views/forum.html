@@ -18,7 +18,7 @@
 		<div>
 	  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created }}</span>
 		</div>
-	  {{ if $.User.Role.ModLevel }}
+	  {{ if and $.User $.User.Role.ModLevel }}
 	  <span>
 		  <form style="display:inline;" method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
 		  <form style="display:inline;" method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
@@ -28,9 +28,8 @@
     </td>
 	<td style="text-align:center;">{{.Replies}}</td>
     <td>
-		<a href="/f/general/{{.ID}}#{{.Latest.ID}}">↗</a>
+		<a href="/f/general/{{.ID}}#{{.Latest.ID}}">{{ timeago .Latest.Created }}</a>
 		by <a href="/user/{{.Latest.Author.ID}}">{{.Latest.Author.Username}}</a>
-	  <span class="text-alt">{{ timeago .Latest.Created }}</span>
     </td>
   </tr>
   {{ end }}

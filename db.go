@@ -108,7 +108,7 @@ func prepareStatements(db *sql.DB) {
 	stmtGetForum = prepare(db, "select id, name, description, slug, permissions from forums where id = ?")
 	stmtGetForumBySlug = prepare(db, "select id, name, description, slug, permissions from forums where slug = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
-	stmtUpdateForum = prepare(db, "update forums set name = ?, description = ?, permissions = ? where id = ?")
+	stmtUpdateForum = prepare(db, "update forums set name = ?, description = ?, permissions = ?, slug = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, active, oauth) values (?, ?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
