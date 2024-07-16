@@ -24,7 +24,5 @@ If you are following along, anti-spam is NOT to the point where open signups
 are a good idea. Don't try to self-host with open signups yet
 
 ## Open Source
-Some code and ideas were taken from:
-* [PHPBB](https://www.phpbb.com/)
-* [Cerca](https://github.com/cblgh/cerca)
+Some code and taken from
 * [Honk](https://humungus.tedunangst.com/r/honk)
