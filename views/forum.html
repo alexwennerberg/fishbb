@@ -5,6 +5,9 @@
 	  <a href="/thread/new?forumid={{.ForumID}}"><button class="top-button">New Thread</button></a>
   {{ template "pagelist.html" . }}
 </div>
+{{ if not (len .Threads) }}
+<tr><td>No threads in this forum yet. Be the first to create one!</td></tr>
+{{ else }} 
   {{ range .Threads }}
   <tr>
     <td>
@@ -23,6 +26,7 @@
   {{ end }}
 </td>
 </tr>
+{{ end }}
 </table>
 <div class="body-footer">
 {{ template "pagelist.html" . }}
