@@ -27,7 +27,11 @@
   </div>
 </div>
 {{ end }}
+{{ $pages := pageArr .ItemCount }}
+{{ $length := len $pages }}
+{{ if ne $length 1 }}
 <div class="body-footer">
 {{ template "pagelist.html" . }}
 </div>
+{{end }}
 {{ template "footer.html" . }}
