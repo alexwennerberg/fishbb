@@ -16,6 +16,9 @@ running your own instance!
 
 TODO
 
+**robots.txt** -- edit the views/robots.txt file, or, if you're running this service behind a reverse proxy, use that as well.
+
+
 ### Google Signup
 
 Optional Google Signup TODO

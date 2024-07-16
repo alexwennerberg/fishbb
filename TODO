@@ -9,10 +9,9 @@ admin/mod ability to delete / edit posts
 Edit save should return to post
 links on home and thread list should go to the post
 proper page titles
-rate limiting -- add limit handler (go to error page) and limit certain actions by user
-input validation on all forms
+add limit handler (go to error page) 
+limit certain actions by user
 ts hover to show full TS + Timestamp into a template snippet
-robots.txt
 Notifications (Including integration with PWA / browser API)
 Search
 

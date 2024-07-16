@@ -393,6 +393,9 @@ func hexsum(h hash.Hash) string {
 	return fmt.Sprintf("%x", h.Sum(nil))[0:authlen]
 }
 
+func SetLoginCookie() {
+}
+
 // Default handler for /dologin
 // Requires username and password form values.
 // Redirects to / on success and /login on failure.

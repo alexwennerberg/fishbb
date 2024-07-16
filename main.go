@@ -16,7 +16,6 @@ var programLevel = new(slog.LevelVar)
 var log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel}))
 
 func main() {
-	SetupGoogleOAuth()
 	flag.BoolVar(&devMode, "dev", devMode, "dev mode")
 	flag.Parse()
 	args := flag.Args()

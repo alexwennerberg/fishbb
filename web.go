@@ -565,6 +565,7 @@ func serve() {
 	r.HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
+	r.HandleFunc("GET /robots.txt", serveAsset)
 	// autogenerate favicon
 	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "max-age=604800")
