@@ -224,6 +224,12 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		post.Content = content
+		slug, err := getPostSlug(pid)
+		if err != nil {
+			serverError(w, r, err)
+			return
+		}
+		http.Redirect(w, r, slug, http.StatusSeeOther)
 		// TODO redirect to post
 	}
 	tmpl["Post"] = post

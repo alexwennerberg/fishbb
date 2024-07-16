@@ -3,15 +3,15 @@
 {{ if ne $length 1 }}
 <span style="padding-right:0.3rem;">
 		{{ if ne $.Page 1 }}
-		<a href=?page={{ dec $.Page }}>&lt;</a>
+		<a href=?p={{ dec $.Page }}>&lt;</a>
 		{{ end }}
 		{{ range $pages }} 
 		{{ if eq . $.Page }} <b>{{.}}</b>
 		{{ else }}
-		<a href="?page={{.}}">{{.}}</a>
+		<a href="?p={{.}}">{{.}}</a>
 		{{ end }}{{ end }}
 		{{ if lt $.Page $length }}
-		<a href=?page={{ inc $.Page }}>&gt;</a>
+		<a href=?p={{ inc $.Page }}>&gt;</a>
 		{{ end }}
 </span>
 {{ end }}

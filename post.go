@@ -29,6 +29,7 @@ type PostSummary struct {
 // TODO more sophisticated
 const previewLength = 10
 
+// unused atm
 func (p Post) Preview() string {
 	text := html2text.HTML2Text(p.Content)
 	if len(text) > previewLength-3 {
@@ -55,12 +56,12 @@ func getPostSlug(postid int) (string, error) {
 		return "", err
 	}
 	// TODO fix bug here
-	lastPage := ((count + 1) / config.PageSize) - 1
-	fmt.Println(lastPage, count)
+	fmt.Println(count, config.PageSize, postid, threadid)
+	postPage := ((count) / config.PageSize) + 1
 	var url string
 	// TODO url builder
-	if lastPage != 1 {
-		url = fmt.Sprintf("/f/%s/%d?page=%d#%d", forumname, threadid, lastPage, postid)
+	if postPage != 1 {
+		url = fmt.Sprintf("/f/%s/%d?p=%d#%d", forumname, threadid, postPage, postid)
 	} else {
 		url = fmt.Sprintf("/f/%s/%d#%d", forumname, threadid, postid)
 	}

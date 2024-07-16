@@ -77,7 +77,7 @@ func paginate(page int) (int, int) {
 
 // pulls page from url param. 1-indexed
 func page(r *http.Request) int {
-	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	page, _ := strconv.Atoi(r.URL.Query().Get("p"))
 	if page == 0 { // 1-indexing
 		page = 1
 	}

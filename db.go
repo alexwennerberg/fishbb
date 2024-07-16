@@ -181,11 +181,11 @@ func prepareStatements(db *sql.DB) {
 		select 
 		threads.id, 
 		forums.slug,
-		(select count(1) from threads where threads.id = threads.id) as count
-		from posts
+		(select count(1) from posts where threads.id = posts.threadid and id < ?1) as count
+		from posts 
 		left join threads on posts.threadid = threads.id
 		left join forums on threads.forumid = forums.id
-		where posts.id = ?
+		where posts.id = ?1
 	`)
 	// very dumb atm. maybe improve?
 	stmtQueryPosts = prepare(db, "select 1")
