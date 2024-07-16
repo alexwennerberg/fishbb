@@ -537,7 +537,8 @@ func doLockThread(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	err = setThreadLock(threadID, true)
+	state, _ := strconv.ParseBool(r.URL.Query().Get("s"))
+	err = setThreadLock(threadID, state)
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -552,7 +553,8 @@ func doPinThread(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	err = setThreadPin(threadID, true)
+	state, _ := strconv.ParseBool(r.URL.Query().Get("s"))
+	err = setThreadPin(threadID, state)
 	if err != nil {
 		serverError(w, r, err)
 		return
