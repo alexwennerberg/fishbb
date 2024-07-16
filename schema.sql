@@ -36,6 +36,7 @@ create table users (
   hash text,
   email text not null,
   role text not null default 'user',
+  oauth text,
   active int not null default true,
   emailverified int not null default false,
   about text not null default 'someone',

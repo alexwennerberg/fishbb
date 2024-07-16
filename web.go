@@ -422,7 +422,6 @@ func doUpdateConfig(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	fmt.Println(c)
 	err = UpdateConfig(c)
 	if err != nil {
 		serverError(w, r, err)
@@ -527,6 +526,7 @@ func dummy(w http.ResponseWriter, r *http.Request) {
 }
 
 func serve() {
+	// order is important here
 	db = opendb()
 	prepareStatements(db)
 	var err error
@@ -535,6 +535,7 @@ func serve() {
 		panic(err)
 	}
 	views = loadTemplates()
+	SetupGoogleOAuth()
 
 	logger := httplog.NewLogger("fishbb", httplog.Options{
 		LogLevel:        slog.LevelDebug,

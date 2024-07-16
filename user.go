@@ -59,7 +59,15 @@ func createUser(username, email, password string, role Role, active bool) error 
 	if err != nil {
 		return err
 	}
-	_, err = stmtCreateUser.Exec(username, email, hash, role, active)
+	_, err = stmtCreateUser.Exec(username, email, hash, role, active, nil)
+	return err
+}
+
+// TODO username figure out
+// TODO password
+// TODO allow to link account, add pw later?
+func createOAuthUser(email string, active bool, provider string) error {
+	_, err := stmtCreateUser.Exec(email, email, "", RoleUser, active, provider)
 	return err
 }
 

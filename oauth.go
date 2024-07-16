@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -38,7 +40,6 @@ func oauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 		AuthCodeURL receive state that is a token to protect the user from CSRF attacks. You must always provide a non-empty string and
 		validate that it matches the the state query parameter on your redirect callback.
 	*/
-	fmt.Println(googleOauthConfig)
 	u := googleOauthConfig.AuthCodeURL(oauthState)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
@@ -46,24 +47,30 @@ func oauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	// Read oauthState from Cookie
 	oauthState, _ := r.Cookie("oauthstate")
-
 	if r.FormValue("state") != oauthState.Value {
-		fmt.Println("invalid oauth google state") // TODO log
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		err := errors.New("invalid oauth google state")
+		serverError(w, r, err)
 		return
 	}
-
 	data, err := getUserDataFromGoogle(r.FormValue("code"))
 	if err != nil {
-		fmt.Println(err.Error()) // TODO log
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		serverError(w, r, err)
 		return
 	}
+	var jsonData map[string]any
+	err = json.Unmarshal(data, &jsonData)
+	if err != nil {
+		serverError(w, r, err)
+	}
 
-	// GetOrCreate User in your db.
-	// Redirect or response with a token.
-	// More code .....
-	fmt.Fprintf(w, "UserInfo: %s\n", data)
+	email := jsonData["email"].(string)
+	// TODO get user if exists
+	err = createOAuthUser(email, !config.RequiresApproval, "google")
+	if err != nil {
+		serverError(w, r, err)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func generateStateOauthCookie(w http.ResponseWriter) string {

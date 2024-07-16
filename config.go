@@ -77,6 +77,8 @@ func UpdateConfig(c Config) error {
 	if err == nil {
 		// update global config
 		config = c
+		// TODO find a better way to do this
+		SetupGoogleOAuth()
 	}
 	return err
 }

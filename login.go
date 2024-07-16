@@ -593,7 +593,6 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-// Set password for a user.
 func SetPassword(userid int, newpass string) error {
 	hash, err := argon2id.CreateHash(newpass, argon2id.DefaultParams)
 	if err != nil {
@@ -605,7 +604,6 @@ func SetPassword(userid int, newpass string) error {
 		log.Info("login: error updating user: %s", err)
 		return fmt.Errorf("error")
 	}
-
 	err = deleteauth(userid)
 	if err != nil {
 		log.Info("login: error deleting old auth: %s", err)
