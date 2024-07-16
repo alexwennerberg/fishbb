@@ -3,8 +3,7 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 
 Login/Reigster:
-csrf key 
-finish up oauth integration
+finish up oauth integration (now I can store config yay)
 test and audit code -- check csrf and rate limit
 rate limit registration
 favicon working

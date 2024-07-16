@@ -387,11 +387,13 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 	var err error
 	tmpl["Users"], err = getUsers()
 	if err != nil {
+		err = fmt.Errorf("failed to get users: %w", err)
 		serverError(w, r, err)
 		return
 	}
 	tmpl["Forums"], err = getForums()
 	if err != nil {
+		err = fmt.Errorf("failed to get forums: %w", err)
 		serverError(w, r, err)
 		return
 	}

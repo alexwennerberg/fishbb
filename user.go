@@ -68,7 +68,7 @@ func getUser(id int) (User, error) {
 	var u User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	if err != nil {
-		return u, err
+		return u, fmt.Errorf("failed to scan row: %w", err)
 	}
 	return u, err
 }
@@ -77,13 +77,13 @@ func getUsers() ([]User, error) {
 	var users []User
 	rows, err := stmtGetUsers.Query()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not execute query: %w", err)
 	}
 	for rows.Next() {
 		var u User
 		err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan rows: %w", err)
 		}
 		users = append(users, u)
 	}
