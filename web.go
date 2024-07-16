@@ -565,6 +565,11 @@ func serve() {
 	r.HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
+	// autogenerate favicon
+	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "max-age=604800")
+		w.Write(genAvatar(config.BoardName))
+	})
 	r.HandleFunc("GET /a", avatarHandler)
 	r.With(httprate.LimitByIP(10, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)
 	r.HandleFunc("POST /logout", LogoutFunc)

@@ -3,10 +3,8 @@ Setup fishbb.org (cloud provider)
 FEATURES:
 
 Login/Reigster:
-finish up oauth integration (now I can store config yay)
-test and audit code -- check csrf and rate limit
+finish up oauth integration
 rate limit registration
-favicon working
 admin/mod ability to delete / edit posts
 Edit save should return to post
 links on home and thread list should go to the post
