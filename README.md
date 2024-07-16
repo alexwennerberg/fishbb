@@ -26,3 +26,6 @@ are a good idea. Don't try to self-host with open signups yet
 ## Open Source
 Some code and taken from
 * [Honk](https://humungus.tedunangst.com/r/honk)
+
+Dependent code is either trivial or MIT-licensed. Project itself is AGPLv3. If
+you would like a license exception for some part of the code, please contact me.
