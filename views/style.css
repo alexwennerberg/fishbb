@@ -112,6 +112,11 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.flex-between {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+}
 .body-header {
   display: flex;
   justify-content: space-between;

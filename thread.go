@@ -51,12 +51,12 @@ func getThreads(forumID, page int) ([]Thread, error) {
 	return threads, nil
 }
 
-func threadPin(threadid int, pinned bool) error {
+func setThreadPin(threadid int, pinned bool) error {
 	_, err := stmtThreadPin.Exec(pinned, threadid)
 	return err
 }
 
-func threadLock(threadid int, locked bool) error {
+func setThreadLock(threadid int, locked bool) error {
 	_, err := stmtThreadLock.Exec(locked, threadid)
 	return err
 }

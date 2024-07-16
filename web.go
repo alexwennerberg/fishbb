@@ -93,6 +93,7 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tmpl["ForumID"] = fid
+	tmpl["ForumSlug"] = r.PathValue("forum")
 	tmpl["Threads"] = threads
 	// pagination
 	tmpl["Page"] = page
@@ -530,6 +531,36 @@ func doCreateForum(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
 
+func doLockThread(w http.ResponseWriter, r *http.Request) {
+	threadID, err := strconv.Atoi(r.PathValue("tid"))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	err = setThreadLock(threadID, true)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	// TODO paginate redirect
+	http.Redirect(w, r, "/f/"+r.PathValue("forum"), http.StatusSeeOther)
+}
+
+func doPinThread(w http.ResponseWriter, r *http.Request) {
+	threadID, err := strconv.Atoi(r.PathValue("tid"))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	err = setThreadPin(threadID, true)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	// TODO paginate redirect
+	http.Redirect(w, r, "/f/"+r.PathValue("forum"), http.StatusSeeOther)
+}
+
 // placeholder
 func dummy(w http.ResponseWriter, r *http.Request) {
 }
@@ -604,6 +635,11 @@ func serve() {
 		r.HandleFunc("POST /user/{userid}/change-password", dummy)
 	})
 
+	r.Group(func(r chi.Router) {
+		r.Use(Mod)
+		r.HandleFunc("POST /f/{forum}/{tid}/pin", doPinThread)
+		r.HandleFunc("POST /f/{forum}/{tid}/lock", doLockThread)
+	})
 	// admin functions
 	// TODO admin auth
 	r.Group(func(r chi.Router) {

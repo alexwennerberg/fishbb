@@ -13,8 +13,20 @@
     <td>
 		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
-      <a class="title-link" href="/f/general/{{.ID}}">{{.Title}}</a><br>
+		<div class="flex-between">
+		<div>
+		<a class="title-link" href="/f/{{$.ForumSlug}}/{{.ID}}">{{.Title}}</a><br>
 	  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created }}</span>
+		</div>
+	  {{ if $.User.Role.ModLevel }}
+	  <div>
+		  <form method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/lock"><button class="link-button" id="submit">Lock</button></form>
+		  {{ if not .Pinned }}
+		  <form method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/pin"><button class="link-button" id="submit">Pin</button></form>
+		  {{ end }}
+	  </div>
+		</div>
+	  {{ end }}
     </td>
 	<td style="text-align:center;">{{.Replies}}</td>
     <td>
@@ -28,7 +40,11 @@
 </tr>
 {{ end }}
 </table>
+{{ $pages := pageArr .ItemCount }}
+{{ $length := len $pages }}
+{{ if ne $length 1 }}
 <div class="body-footer">
 {{ template "pagelist.html" . }}
 </div>
+{{ end }}
 {{ template "footer.html" . }}
