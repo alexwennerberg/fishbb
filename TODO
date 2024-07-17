@@ -2,7 +2,6 @@ Setup fishbb.org (cloud provider)
 
 FEATURES:
 rate limit registration
-proper page titles
 
 Login/Reigster:
 finish up oauth integration

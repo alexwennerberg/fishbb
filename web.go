@@ -31,8 +31,10 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["Version"] = softwareVersion
 	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
-	if name != "index" {
-		title += " > " + name
+	if info["Subtitle"] != nil {
+		title = info["Subtitle"].(string) + " - " + title
+	} else if name != "index" {
+		title = name + " - " + title
 	}
 	info["Title"] = title
 	err := views.ExecuteTemplate(w, name+".html", info)
@@ -80,25 +82,29 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	fid := getForumID(r.PathValue("forum"))
+	f, err := getForumBySlug(r.PathValue("forum"))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	page := page(r)
-	threads, err := getThreads(fid, page)
+	threads, err := getThreads(f.ID, page)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
-	count, err := getThreadCount(fid)
+	count, err := getThreadCount(f.ID)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
-	tmpl["ForumID"] = fid
-	tmpl["ForumSlug"] = r.PathValue("forum")
+	tmpl["Forum"] = f
 	tmpl["Threads"] = threads
 	// pagination
 	tmpl["Page"] = page
 	tmpl["ItemCount"] = count
 	tmpl["Threads"] = threads
+	tmpl["Subtitle"] = f.Name
 	serveHTML(w, r, "forum", tmpl)
 }
 
@@ -125,6 +131,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl["ItemCount"] = thread.Replies + 1
 	tmpl["Forum"] = forum
 	tmpl["Posts"] = getPosts(threadID, page)
+	tmpl["Subtitle"] = thread.Title
 	serveHTML(w, r, "thread", tmpl)
 }
 
@@ -384,6 +391,7 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tmpl["InfoUser"] = info
+	tmpl["Subtitle"] = info.Username
 	// TODO specific DNE error?
 	serveHTML(w, r, "user", tmpl)
 }

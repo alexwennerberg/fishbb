@@ -9,8 +9,15 @@
   <div id="page-header">
 	  <div>
 		  <a href="/"><img src="/a?a={{.Config.BoardName}}" width=18px></a>
-		  <a href="/" class="title-link">{{.Config.BoardName}}</a><br>
-      {{.Config.BoardDescription}}
+		  <a href="/" class="title-link">{{.Config.BoardName}}</a>
+		  {{ if .Forum }}
+		  &gt; <a class="title-link" href="/f/{{.Forum.Slug}}"</a>{{ .Forum.Name }}</a>
+		  {{ end }}<br>
+		  {{ if .Forum }}
+		  {{ .Forum.Description }}
+		  {{ else }}
+		  {{.Config.BoardDescription}}
+		  {{ end }}
     </div>
     <div id="nav">
       {{ if not .User }}

@@ -2,7 +2,7 @@
 <table class="nav-table" id="threads">
   <tr><th style="width:50%">Thread</th><th style="text-align:center;width:4rem;">Replies</th><th style="width:30%">Last Post</th></tr>
   <div class="body-header">
-	  <a href="/thread/new?forumid={{.ForumID}}"><button class="top-button">New Thread</button></a>
+	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="top-button">New Thread</button></a>
   {{ template "pagelist.html" . }}
 </div>
 {{ if not (len .Threads) }}
@@ -13,7 +13,7 @@
     <td>
 		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
-		<a class="title-link" href="/f/{{$.ForumSlug}}/{{.ID}}">{{.Title}}</a><br>
+		<a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div>
 			by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span>
