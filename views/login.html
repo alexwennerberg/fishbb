@@ -9,6 +9,7 @@
 <button tabindex=1 name="login" value="login">Login</button>
 </form>
 {{ if .Config.GoogleOAuthClientID }}
+No account yet? <a href="/register">Register!</a>
 <br>
 <a href="/auth/google/login">
 <button class="gsi-material-button">

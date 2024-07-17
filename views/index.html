@@ -1,15 +1,16 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="forums">
-  <tr><th style="width:66%">Forum</th><th style="width:33%">Last Post</th></tr>
+	<tr><th style="width:60%">Forum</th><th>Threads</th><th style="width:30%">Last Post</th></tr>
   {{ range .Forums }}
   <tr>
     <td>
       <a class="title-link" href="/f/{{.Slug}}">{{.Name}}</a><br>
       {{.Description}}
     </td>
+	<td style="text-align:center;">{{.ThreadCount}}</td>
     <td>
 		<a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}?p={{.LastPost.ID}}">{{ timeago .LastPost.Created }}</a> 
-		by <a href="/user/{{.LastPost.Author.ID}}">{{.LastPost.Author.Username}}</a>
+		by <a href="/user/{{.LastPost.Author.ID}}">{{.LastPost.Author.Username}}</a><br>
 		in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
     </td>
   </tr>

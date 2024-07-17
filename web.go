@@ -171,6 +171,11 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 		return // TODO 4xx
 	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
+	thread, _ := getThread(tid)
+	if thread.Locked && !u.Role.ModLevel() {
+		// can't post in locked thread
+		return // TODO 4xx
+	}
 	pid, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
 		serverError(w, r, err)
@@ -196,7 +201,7 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	aid := post.Author.ID
-	if u.UserID != aid {
+	if u.UserID != aid && !u.Role.ModLevel() {
 		unauthorized(w, r)
 		return
 	}
@@ -217,7 +222,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := GetUserInfo(r)
-	if post.Author.ID != u.UserID {
+	if post.Author.ID != u.UserID && !u.Role.ModLevel() {
 		unauthorized(w, r)
 		return
 	}
@@ -308,7 +313,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := createUser(username, email, password, RoleUser, config.RequiresApproval)
+		err := createUser(username, email, password, RoleUser, !config.RequiresApproval)
 		if err != nil {
 			serverError(w, r, err)
 		}

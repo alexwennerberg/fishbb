@@ -12,6 +12,7 @@ type Forum struct {
 	// lowest level that can view this for
 	Permissions Role
 	LastPost    PostSummary
+	ThreadCount int
 }
 
 func createForum(name, description string) error {
@@ -58,7 +59,7 @@ func getForums() ([]Forum, error) {
 		err := rows.Scan(&f.ID, &f.Name, &f.Description, &f.Permissions,
 			&f.LastPost.ThreadID, &f.LastPost.ThreadTitle,
 			&f.LastPost.ID,
-			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created)
+			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created, &f.ThreadCount)
 		if err != nil {
 			return nil, err
 		}

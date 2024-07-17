@@ -20,8 +20,8 @@
 		</div>
 	  {{ if and $.User $.User.Role.ModLevel }}
 	  <span>
-		  <form style="display:inline;" method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
-		  <form style="display:inline;" method="POST" action="/f/{{$.ForumSlug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
+		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
+		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
 	  </span>
 		</div>
 	  {{ end }}

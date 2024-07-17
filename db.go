@@ -93,7 +93,8 @@ func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
 		select forums.id, name, description, permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
-		coalesce(latest.username, ''), coalesce(latest.created, '')
+		coalesce(latest.username, ''), coalesce(latest.created, ''),
+		count(1)
 		from forums
 		left join (
 			select threadid, threads.title, posts.id, threads.authorid,
@@ -103,6 +104,8 @@ func prepareStatements(db *sql.DB) {
 			join threads on posts.threadid = threads.id
 			group by forumid 
 		) latest on latest.forumid = forums.id
+		left join threads on threads.forumid = forums.id
+		group by 1
 
 `)
 	stmtGetForum = prepare(db, "select id, name, description, slug, permissions from forums where id = ?")

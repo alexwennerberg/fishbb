@@ -1,15 +1,24 @@
 Setup fishbb.org (cloud provider)
 
 FEATURES:
+minor/bugs:
 rate limit registration
+better error handling on login
+better ux for account creation
+move lock to right place
+links on home and thread list should go to the post
+
+NOTIFICATIONS:
+- @mentions
+- auto-hyperlink @mention maybe?
+
+"shortpsot" list -> use summary code
 
 Login/Reigster:
+add a reply button that uses @mentions
 finish up oauth integration
-admin/mod ability to delete / edit posts
 Notifications (Including integration with PWA / browser API)
-links on home and thread list should go to the post
 Search
-thread count on index.html
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
