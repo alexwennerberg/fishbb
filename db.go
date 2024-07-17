@@ -121,7 +121,7 @@ func prepareStatements(db *sql.DB) {
 	stmtGetUsers = prepare(db, `
 		select users.id,username,email,role,active,about,website,users.created, count(1)
 		from users 
-		join posts on users.id = posts.authorid
+		left join posts on users.id = posts.authorid
 		group by users.id
 		order by active, role, username desc
 		`)

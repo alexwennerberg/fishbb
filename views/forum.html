@@ -16,7 +16,7 @@
 		<a class="title-link" href="/f/{{$.ForumSlug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div>
-	  by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt">{{ timeago .Created }}</span>
+			by <a href="/user/{{.Author.ID}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span>
 		</div>
 	  {{ if and $.User $.User.Role.ModLevel }}
 	  <span>
