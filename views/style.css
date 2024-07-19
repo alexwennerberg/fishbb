@@ -42,7 +42,7 @@ button:not(.link-button) {
   font-size: 14px;
 }   
 
-.top-button {
+.padded-button {
   margin: 0.3rem;
 }
 

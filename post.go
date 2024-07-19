@@ -38,6 +38,11 @@ func (p Post) Preview() string {
 	return text
 }
 
+// TODO build quote reply string
+func (p Post) QuoteReply() string {
+	return "> tbd"
+}
+
 func postValid(body string) bool {
 	if len(body) > 10000 {
 		return false

@@ -1,14 +1,13 @@
 {{ template "header.html" . }}
 <div class="body-header">
 	{{ if or (not .Thread.Locked) (.User.Role.ModLevel) }}
-<a href="/post/new?threadid={{.Thread.ID}}"><button class="top-button">Reply</button></a>
+<a href="/post/new?threadid={{.Thread.ID}}"><button class="padded-button">Reply</button></a>
 	{{ end }}
 {{ template "pagelist.html" . }}
 </div>
 <div class="div-header">
 
-	{{ if .Thread.Locked }} {{ template "lock.svg" }} {{end}}
-	<a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{.Thread.Title}}
+	<a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{ if .Thread.Locked }} {{ template "lock.svg" }} {{end}} {{.Thread.Title}}
 </div>
 {{ range .Posts }}
 <div class="post" id={{.ID}}>
@@ -35,6 +34,7 @@
   <div class="post-body">
   {{ markup .Content }}
   </div>
+  <a href="/post/new?threadid={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a>
 </div>
 {{ end }}
 {{ $pages := pageArr .ItemCount }}

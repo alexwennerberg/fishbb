@@ -5,20 +5,20 @@ minor/bugs:
 rate limit registration
 better error handling on login
 better ux for account creation
-move lock to right place
-links on home and thread list should go to the post
+links on home and thread list should go to the post ( BETTER LINK  TO POST )
+-> create a getpost query and parameterize it 
 Login/Reigster:
 add a reply button that uses @mentions
 finish up oauth integration
 Notifications (Including integration with PWA / browser API)
+-- store "in reply to" in url params
+post preview on edit?
 Search
+- auto-hyperlink @mention maybe?
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
-NOTIFICATIONS:
-- @mentions
-- auto-hyperlink @mention maybe?
 
 "shortpsot" list -> use summary code
 block renaming of form
