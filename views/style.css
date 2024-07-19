@@ -116,8 +116,13 @@ body {
 .flex-between {
   justify-content: space-between;
   display: flex;
-  flex-direction: row;
 }
+
+.flex-end {
+  justify-content: flex-end ;
+  display: flex;
+}
+
 .body-header {
   display: flex;
   justify-content: space-between;

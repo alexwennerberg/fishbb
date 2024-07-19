@@ -34,7 +34,8 @@
   <div class="post-body">
   {{ markup .Content }}
   </div>
-  <a href="/post/new?threadid={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a>
+  <div class="flex-end">
+	  <a href="/post/new?threadid={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a></div>
 </div>
 {{ end }}
 {{ $pages := pageArr .ItemCount }}
