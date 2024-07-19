@@ -7,13 +7,6 @@ better error handling on login
 better ux for account creation
 move lock to right place
 links on home and thread list should go to the post
-
-NOTIFICATIONS:
-- @mentions
-- auto-hyperlink @mention maybe?
-
-"shortpsot" list -> use summary code
-
 Login/Reigster:
 add a reply button that uses @mentions
 finish up oauth integration
@@ -23,6 +16,11 @@ Search
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+NOTIFICATIONS:
+- @mentions
+- auto-hyperlink @mention maybe?
+
+"shortpsot" list -> use summary code
 block renaming of form
 IP blocking / other antispam
 split out config management for admins

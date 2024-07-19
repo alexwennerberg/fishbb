@@ -482,7 +482,14 @@ func doChangePassword(w http.ResponseWriter, r *http.Request) {
 
 func searchPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	tmpl["Query"] = r.URL.Query().Get("q")
+	q := r.URL.Query().Get("q")
+	tmpl["Query"] = q
+	posts, err := searchPosts(q)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["Posts"] = posts
 	serveHTML(w, r, "search", tmpl)
 }
 

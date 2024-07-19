@@ -62,7 +62,11 @@ create index idxposts_threadid on posts(threadid);
 
 -- create table invitations ( );
 -- create table reports
--- create table notifications
+create table notifications (
+  type text not null,
+  message text, -- markdown
+  created datetime default current_timestamp,
+);
 
 pragma journal_mode = wal;
 pragma busy_timeout = 5000;

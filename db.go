@@ -10,7 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var stmtGetForumID, stmtUpdateMe,
+var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
@@ -163,6 +163,11 @@ func prepareStatements(db *sql.DB) {
 		from posts 
 		join users on posts.authorid = users.id 
 		where threadid = ? limit ? offset ?`)
+	stmtSearchPosts = prepare(db, `
+	select posts.id, content, users.id, users.username, posts.created, posts.edited 
+	from posts 
+	join users on posts.authorid = users.id 
+	where content like ?`)
 	stmtGetPost = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 

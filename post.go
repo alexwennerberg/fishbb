@@ -33,7 +33,7 @@ const previewLength = 10
 func (p Post) Preview() string {
 	text := html2text.HTML2Text(p.Content)
 	if len(text) > previewLength-3 {
-		return text[:previewLength] + "..."
+		return text[:previewLength-3] + "..."
 	}
 	return text
 }
@@ -66,6 +66,25 @@ func getPostSlug(postid int) (string, error) {
 		url = fmt.Sprintf("/f/%s/%d#%d", forumname, threadid, postid)
 	}
 	return url, nil
+}
+
+// TODO maybe consolidate with query builder
+func searchPosts(q string) ([]Post, error) {
+	var posts []Post
+	rows, err := stmtSearchPosts.Query("%" + q + "%")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var p Post
+		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
+		fmt.Println(p)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, nil
 }
 
 // page is 1-indexed

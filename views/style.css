@@ -269,3 +269,8 @@ h1, h2, h3, h4, h5, h6 {
   text-overflow: ellipsis;
   vertical-align: top;
 }
+
+.shortpost {
+  border-bottom: 1px solid var(--border);
+  padding: 0.3rem;
+}
