@@ -42,6 +42,7 @@ create table users (
   about text not null default 'someone',
   website text not null default '',
   created datetime default current_timestamp
+  last_notification_view datetime,
 );
 
 create table auth (
@@ -63,9 +64,11 @@ create index idxposts_threadid on posts(threadid);
 -- create table invitations ( );
 -- create table reports
 create table notifications (
+  id integer primary key,
   type text not null,
   message text, -- markdown
   created datetime default current_timestamp,
+  foreign key (userid) references users(id)
 );
 
 pragma journal_mode = wal;
