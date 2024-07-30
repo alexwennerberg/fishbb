@@ -15,6 +15,8 @@ type Post struct {
 	Edited  *time.Time
 }
 
+// Custom inline parser for user and post links
+
 // TODO reconcile these somehow maybe
 type PostSummary struct {
 	ID          int

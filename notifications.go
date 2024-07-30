@@ -4,7 +4,7 @@ import "time"
 
 type Notification struct {
 	ID      int
-	Message string // markdown
+	Message string
 	Created time.Time
 }
 

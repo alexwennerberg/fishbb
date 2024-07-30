@@ -99,6 +99,24 @@ func getUsers() ([]User, error) {
 	return users, nil
 }
 
+// unused
+func getAllUsernames() ([]string, error) {
+	var usernames []string
+	rows, err := stmtGetUsers.Query()
+	if err != nil {
+		return nil, fmt.Errorf("could not execute query: %w", err)
+	}
+	for rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan rows: %w", err)
+		}
+		usernames = append(usernames, username)
+	}
+	return usernames, nil
+}
+
 func activateUser(id int) error {
 	_, err := stmtActivateUser.Exec(id)
 	return err

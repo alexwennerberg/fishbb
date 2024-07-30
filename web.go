@@ -366,7 +366,6 @@ func loadTemplates() *template.Template {
 	views, err := template.New("main").Funcs(template.FuncMap{
 		"timeago": timeago,
 		"pageArr": pageArray,
-		"markup":  markup,
 		"inc": func(i int) int {
 			return i + 1
 

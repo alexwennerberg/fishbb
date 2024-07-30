@@ -10,14 +10,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
-	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
-	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
-	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
-	stmtThreadPin, stmtThreadLock, stmtActivateUser,
-	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
-	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
-	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 var db *sql.DB
 
 func opendb() *sql.DB {
@@ -88,8 +80,16 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 	return s
 }
 
+var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
+	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
+	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
+	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
+	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
+	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
+	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
+	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
+
 func prepareStatements(db *sql.DB) {
-	// TODO maybe do this in code?
 	stmtGetForums = prepare(db, `
 		select forums.id, name, description, permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
@@ -199,6 +199,7 @@ func prepareStatements(db *sql.DB) {
 	stmtQueryPosts = prepare(db, "select 1")
 	stmtUpdateConfig = prepare(db, "insert into config(value) values(?)")
 	stmtGetConfig = prepare(db, "select value from config order by id desc limit 1")
+	stmtGetAllUsernames = prepare(db, "select username from users;")
 	LoginInit(LoginInitArgs{
 		Db: db,
 	})

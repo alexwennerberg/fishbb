@@ -67,6 +67,20 @@ button:not(.link-button) {
   font-size: 16px;
 }
 
+.post-body p {
+  margin-top: 0px;
+  margin-bottom: 0.2rem;
+}
+
+
+blockquote {
+  margin-left: .5em;
+  font-style: italic;
+  background: var(--bg-alt);
+  border-left: .5em solid var(--bg-inverse);
+  padding: .5em 10px;
+}
+
 .error {
   font-weight: bold;
 }

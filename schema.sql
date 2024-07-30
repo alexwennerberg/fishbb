@@ -24,6 +24,7 @@ create table posts (
   threadid integer,
   authorid integer,
   content text,
+  in_reply_to integer, 
   created datetime default current_timestamp,
   edited datetime,
   foreign key (authorid) references users(id),

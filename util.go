@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"fmt"
-	"html/template"
 	"image"
 	"image/png"
 	"io"
@@ -13,9 +12,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
 
 	"strings"
 )
@@ -184,19 +180,4 @@ func timeago(t *time.Time) string {
 	} else {
 		return fmt.Sprintf("%d %ss ago", amount, metric)
 	}
-}
-
-// TODO investigate extensions
-var gm = goldmark.New(
-	goldmark.WithExtensions(extension.Linkify),
-)
-
-func markup(md string) template.HTML {
-	var buf bytes.Buffer
-	err := gm.Convert([]byte(md), &buf)
-	if err != nil {
-		// TODO error handling? Bluemonday as backup?
-		return template.HTML("(Error rendering post)!")
-	}
-	return template.HTML(buf.String())
 }
