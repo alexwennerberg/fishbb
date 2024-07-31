@@ -61,6 +61,7 @@ create table config (
 
 create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);
+create index idxusers_username users(username);
 
 -- create table invitations ( );
 -- create table reports
