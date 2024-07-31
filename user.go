@@ -71,8 +71,8 @@ func createOAuthUser(email string, active bool, provider string) error {
 	return err
 }
 
-func getUser(id int) (User, error) {
-	row := stmtGetUser.QueryRow(id)
+func getUser(username string) (User, error) {
+	row := stmtGetUser.QueryRow(username)
 	var u User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	if err != nil {

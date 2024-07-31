@@ -10,7 +10,7 @@
 	<td style="text-align:center;">{{.ThreadCount}}</td>
     <td>
 		<a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}?p={{.LastPost.ID}}">{{ timeago .LastPost.Created }}</a> 
-		by <a href="/user/{{.LastPost.Author.ID}}">{{.LastPost.Author.Username}}</a><br>
+		by <a href="/u/{{.LastPost.Author.Username}}">{{.LastPost.Author.Username}}</a><br>
 		in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
     </td>
   </tr>

@@ -383,13 +383,8 @@ func loadTemplates() *template.Template {
 func userPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 
-	uid, err := strconv.Atoi(r.PathValue("userid"))
-	if err != nil {
-		err = fmt.Errorf("failed to parse user ID from path: %w", err)
-		serverError(w, r, err)
-		return
-	}
-	info, err := getUser(uid)
+	uname := r.PathValue("username")
+	info, err := getUser(uname)
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -403,7 +398,7 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 func mePage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	u := GetUserInfo(r)
-	info, err := getUser(u.UserID)
+	info, err := getUser(u.Username)
 	if err != nil {
 		err = fmt.Errorf("failed to get user %d: %w", u.UserID, err)
 		serverError(w, r, err)
@@ -470,7 +465,7 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tmpl := make(map[string]any)
-	info, _ := getUser(u.UserID)
+	info, _ := getUser(u.Username)
 	tmpl["UserInfo"] = info
 	tmpl["Notice"] = "Updated!"
 	serveHTML(w, r, "me", tmpl)
@@ -620,7 +615,7 @@ func serve() {
 	r.HandleFunc("/", indexPage)
 	r.HandleFunc("GET /f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
-	r.HandleFunc("GET /user/{userid}", userPage)
+	r.HandleFunc("GET /u/{username}", userPage)
 	r.HandleFunc("GET /login", loginPage)
 	// TODO limit registration successes
 	// TODO csrf wrap?
