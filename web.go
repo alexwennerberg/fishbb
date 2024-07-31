@@ -149,11 +149,19 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 
 func newPostPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
+	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
+	inReplyTo, _ := strconv.Atoi(r.URL.Query().Get("reply"))
+
 	thread, err := getThread(tid)
 	if err != nil {
 		serverError(w, r, err)
 		return
+	}
+	if inReplyTo != 0 {
+		post, err := getPost(inReplyTo)
+		if err == nil {
+			tmpl["Content"] = post.BuildReply()
+		}
 	}
 	tmpl["Thread"] = thread
 	tmpl["Forum"], err = getForum(thread.ForumID)
@@ -170,7 +178,7 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 	if !postValid(content) {
 		return // TODO 4xx
 	}
-	tid, _ := strconv.Atoi(r.URL.Query().Get("threadid"))
+	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
 	thread, _ := getThread(tid)
 	if thread.Locked && !u.Role.ModLevel() {
 		// can't post in locked thread

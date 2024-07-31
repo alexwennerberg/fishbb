@@ -19,7 +19,7 @@ func (p Post) Render() template.HTML {
 // #post -> post
 
 func (p Post) BuildReply() string {
-	// naive solution: prefix everything?
-	// User [@username](/u/username) wrote ...
+	// naive solution: prefix everything with '> '
+	// User [@username](/u/username) wrote in [#n](/post/n)...
 	return p.Content
 }

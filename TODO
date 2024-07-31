@@ -5,8 +5,6 @@ RESEARCH:
 
 FEATURES:
 consider htmx
-user profile should be /u/{profile} not id
-4chan style replies
 
 minor/bugs:
 rate limit registration
