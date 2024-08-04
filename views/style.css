@@ -57,6 +57,10 @@ button:not(.link-button) {
   background-color: var(--bg-alt);
 }
 
+:target blockquote {
+  background-color: var(--bg);
+}
+
 .post-body {
   padding-left: 0.4rem;
   padding-right: 0.4rem;
