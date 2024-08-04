@@ -27,9 +27,7 @@ type PostSummary struct {
 	Content     string
 }
 
-// generate a preview for a post
-// TODO more sophisticated
-const previewLength = 10
+const previewLength = 150
 
 // unused atm
 func (p Post) Preview() string {
@@ -62,8 +60,6 @@ func getPostSlug(postid int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// TODO fix bug here
-	fmt.Println(count, config.PageSize, postid, threadid)
 	postPage := ((count) / config.PageSize) + 1
 	var url string
 	// TODO url builder

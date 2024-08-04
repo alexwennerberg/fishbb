@@ -6,24 +6,19 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/yuin/goldmark"
+	"git.sr.ht/~aw/gmi2html"
 )
 
-var md = goldmark.New()
-
 func (p Post) Render() template.HTML {
-	var out bytes.Buffer
-	md.Convert([]byte(p.Content), &out)
-	return template.HTML(out.String())
+	r := gmi2html.NewReader(strings.NewReader(p.Content))
+	r.NestedBlocks = true
+	return template.HTML(r.HTMLString())
 }
-
-// @user -> username
-// #post -> post
 
 func (p Post) BuildReply() string {
 	var out bytes.Buffer
 	// TODO link to post
-	out.Write([]byte(fmt.Sprintf("[@%s](/u/%s) wrote:\n", p.Author.Username, p.Author.Username)))
+	out.Write([]byte(fmt.Sprintf("@%s wrote:\n", p.Author.Username)))
 	for _, line := range strings.Split(p.Content, "\n") {
 		out.Write([]byte("> "))
 		out.Write([]byte(line))

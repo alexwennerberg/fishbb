@@ -4,9 +4,9 @@ RESEARCH:
 - look into email: IMAP uname/pw?
 
 FEATURES:
-consider htmx
 
 minor/bugs:
+notifications are just a search of mentions
 rate limit registration
 better error handling on login
 better ux for account creation
@@ -15,7 +15,6 @@ links on home and thread list should go to the post ( BETTER LINK  TO POST )
 Login/Reigster:
 finish up replies
 finish up oauth integration
-Notifications (Including integration with PWA / browser API)
 post preview on edit?
 Search
 - auto-hyperlink @mention maybe?
