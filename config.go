@@ -32,6 +32,10 @@ type Config struct {
 	Domain                  string // todo not exactly
 	GoogleOAuthClientID     string
 	GoogleOAuthClientSecret string
+
+	// optional (but required for email sending)
+	SMTPUsername string
+	SMTPPassword string
 }
 
 func (c Config) TOMLString() string {
@@ -47,7 +51,7 @@ func DefaultConfig() Config {
 	return Config{
 		BoardName:               "fishbb",
 		BoardDescription:        "A discussion board",
-		PageSize:                5,
+		PageSize:                100,
 		RequiresApproval:        true,
 		Domain:                  "http://localhost:8080",
 		GoogleOAuthClientID:     "",

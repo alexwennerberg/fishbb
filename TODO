@@ -1,34 +1,22 @@
 Setup fishbb.org (cloud provider)
 
-RESEARCH:
-- look into email: IMAP uname/pw?
-
-FEATURES:
-
 minor/bugs:
-rate limit registration
 
 boring stuff:
+rate limit registration
 better error handling on login
 better ux for account creation
 links on home and thread list should go to the post ( BETTER LINK  TO POST )
 -> create a getpost query and parameterize it 
-Login/Reigster:
-finish up replies
 finish up oauth integration
-post preview on edit?
-Search
-- auto-hyperlink @mention maybe?
+implement change password / reset password
+hide CSRF key from config
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
-
-"shortpsot" list -> use summary code
-block renaming of form
+block renaming of forum
 IP blocking / other antispam
-split out config management for admins
-implement change password / reset password
 2fa  pquerna/otp
 Delete account: dont delete posts, replace with "(deleted)"?
 get anti spam good enough for open signups
@@ -37,7 +25,6 @@ distinguish notfound db error from other errors
 login package should merge
 JSON API
 flash on inactive account
-full Email interface / email notifications
 
 # MAYBE 
 Delete own account
@@ -47,7 +34,6 @@ panics -> log.Fatal
 better db init / signal handling
 Microformats
 language selection and localization
-
 
 OPS/DEPLOY:
 RRDtool integration / metrics

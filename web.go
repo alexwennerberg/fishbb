@@ -162,6 +162,8 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			tmpl["Content"] = post.BuildReply()
 		}
+	} else {
+		tmpl["Content"] = ""
 	}
 	tmpl["Thread"] = thread
 	tmpl["Forum"], err = getForum(thread.ForumID)
