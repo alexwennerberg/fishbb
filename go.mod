@@ -8,7 +8,7 @@ require (
 )
 
 require (
-	git.sr.ht/~aw/gmi2html v0.1.3
+	git.sr.ht/~aw/gmi2html v0.1.4
 	github.com/BurntSushi/toml v1.4.0
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-chi/chi/v5 v5.1.0

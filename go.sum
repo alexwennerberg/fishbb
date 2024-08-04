@@ -1,7 +1,7 @@
 cloud.google.com/go/compute/metadata v0.3.0 h1:Tz+eQXMEqDIKRsmY3cHTL6FVaynIjX2QxYC4trgAKZc=
 cloud.google.com/go/compute/metadata v0.3.0/go.mod h1:zFmK7XCadkQkj6TtorcaGlCW1hT1fIilQDwofLpJ20k=
-git.sr.ht/~aw/gmi2html v0.1.3 h1:Gj2vcmI/HqSs+9t05s0y/9n8o7swXSnJH4H+AQSu1Sc=
-git.sr.ht/~aw/gmi2html v0.1.3/go.mod h1:WXvBJ0UXRsTcMcm/jmE1yJXz4bxUZDdFqv8HDcIueE0=
+git.sr.ht/~aw/gmi2html v0.1.4 h1:L1FgDEj244FNpFsppL38tj5STMhX5EUHoFfkkvNn3/4=
+git.sr.ht/~aw/gmi2html v0.1.4/go.mod h1:WXvBJ0UXRsTcMcm/jmE1yJXz4bxUZDdFqv8HDcIueE0=
 github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHcQQP0w=
