@@ -36,6 +36,9 @@ var RoleAdmin Role = "admin"
 var RoleMod Role = "mod"
 var RoleUser Role = "user"
 
+// An inactive or "banned" user cannot post
+var RoleInactive Role = "inactive"
+
 // Logged out, non-user
 var RoleNone Role = ""
 
