@@ -14,6 +14,11 @@ running your own instance!
 
 ### Configuration
 
+Admin configuration is available at `/control`
+
+See the comments in `config.go` for now (better documentation forthcoming)
+
+
 TODO
 
 **robots.txt** -- edit the views/robots.txt file, or, if you're running this service behind a reverse proxy, use that as well.

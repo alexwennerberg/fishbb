@@ -36,11 +36,9 @@ import (
 	"humungus.tedunangst.com/r/webs/cache"
 )
 
-// represents a logged in user
 type UserInfo struct {
 	UserID   int
 	Username string
-	Role     Role
 }
 
 type keytype struct{}
@@ -78,7 +76,9 @@ func Required(handler http.Handler) http.Handler {
 func Roles(handler http.Handler, roles []Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u := GetUserInfo(r)
-		if u == nil || !slices.Contains(roles, u.Role) {
+		// TODO better
+		user, _ := getUser(u.Username)
+		if u == nil || !slices.Contains(roles, user.Role) {
 			loginredirect(w, r) // TODO unauth?
 			return
 		}
@@ -119,6 +119,8 @@ func GetUserInfo(r *http.Request) *UserInfo {
 	}
 	return userinfo
 }
+
+// TODO define a full get user?
 
 func calculateCSRF(salt, auth string) string {
 	hasher := sha512.New512_256()
@@ -229,11 +231,11 @@ type LoginInitArgs struct {
 func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash, role, active from users where username = ? and id > 0")
 	if err != nil {
 		panic(err)
 	}
-	stmtUserAuth, err = db.Prepare("select users.id, username, role, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
+	stmtUserAuth, err = db.Prepare("select users.id, username, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
 		panic(err)
 	}
@@ -330,7 +332,7 @@ var validcookies = cache.New(cache.Options{Filler: func(cookie string) (*UserInf
 	row := stmtUserAuth.QueryRow(authhash, now.Format(dbtimeformat))
 	var userinfo UserInfo
 	var stamp string
-	err := row.Scan(&userinfo.UserID, &userinfo.Username, &userinfo.Role, &stamp)
+	err := row.Scan(&userinfo.UserID, &userinfo.Username, &stamp)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no auth found")
@@ -369,11 +371,12 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 
 // TODO use struct
 func loaduser(username string) (int, string, string, bool) {
-	row := stmtUserName.QueryRow(username)
+	row := stmtUserName.QueryRow(username) // TODO rename
 	var userid int
 	var hash string
 	var role string
-	err := row.Scan(&userid, &hash, &role)
+	var active bool
+	err := row.Scan(&userid, &hash, &role, &active)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no username found")
@@ -590,7 +593,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
 	_, err = stmtSaveAuth.Exec(userid, authhash, expiry)
 	if err != nil {
-		log.Info("error saving auth: %s", err)
+		log.Info("error saving auth: %e", err)
 	}
 
 	return nil

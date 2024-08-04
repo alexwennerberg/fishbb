@@ -18,6 +18,9 @@
 		  {{ else }}
 		  {{.Config.BoardDescription}}
 		  {{ end }}
+          {{ if and .User (not .User.Active)}}
+          <div class="alert">Your account is pending approval and not yet active. You are not yet able to post.</div>
+          {{ end }}
     </div>
     <div id="nav">
       {{ if not .User }}

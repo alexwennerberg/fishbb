@@ -15,11 +15,13 @@ require (
 	github.com/go-chi/httplog/v2 v2.0.11
 	github.com/go-chi/httprate v0.9.0
 	github.com/k3a/html2text v1.2.1
+	github.com/pquerna/otp v1.4.0
 	golang.org/x/oauth2 v0.21.0
 )
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect

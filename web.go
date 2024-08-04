@@ -23,10 +23,13 @@ var views *template.Template
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	l := httplog.LogEntry(r.Context())
 	u := GetUserInfo(r)
-	if u == nil && !devMode {
+	var user *User
+	if u != nil {
+		user, _ = getUser(u.Username)
+	} else if u == nil && !devMode {
 		w.Header().Set("Cache-control", "max-age=60")
 	}
-	info["User"] = u
+	info["User"] = user
 	info["Config"] = config
 	info["Version"] = softwareVersion
 	info["CSRFToken"] = GetCSRF(r)
@@ -176,13 +179,14 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 
 func createNewPost(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
+	user, _ := getUser(u.Username) // TODO awkward
 	content := r.FormValue("content")
 	if !postValid(content) {
 		return // TODO 4xx
 	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
 	thread, _ := getThread(tid)
-	if thread.Locked && !u.Role.ModLevel() {
+	if !user.Active || (thread.Locked && !user.Role.ModLevel()) {
 		// can't post in locked thread
 		return // TODO 4xx
 	}
@@ -199,6 +203,7 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 
 func doDeletePost(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
+	user, _ := getUser(u.Username) // TODO awkward
 	pid, err := strconv.Atoi(r.PathValue("postid"))
 	if err != nil {
 		notFound(w, r)
@@ -211,7 +216,7 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	aid := post.Author.ID
-	if u.UserID != aid && !u.Role.ModLevel() {
+	if u.UserID != aid && !user.Role.ModLevel() {
 		unauthorized(w, r)
 		return
 	}
@@ -232,7 +237,8 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := GetUserInfo(r)
-	if post.Author.ID != u.UserID && !u.Role.ModLevel() {
+	user, _ := getUser(u.Username) // TODO awkward
+	if post.Author.ID != u.UserID && !user.Role.ModLevel() {
 		unauthorized(w, r)
 		return
 	}
@@ -261,12 +267,18 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 
 func createNewThread(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
+	user, _ := getUser(u.Username) // TODO awkward
+	if !user.Active {
+		unauthorized(w, r)
+		return
+	}
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
 	tid, err := createThread(u.UserID, forumID, title)
 	if err != nil {
 		// handle
+		serverError(w, r, err)
 	}
 	_, err = createPost(u.UserID, int(tid), content)
 	if err != nil {
@@ -327,12 +339,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			serverError(w, r, err)
 		}
-		if !config.RequiresApproval {
-			LoginFunc(w, r)
-		} else {
-			// TODO flash
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
+		LoginFunc(w, r)
 	}
 	serveHTML(w, r, "register", tmpl)
 }

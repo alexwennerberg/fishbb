@@ -1,6 +1,6 @@
 {{ template "header.html" . }}
 <div class="body-header">
-	{{ if or (not .Thread.Locked) (.User.Role.ModLevel) }}
+	{{ if and (or (not .Thread.Locked) (.User.Role.ModLevel)) (and .User .User.Active) }}
 <a href="/post/new?thread={{.Thread.ID}}"><button class="padded-button">Reply</button></a>
 	{{ end }}
 {{ template "pagelist.html" . }}
@@ -21,7 +21,7 @@
 </span>
 	  </div>
 	  <div>
-		  {{ if or (eq .Author.ID $.User.UserID) $.User.Role.ModLevel }}
+		  {{ if and $.User (or (eq .Author.ID $.User.ID) $.User.Role.ModLevel) }}
 		  <a href="/post/{{.ID}}/edit">Edit</a>
 		  <form style="display:inline" action="/post/{{.ID}}" method="POST">
 			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">Delete</button>
@@ -34,8 +34,10 @@
   <div class="post-body">
   {{ .Render }}
   </div>
+  {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User $.User.Active) }}
   <div class="flex-end">
 	  <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a></div>
+  {{ end }}
 </div>
 {{ end }}
 {{ $pages := pageArr .ItemCount }}

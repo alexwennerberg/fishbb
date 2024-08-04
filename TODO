@@ -1,9 +1,11 @@
 Setup fishbb.org (cloud provider)
 
 minor/bugs:
+permissions on forums don't actually work. can I simplify permissions?
 
 boring stuff:
-rate limit registration
+csrf doesnt actually work
+rate limit registration: 5 accounts per IP per day
 better error handling on login
 better ux for account creation
 links on home and thread list should go to the post ( BETTER LINK  TO POST )
@@ -15,9 +17,9 @@ hide CSRF key from config
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+2fa  pquerna/otp
 block renaming of forum
 IP blocking / other antispam
-2fa  pquerna/otp
 Delete account: dont delete posts, replace with "(deleted)"?
 get anti spam good enough for open signups
 Archive forums

@@ -71,14 +71,14 @@ func createOAuthUser(email string, active bool, provider string) error {
 	return err
 }
 
-func getUser(username string) (User, error) {
+func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
 	var u User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.Active, &u.About, &u.Website, &u.Created, &u.Posts)
 	if err != nil {
-		return u, fmt.Errorf("failed to scan row: %w", err)
+		return nil, fmt.Errorf("failed to scan row: %w", err)
 	}
-	return u, err
+	return &u, err
 }
 
 func getUsers() ([]User, error) {

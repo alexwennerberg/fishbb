@@ -15,7 +15,7 @@
     --text-alt: #999;
     --bg: #0d0d0d;
     --bg-inverse: #ccc;
-    --bg-alt: #161616;
+    --bg-alt: #1c1c1c;
     --border: #444;
   }
 }
@@ -296,5 +296,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .shortpost {
   border-bottom: 1px solid var(--border);
+  padding: 0.3rem;
+}
+
+.alert {
+  background: var(--bg-alt);
+  font-style: italic;
   padding: 0.3rem;
 }

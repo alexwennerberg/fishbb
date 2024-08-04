@@ -13,19 +13,18 @@ var DBPath = "fishbb.db"
 
 // most of these don't work yet
 type Config struct {
-	// Signups require admin approval
+	// Whether new signups require admin approval before users can post
 	RequiresApproval bool
-	BoardName        string
+	// The title of the bulletin board
+	BoardName string
+	// The description of the bulletin board
 	BoardDescription string
-	// TODO does nothing yet
-	RequireEmailVerification bool
-	// private instances are only visible to logged in users
-	Private string
 
-	// smaller forum settings
+	// The size of pages on threads and forums
 	PageSize int
 
 	// A secret key used for generating CSRF tokens
+	// TODO this should not be directly configurable
 	CSRFKey string
 
 	// optional (for oauth)

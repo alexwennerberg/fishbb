@@ -43,7 +43,6 @@ create table users (
   about text not null default 'someone',
   website text not null default '',
   created datetime default current_timestamp
-  last_notification_view datetime,
 );
 
 create table auth (
@@ -61,17 +60,7 @@ create table config (
 
 create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);
-create index idxusers_username users(username);
-
--- create table invitations ( );
--- create table reports
-create table notifications (
-  id integer primary key,
-  type text not null,
-  message text, -- markdown
-  created datetime default current_timestamp,
-  foreign key (userid) references users(id)
-);
+create index idxusers_username on users(username);
 
 pragma journal_mode = wal;
 pragma busy_timeout = 5000;

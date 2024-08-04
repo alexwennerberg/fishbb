@@ -1,8 +1,10 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="threads">
   <tr><th style="width:50%">Thread</th><th style="text-align:center;width:4rem;">Replies</th><th style="width:30%">Last Post</th></tr>
+  {{ if (and $.User $.User.Active) }}
   <div class="body-header">
 	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="top-button">New Thread</button></a>
+      {{ end }}
   {{ template "pagelist.html" . }}
 </div>
 {{ if not (len .Threads) }}

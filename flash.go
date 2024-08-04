@@ -9,12 +9,14 @@ import (
 // simple flash messages
 // from alex edwards
 
-func SetFlash(w http.ResponseWriter, name string, value string) {
+// SetCookieValue is used to store some arbitrary value in a cookie
+func SetCookieValue(w http.ResponseWriter, name string, value string) {
 	c := &http.Cookie{Name: name, Value: encode([]byte(value))}
 	http.SetCookie(w, c)
 }
 
-func GetFlash(w http.ResponseWriter, r *http.Request, name string) (string, error) {
+// GetCookieValue gets a velue stored in a cookie
+func GetCookieValue(r *http.Request, name string) (string, error) {
 	c, err := r.Cookie(name)
 	if err != nil {
 		switch err {
@@ -25,6 +27,15 @@ func GetFlash(w http.ResponseWriter, r *http.Request, name string) (string, erro
 		}
 	}
 	value, err := decode(c.Value)
+	if err != nil {
+		return "", err
+	}
+	return string(value), nil
+}
+
+// GetFlash gets a cookie value and resets it
+func GetFlash(w http.ResponseWriter, r *http.Request, name string) (string, error) {
+	value, err := GetCookieValue(r, name)
 	if err != nil {
 		return "", err
 	}
