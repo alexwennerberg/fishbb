@@ -18,7 +18,7 @@
 		  {{ else }}
 		  {{.Config.BoardDescription}}
 		  {{ end }}
-          {{ if and .User (not .User.Active)}}
+          {{ if and .User (not (.User.Role.Can "user"))}}
           <div class="alert">Your account is pending approval and not yet active. You are not yet able to post.</div>
           {{ end }}
     </div>
@@ -28,7 +28,7 @@
       <a href="/login">Login</a>
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>.
-	  {{ if .User.Role.ModLevel }}<a href="/control">control</a>{{ end }}
+	  {{ if (.User.Role.Can "mod") }}<a href="/control">control</a>{{ end }}
 	  <a href="/search?q=@{{.User.Username}}">✉️</a>
 	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">Logout</button>
 	<input type="hidden" name="CSRF" value="{{.CSRFToken}}">

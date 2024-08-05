@@ -73,9 +73,25 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	var role Role
+	if u != nil {
+		role = u.Role
+	}
 	tmpl := make(map[string]any)
-	var err error
-	tmpl["Forums"], err = getForums()
+	f, err := getForums()
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	// filter forums above your role
+	var forums []Forum
+	for _, ff := range f {
+		if role.Can(ff.ReadPermissions) {
+			forums = append(forums, ff)
+		}
+	}
+	tmpl["Forums"] = forums
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -179,16 +195,16 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 
 func createNewPost(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
-	user, _ := getUser(u.Username) // TODO awkward
 	content := r.FormValue("content")
 	if !postValid(content) {
 		return // TODO 4xx
 	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
 	thread, _ := getThread(tid)
-	if !user.Active || (thread.Locked && !user.Role.ModLevel()) {
-		// can't post in locked thread
-		return // TODO 4xx
+	// TODO check if forum allows you to post
+	if !u.Role.Can(RoleUser) || (thread.Locked && !u.Role.Can(RoleMod)) {
+		unauthorized(w, r)
+		return
 	}
 	pid, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
@@ -203,7 +219,6 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 
 func doDeletePost(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
-	user, _ := getUser(u.Username) // TODO awkward
 	pid, err := strconv.Atoi(r.PathValue("postid"))
 	if err != nil {
 		notFound(w, r)
@@ -216,7 +231,7 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	aid := post.Author.ID
-	if u.UserID != aid && !user.Role.ModLevel() {
+	if u.UserID != aid && !u.Role.Can(RoleMod) {
 		unauthorized(w, r)
 		return
 	}
@@ -237,8 +252,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := GetUserInfo(r)
-	user, _ := getUser(u.Username) // TODO awkward
-	if post.Author.ID != u.UserID && !user.Role.ModLevel() {
+	if post.Author.ID != u.UserID && !u.Role.Can(RoleMod) {
 		unauthorized(w, r)
 		return
 	}
@@ -267,14 +281,17 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 
 func createNewThread(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
-	user, _ := getUser(u.Username) // TODO awkward
-	if !user.Active {
+	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
+	f, err := getForum(forumID)
+	if err != nil {
+		serverError(w, r, err)
+	}
+	if !u.Role.Can(f.WritePermissions) {
 		unauthorized(w, r)
 		return
 	}
 	title := r.FormValue("title")
 	content := r.FormValue("content")
-	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
 	tid, err := createThread(u.UserID, forumID, title)
 	if err != nil {
 		// handle
@@ -284,10 +301,6 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		serverError(w, r, err)
 		// handle
-	}
-	f, err := getForum(forumID)
-	if err != nil {
-		serverError(w, r, err)
 	}
 	slug := f.Slug
 	http.Redirect(w, r, fmt.Sprintf("/f/%s/%d", slug, tid), http.StatusSeeOther)
@@ -335,7 +348,11 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := createUser(username, email, password, RoleUser, !config.RequiresApproval)
+		role := RoleUser
+		if config.RequiresApproval {
+			role = RoleInactive
+		}
+		err := createUser(username, email, password, role)
 		if err != nil {
 			serverError(w, r, err)
 		}

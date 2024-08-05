@@ -3,7 +3,8 @@ create table forums (
   name text, 
   description text, 
   slug text not null unique, 
-  permissions text not null default '',
+  read_permissions text not null default '',
+  write_permissions text not null default 'user',
   created datetime default current_timestamp
 );
 
@@ -36,9 +37,8 @@ create table users (
   username text,
   hash text,
   email text not null,
-  role text not null default 'user',
+  role text not null default 'inactive',
   oauth text,
-  active int not null default true,
   emailverified int not null default false,
   about text not null default 'someone',
   website text not null default '',

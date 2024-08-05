@@ -65,7 +65,8 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 
 	email := jsonData["email"].(string)
 	// TODO get user if exists
-	err = createOAuthUser(email, !config.RequiresApproval, "google")
+	// TODO don't activate yet...
+	err = createOAuthUser(email, "google")
 	if err != nil {
 		serverError(w, r, err)
 	}

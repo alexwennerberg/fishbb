@@ -52,7 +52,7 @@ func initdb() {
 		panic(err)
 	}
 	if devMode { // create admin / admin
-		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin, true)
+		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 		if err != nil {
 			panic(err) // TODO
 		}
@@ -91,7 +91,7 @@ var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
 
 func prepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
-		select forums.id, name, description, permissions,
+		select forums.id, name, description, read_permissions, write_permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
 		count(1)
@@ -108,27 +108,26 @@ func prepareStatements(db *sql.DB) {
 		group by 1
 
 `)
-	stmtGetForum = prepare(db, "select id, name, description, slug, permissions from forums where id = ?")
-	stmtGetForumBySlug = prepare(db, "select id, name, description, slug, permissions from forums where slug = ?")
+	stmtGetForum = prepare(db, "select id, name, description, slug, read_permissions, write_permissions from forums where id = ?")
+	stmtGetForumBySlug = prepare(db, "select id, name, description, slug, read_permissions, write_permissions from forums where slug = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
-	stmtUpdateForum = prepare(db, "update forums set name = ?, description = ?, permissions = ?, slug = ? where id = ?")
+	stmtUpdateForum = prepare(db, "update forums set name = ?, description = ?, read_permissions = ?, write_permissions = ?, slug = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
-	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, active, oauth) values (?, ?, ?, ?, ?, ?)")
+	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, oauth) values (?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,role,active,about,website,users.created, count(1)
+		select users.id,username,email,role,about,website,users.created, count(1)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  
 		group by users.id
 		`)
 	stmtGetUsers = prepare(db, `
-		select users.id,username,email,role,active,about,website,users.created, count(1)
+		select users.id,username,email,role,about,website,users.created, count(1)
 		from users 
 		left join posts on users.id = posts.authorid
 		group by users.id
-		order by active, role, username desc
+		order by role, username desc
 		`)
-	stmtActivateUser = prepare(db, "update users set active = true where id = ?;")
 	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")
 	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")
@@ -178,9 +177,7 @@ func prepareStatements(db *sql.DB) {
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
 	// TODO also delete posts and threads
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
-	// TODO if this ends up being more complex, maybe alter it
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
-	stmtUpdateBanStatus = prepare(db, "update users set active = ? where id = ?")
 
 	stmtThreadPin = prepare(db, "update threads set pinned = ? where id = ?")
 	stmtThreadLock = prepare(db, "update threads set locked = ? where id = ?")

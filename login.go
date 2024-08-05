@@ -39,6 +39,7 @@ import (
 type UserInfo struct {
 	UserID   int
 	Username string
+	Role     Role
 }
 
 type keytype struct{}
@@ -231,7 +232,7 @@ type LoginInitArgs struct {
 func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash, role, active from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0")
 	if err != nil {
 		panic(err)
 	}
@@ -347,7 +348,7 @@ var validcookies = cache.New(cache.Options{Filler: func(cookie string) (*UserInf
 	}
 
 	return &userinfo, true
-}, Duration: 5 * time.Minute})
+}, Duration: 1 * time.Minute})
 
 func checkauthcookie(r *http.Request) (*UserInfo, bool) {
 	cookie := getauthcookie(r)
@@ -375,8 +376,7 @@ func loaduser(username string) (int, string, string, bool) {
 	var userid int
 	var hash string
 	var role string
-	var active bool
-	err := row.Scan(&userid, &hash, &role, &active)
+	err := row.Scan(&userid, &hash, &role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no username found")

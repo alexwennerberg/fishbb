@@ -11,10 +11,11 @@
 
 	<h2>Forums</h2>
 	<table>
-		<tr><th>ID</th><th>Name</th></th><th>Description</th><th>Permissions</th></tr>
+      <tr><th>ID</th><th>Name</th></th><th>Description</th><th>Read Permissions</th><th>Write Permissions</th></tr>
 	{{ range .Forums }}
 	<tr><td>{{ .ID }}</td><td>{{ .Name }}</td><td>{{ .Description }}</td>
-		<td>{{ if eq .Permissions ""}}public{{else}}{{ .Permissions }}{{end}}</td>
+      <td>{{.ReadPermissions }}</td>
+      <td>{{.WritePermissions }}</td>
 		<td><a href="/f/{{.Slug}}/edit">edit</a></td></tr>
 	{{ end }}
 	</table>
@@ -25,24 +26,21 @@
 	<br>
 	<h2>Users</h2>
 	<table>
-		<th>ID</th><th>Username</th><th>Role</th><th>Active</th><th>Actions</th>
+		<th>ID</th><th>Username</th><th>Role</th><th>Actions</th>
 	{{ range .Users }}
 	<tr>
 		<td>{{.ID}}<td>{{ .Username }}</td>
 		<td>{{.Role}}</td>
-		<td> {{ .Active }}</td>
 			<td>
-				<form method="POST" action="/user/{{.ID}}/administer">
+				<form method="POST" action="/user/{{.ID}}/set-role">
 				<select name="action" id="action">
-				<option value="ban">Ban (deactivate)</option>
-				<option value="unban">Unban (activate)</option>
-				<option value="delete">Delete</option>
-				<option value="make-mod">Make Mod</option>
-				<option value="make-admin">Make Admin</option>
-				<option value="make-user">Make Regular User</option>
+				<option value="inactive">Inactive</option>
+				<option value="user">User</option>
+				<option value="mod">Mod</option>
+				<option value="admin">Admin</option>
 				</select>
 				<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
-				<button type="submit" id="submit">Submit</button>
+				<button type="submit" id="submit">Set Role</button>
 				</form>
 	</tr>
 	{{ end }}
