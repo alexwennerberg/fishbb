@@ -6,13 +6,20 @@
 			<input id="name" name="name" value="{{.Forum.Name}}"></input><br>
 			Description:
 			<input id="description" name="description" value="{{.Forum.Description}}"></input><br>
-			Permissions: 
-			<select id="permissions" name="permissions">
-				<option value="admin" {{ if eq .Forum.Permissions "admin"}}selected{{end}}>Admin-Only</option>
-				<option value="mod" {{ if eq .Forum.Permissions "mod"}}selected{{end}}>Moderator-Only</option>
-				<option value="user" {{ if eq .Forum.Permissions "user"}}selected{{end}}>User-Only</option>
-				<option value=""{{ if eq .Forum.Permissions ""}}selected{{end}}>Anyone</option>
-			</select><br>
+			Read Permissions: 
+			<select id="read-permissions" name="read-permissions">
+				<option value="admin" {{ if eq .Forum.ReadPermissions "admin"}}selected{{end}}>Admin-Only</option>
+				<option value="mod" {{ if eq .Forum.ReadPermissions "mod"}}selected{{end}}>Moderator-Only</option>
+				<option value="user" {{ if eq .Forum.ReadPermissions "user"}}selected{{end}}>User-Only</option>
+				<option value=""{{ if eq .Forum.ReadPermissions ""}}selected{{end}}>Anyone</option>
+            </select><br>
+			Write Permissions: 
+            <select id="write-permissions" name="write-permissions">
+				<option value="admin" {{ if eq .Forum.WritePermissions "admin"}}selected{{end}}>Admin-Only</option>
+				<option value="mod" {{ if eq .Forum.WritePermissions "mod"}}selected{{end}}>Moderator-Only</option>
+				<option value="user" {{ if eq .Forum.WritePermissions "user"}}selected{{end}}>User-Only</option>
+			</select>
+            <br>
 			<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 			<button type="submit">Save</button>
 			<a href="/control">Back</a>

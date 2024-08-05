@@ -1,8 +1,8 @@
 Setup fishbb.org (cloud provider)
 
 minor/bugs:
-permissions on forums don't actually work. can I simplify permissions? 
 Role and Active also cached? or make "active" a role...
+Can't make it so there are 0 admins
 
 boring stuff:
 csrf doesnt actually work

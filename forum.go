@@ -28,8 +28,8 @@ func getForum(id int) (Forum, error) {
 	return f, err
 }
 
-func updateForum(id int, name, description string, role Role) error {
-	_, err := stmtUpdateForum.Exec(name, description, role, slugify(name), id)
+func updateForum(id int, name, description string, readRole Role, writeRole Role) error {
+	_, err := stmtUpdateForum.Exec(name, description, readRole, writeRole, slugify(name), id)
 	return err
 }
 

@@ -1,7 +1,7 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="threads">
   <tr><th style="width:50%">Thread</th><th style="text-align:center;width:4rem;">Replies</th><th style="width:30%">Last Post</th></tr>
-  {{ if (and $.User $.User.Active) }}
+  {{ if (and $.User ($.User.Role.Can "user")) }}
   <div class="body-header">
 	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="top-button">New Thread</button></a>
       {{ end }}
@@ -20,7 +20,7 @@
 		<div>
 			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span>
 		</div>
-	  {{ if and $.User $.User.Role.ModLevel }}
+	  {{ if and $.User ($.User.Role.Can "mod")}}
 	  <span>
 		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
 		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>

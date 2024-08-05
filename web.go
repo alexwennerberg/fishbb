@@ -92,10 +92,6 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	tmpl["Forums"] = forums
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
 	serveHTML(w, r, "index", tmpl)
 }
 
@@ -521,27 +517,15 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "search", tmpl)
 }
 
-func doAdminister(w http.ResponseWriter, r *http.Request) {
-	action := r.FormValue("action")
+func doSetRole(w http.ResponseWriter, r *http.Request) {
+	action := r.FormValue("role")
 	uid, err := strconv.Atoi(r.PathValue("uid"))
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
-	if action == "ban" {
-		err = updateUserBanStatus(uid, true)
-	} else if action == "unban" {
-		err = updateUserBanStatus(uid, false)
-	} else if action == "delete" {
-		// TODO not complete yet
-		err = deleteUser(uid)
-	} else if action == "make-mod" {
-		err = updateUserRole(uid, RoleMod)
-	} else if action == "make-admin" {
-		err = updateUserRole(uid, RoleAdmin)
-	} else if action == "make-user" {
-		err = updateUserRole(uid, RoleUser)
-	}
+	// TODO must be valid role
+	err = updateUserRole(uid, Role(action))
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -560,7 +544,7 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 	id := getForumID(fs)
 	if r.Method == "POST" {
 		// TODO field validation
-		err := updateForum(id, r.FormValue("name"), r.FormValue("description"), Role(r.FormValue("permissions")))
+		err := updateForum(id, r.FormValue("name"), r.FormValue("description"), Role(r.FormValue("read-permissions")), Role(r.FormValue("write-permissions")))
 		if err != nil {
 			serverError(w, r, err)
 		}
@@ -698,7 +682,7 @@ func serve() {
 		// TODO mod authorization
 		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /update-config", doUpdateConfig)
-		r.HandleFunc("POST /user/{uid}/administer", doAdminister)
+		r.HandleFunc("POST /user/{uid}/set-role", doSetRole)
 		r.HandleFunc("/f/{forum}/edit", editForumPage)
 		r.HandleFunc("POST /forum/new", doCreateForum)
 	})

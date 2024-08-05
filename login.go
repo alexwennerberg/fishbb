@@ -232,11 +232,11 @@ type LoginInitArgs struct {
 func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0") // TODO remove role
 	if err != nil {
 		panic(err)
 	}
-	stmtUserAuth, err = db.Prepare("select users.id, username, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
+	stmtUserAuth, err = db.Prepare("select users.id, username, role, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
 		panic(err)
 	}
@@ -333,7 +333,7 @@ var validcookies = cache.New(cache.Options{Filler: func(cookie string) (*UserInf
 	row := stmtUserAuth.QueryRow(authhash, now.Format(dbtimeformat))
 	var userinfo UserInfo
 	var stamp string
-	err := row.Scan(&userinfo.UserID, &userinfo.Username, &stamp)
+	err := row.Scan(&userinfo.UserID, &userinfo.Username, &userinfo.Role, &stamp)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no auth found")
@@ -371,11 +371,11 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 }
 
 // TODO use struct
-func loaduser(username string) (int, string, string, bool) {
+func loaduser(username string) (int, string, Role, bool) {
 	row := stmtUserName.QueryRow(username) // TODO rename
 	var userid int
 	var hash string
-	var role string
+	var role Role
 	err := row.Scan(&userid, &hash, &role)
 	if err != nil {
 		if err == sql.ErrNoRows {

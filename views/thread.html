@@ -1,6 +1,6 @@
 {{ template "header.html" . }}
 <div class="body-header">
-	{{ if and (or (not .Thread.Locked) (.User.Role.ModLevel)) (and .User .User.Active) }}
+	{{ if and (or (not .Thread.Locked) (.User.Role.ModLevel)) (and .User (.User.Role.Can "user")) }}
 <a href="/post/new?thread={{.Thread.ID}}"><button class="padded-button">Reply</button></a>
 	{{ end }}
 {{ template "pagelist.html" . }}
@@ -34,7 +34,7 @@
   <div class="post-body">
   {{ .Render }}
   </div>
-  {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User $.User.Active) }}
+  {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
   <div class="flex-end">
 	  <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a></div>
   {{ end }}
