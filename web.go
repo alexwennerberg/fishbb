@@ -335,6 +335,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if len(password) < 8 {
 			formErr("Passwords must be at least 8 characters.")
+			return
 		}
 		if !validUsername(username) {
 			formErr("Invalid username. Must contain only letters and numbers and be maximum of 25 characters.")
@@ -355,6 +356,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 		}
 		LoginFunc(w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 	serveHTML(w, r, "register", tmpl)
 }

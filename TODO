@@ -1,12 +1,10 @@
 Setup fishbb.org (cloud provider)
 
 minor/bugs:
+better ux for account creation
 
 boring stuff:
 rate limit registration: 5 accounts per IP per day
-better error handling on login
-rate limit registration
-better ux for account creation
 links on home and thread list should go to the post ( BETTER LINK  TO POST )
 -> create a getpost query and parameterize it 
 finish up oauth integration
