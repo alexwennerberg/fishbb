@@ -4,30 +4,26 @@ minor/bugs:
 
 boring stuff:
 rate limit registration: 5 accounts per IP per day
-
 finish up oauth integration
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
-Fix Post Slug issue with a view or something
+make Post Slug faster / cleaner with a view or something
 csrf doesnt actually work? <--- Why did I write this
-2fa  pquerna/otp
+2fa pquerna/otp
 implement change password 
 implement reset password
-block renaming of forum
 IP blocking / other antispam
 Delete account: dont delete posts, replace with "(deleted)"?
 get anti spam good enough for open signups
-Archive forums
 distinguish notfound db error from other errors
+Forum sections
 login package should merge
 JSON API
-flash on inactive account
 
 # MAYBE 
 Delete own account
-Split out read and write permissions
 reporting system
 panics -> log.Fatal
 better db init / signal handling

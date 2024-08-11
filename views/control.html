@@ -14,7 +14,7 @@
       <tr><th>ID</th><th>Name</th></th><th>Description</th><th>Read Permissions</th><th>Write Permissions</th></tr>
 	{{ range .Forums }}
 	<tr><td>{{ .ID }}</td><td>{{ .Name }}</td><td>{{ .Description }}</td>
-      <td>{{.ReadPermissions }}</td>
+		<td>{{ if .ReadPermissions}}{{.ReadPermissions }}{{ else }}Anyone{{end}}</td>
       <td>{{.WritePermissions }}</td>
 		<td><a href="/f/{{.Slug}}/edit">edit</a></td></tr>
 	{{ end }}

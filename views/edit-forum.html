@@ -1,9 +1,7 @@
 {{ template "header.html" . }}
-	<div class="div-header">Editing Properties for Forum {{.Forum.Name}}</div>
+<div class="div-header">Editing Properties for Forum <a href="/f/{{.Forum.Name}}">{{.Forum.Name}}</a></div>
 	<form method="POST">
 		<div class="body-padded" >
-			Name:
-			<input id="name" name="name" value="{{.Forum.Name}}"></input><br>
 			Description:
 			<input id="description" name="description" value="{{.Forum.Description}}"></input><br>
 			Read Permissions: 

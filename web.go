@@ -548,7 +548,7 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 	id := getForumID(fs)
 	if r.Method == "POST" {
 		// TODO field validation
-		err := updateForum(id, r.FormValue("name"), r.FormValue("description"), Role(r.FormValue("read-permissions")), Role(r.FormValue("write-permissions")))
+		err := updateForum(id, r.FormValue("description"), Role(r.FormValue("read-permissions")), Role(r.FormValue("write-permissions")))
 		if err != nil {
 			serverError(w, r, err)
 		}
