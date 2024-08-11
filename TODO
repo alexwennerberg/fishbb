@@ -1,24 +1,26 @@
 Setup fishbb.org (cloud provider)
 
 minor/bugs:
-Role and Active also cached? or make "active" a role...
 Can't make it so there are 0 admins
 
 boring stuff:
-csrf doesnt actually work
+csrf doesnt actually work? Why did I write this
+
 rate limit registration: 5 accounts per IP per day
 better error handling on login
+rate limit registration
 better ux for account creation
 links on home and thread list should go to the post ( BETTER LINK  TO POST )
 -> create a getpost query and parameterize it 
 finish up oauth integration
-implement change password / reset password
 hide CSRF key from config
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
 2fa  pquerna/otp
+implement change password 
+implement reset password
 block renaming of forum
 IP blocking / other antispam
 Delete account: dont delete posts, replace with "(deleted)"?

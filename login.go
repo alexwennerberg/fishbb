@@ -29,7 +29,6 @@ import (
 	"regexp"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/alexedwards/argon2id"
@@ -268,25 +267,6 @@ func LoginInit(args LoginInitArgs) {
 	getconfig(db, "csrfkey", &csrfkey)
 }
 
-var authinprogress = make(map[string]bool)
-var authprogressmtx sync.Mutex
-
-func rateandwait(username string) bool {
-	authprogressmtx.Lock()
-	defer authprogressmtx.Unlock()
-	if authinprogress[username] {
-		return false
-	}
-	authinprogress[username] = true
-	go func(name string) {
-		time.Sleep(1 * time.Second / 2)
-		authprogressmtx.Lock()
-		authinprogress[name] = false
-		authprogressmtx.Unlock()
-	}(username)
-	return true
-}
-
 func getauthcookie(r *http.Request) string {
 	cookie, err := r.Cookie("auth")
 	if err != nil {
@@ -405,43 +385,24 @@ func SetLoginCookie() {
 func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	gettoken := r.FormValue("gettoken") == "1"
-
 	if len(username) == 0 || len(username) > userlen ||
 		!userregex.MatchString(username) || len(password) == 0 ||
 		len(password) > passlen {
-		log.Info("login: invalid password attempt")
-		if gettoken {
-			http.Error(w, "incorrect", http.StatusForbidden)
-		} else {
-			loginredirect(w, r)
-		}
+		SetCookieValue(w, "login-err", "Invalid username or invalid password.")
+		loginredirect(w, r)
 		return
 	}
 	userid, hash, _, ok := loaduser(username)
 	if !ok {
+		SetCookieValue(w, "login-err", "Account does not exist.")
 		loginredirect(w, r)
 		return
 	}
-
-	if !rateandwait(username) {
-		if gettoken {
-			http.Error(w, "incorrect", http.StatusForbidden)
-		} else {
-			loginredirect(w, r)
-		}
-		return
-	}
-
 	match, err := argon2id.ComparePasswordAndHash(password, hash)
 	// TODO better error handling
 	if !match || err != nil {
-		log.Info("login: incorrect password")
-		if gettoken {
-			http.Error(w, "incorrect", http.StatusForbidden)
-		} else {
-			loginredirect(w, r)
-		}
+		SetCookieValue(w, "login-err", "Incorrect password.")
+		loginredirect(w, r)
 		return
 	}
 	hasher := sha512.New512_256()
@@ -449,16 +410,14 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	auth := hexsum(hasher)
 
 	maxage := 3600 * 24 * 365
-	if !gettoken {
-		http.SetCookie(w, &http.Cookie{
-			Name:     "auth",
-			Value:    auth,
-			MaxAge:   maxage,
-			Secure:   securecookies,
-			SameSite: getsamesite(r),
-			HttpOnly: true,
-		})
-	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth",
+		Value:    auth,
+		MaxAge:   maxage,
+		Secure:   securecookies,
+		SameSite: getsamesite(r),
+		HttpOnly: true,
+	})
 
 	hasher.Reset()
 	hasher.Write([]byte(auth))
@@ -471,11 +430,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Info("login: successful login")
-	if gettoken {
-		w.Write([]byte(auth))
-	} else {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func deleteauth(userid int) error {

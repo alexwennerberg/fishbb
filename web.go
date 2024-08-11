@@ -311,6 +311,7 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
+	tmpl["LoginErr"], _ = GetFlash(w, r, "login-err")
 	serveHTML(w, r, "login", tmpl)
 }
 
@@ -353,6 +354,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			serverError(w, r, err)
 		}
 		LoginFunc(w, r)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 	serveHTML(w, r, "register", tmpl)
 }
@@ -636,7 +638,7 @@ func serve() {
 	r.HandleFunc("GET /u/{username}", userPage)
 	r.HandleFunc("GET /login", loginPage)
 	// TODO limit registration successes
-	// TODO csrf wrap?
+	// TODO Consider CSRF wrapping
 	r.HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
@@ -647,6 +649,7 @@ func serve() {
 		w.Write(genAvatar(config.BoardName))
 	})
 	r.HandleFunc("GET /a", avatarHandler)
+	// TODO Consider CSRF wrapping
 	r.With(LimitByRealIP(20, 1*time.Hour)).HandleFunc("POST /dologin", LoginFunc)
 	r.HandleFunc("POST /logout", LogoutFunc)
 
