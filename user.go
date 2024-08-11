@@ -135,6 +135,7 @@ func deleteUser(id int) error {
 
 func updateUserRole(id int, role Role) error {
 	_, err := stmtUpdateUserRole.Exec(role, id)
+	// TODO check constraint error?
 	return err
 }
 

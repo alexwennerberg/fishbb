@@ -1,11 +1,8 @@
 Setup fishbb.org (cloud provider)
 
 minor/bugs:
-Can't make it so there are 0 admins
 
 boring stuff:
-csrf doesnt actually work? Why did I write this
-
 rate limit registration: 5 accounts per IP per day
 better error handling on login
 rate limit registration
@@ -14,10 +11,12 @@ links on home and thread list should go to the post ( BETTER LINK  TO POST )
 -> create a getpost query and parameterize it 
 finish up oauth integration
 hide CSRF key from config
+Don't create sqlite file if it doesn't exist
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+csrf doesnt actually work? Why did I write this
 2fa  pquerna/otp
 implement change password 
 implement reset password

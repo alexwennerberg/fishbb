@@ -35,7 +35,8 @@ func initdb() {
 	if err != nil {
 		panic(err)
 	}
-	for _, line := range strings.Split(sqlSchema, ";") {
+	// TODO -- some better way to do exec these
+	for _, line := range strings.Split(sqlSchema, ";\n") {
 		_, err = db.Exec(line)
 		if err != nil {
 			log.Error(line, "error", err)

@@ -62,9 +62,17 @@ create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);
 create index idxusers_username on users(username);
 
+create trigger prevent_last_admin_deletion
+before update of role on users 
+for each row 
+when NEW.role != 'admin' and (select count(*) from users where role = 'admin') = 1
+begin
+  select raise(ABORT, 'Cannot remove the last admin'); end;
+
 pragma journal_mode = wal;
 pragma busy_timeout = 5000;
 pragma synchronous = normal;
 pragma cache_size = 1000000000;
 pragma foreign_keys = true;
 pragma temp_store = memory;
+
