@@ -12,7 +12,7 @@ type Forum struct {
 	// lowest level that can view this for
 	ReadPermissions  Role
 	WritePermissions Role
-	LastPost         PostSummary
+	LastPost         Post
 	ThreadCount      int
 }
 

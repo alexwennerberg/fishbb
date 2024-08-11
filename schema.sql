@@ -52,8 +52,10 @@ create table auth (
   foreign key (userid) references users(id)
 );
 
+-- sort of awkward bc it just stores a toml blob. TODO move away from toml
 create table config (
   id integer primary key,
+  key text unique,
   -- toml blob
   value text 
 );

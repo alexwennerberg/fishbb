@@ -457,7 +457,7 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	cfg, err := GetConfig()
+	cfg, err := GetConfig("config-toml")
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -473,7 +473,7 @@ func doUpdateConfig(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	err = UpdateConfig(c)
+	err = UpdateConfigTOML(c)
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -609,7 +609,7 @@ func serve() {
 	db = opendb()
 	prepareStatements(db)
 	var err error
-	config, err = GetConfig()
+	config, err = GetConfig("config-toml")
 	if err != nil {
 		panic(err)
 	}

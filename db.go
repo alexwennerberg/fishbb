@@ -13,7 +13,11 @@ import (
 var db *sql.DB
 
 func opendb() *sql.DB {
-	db, err := sql.Open("sqlite3", DBPath)
+	_, err := os.Stat(DBPath)
+	if err != nil {
+		initdb() // initialize if no db exists
+	}
+	db, err := sql.Open("sqlite3", DBPath) // probably not safe variable
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +28,6 @@ func opendb() *sql.DB {
 var sqlSchema string
 
 func initdb() {
-	// set csrf key
 	dbname := DBPath
 	_, err := os.Stat(dbname)
 	if err == nil {
@@ -44,10 +47,6 @@ func initdb() {
 		}
 	}
 	prepareStatements(db)
-	// set default values
-	// Create admin user
-	// Set csrfkey
-
 	err = createForum("General", "General discussion")
 	if err != nil {
 		panic(err)
@@ -60,11 +59,15 @@ func initdb() {
 	}
 
 	config := DefaultConfig()
-	config.CSRFKey, err = GenerateRandomString(16)
+	err = UpdateConfigTOML(config)
 	if err != nil {
 		panic(err)
 	}
-	err = UpdateConfig(config)
+	csrf, err := GenerateRandomString(16)
+	if err != nil {
+		panic(err)
+	}
+	err = UpdateConfig("csrfkey", csrf)
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +90,7 @@ var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
 	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
-	stmtQueryPosts, stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
+	stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 
 func prepareStatements(db *sql.DB) {
@@ -167,7 +170,7 @@ func prepareStatements(db *sql.DB) {
 	select posts.id, content, users.id, users.username, posts.created, posts.edited 
 	from posts 
 	join users on posts.authorid = users.id 
-	where content like ?`)
+	where content like ? limit 1000`) // TODO paginate
 	stmtGetPost = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 
@@ -193,10 +196,8 @@ func prepareStatements(db *sql.DB) {
 		left join forums on threads.forumid = forums.id
 		where posts.id = ?1
 	`)
-	// very dumb atm. maybe improve?
-	stmtQueryPosts = prepare(db, "select 1")
-	stmtUpdateConfig = prepare(db, "insert into config(value) values(?)")
-	stmtGetConfig = prepare(db, "select value from config order by id desc limit 1")
+	stmtUpdateConfig = prepare(db, "insert into config(key,value) values(?1,?2) on conflict(key) do update set value = ?2")
+	stmtGetConfig = prepare(db, "select value from config where key = ?")
 	stmtGetAllUsernames = prepare(db, "select username from users;")
 	LoginInit(LoginInitArgs{
 		Db: db,

@@ -30,7 +30,7 @@
     </td>
 	<td style="text-align:center;">{{.Replies}}</td>
     <td>
-		<a href="/f/general/{{.ID}}#{{.Latest.ID}}">{{ timeago .Latest.Created }}</a>
+		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
 		by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a>
     </td>
   </tr>

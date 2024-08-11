@@ -23,10 +23,6 @@ type Config struct {
 	// The size of pages on threads and forums
 	PageSize int
 
-	// A secret key used for generating CSRF tokens
-	// TODO this should not be directly configurable
-	CSRFKey string
-
 	// optional (for oauth)
 	Domain                  string // todo not exactly
 	GoogleOAuthClientID     string
@@ -58,8 +54,8 @@ func DefaultConfig() Config {
 	}
 }
 
-func GetConfig() (Config, error) {
-	row := stmtGetConfig.QueryRow()
+func GetConfig(key string) (Config, error) {
+	row := stmtGetConfig.QueryRow(key)
 	var val string
 	err := row.Scan(&val)
 	if err != nil {
@@ -73,10 +69,14 @@ func GetConfig() (Config, error) {
 	return c, nil
 }
 
-// keeps a record of previous configs... TODO maybe remove
-// includes cache
-func UpdateConfig(c Config) error {
-	_, err := stmtUpdateConfig.Exec(c.TOMLString())
+func UpdateConfig(key string, value string) error {
+	_, err := stmtUpdateConfig.Exec(key, value)
+	return err
+}
+
+// TODO stop this toml nonsense
+func UpdateConfigTOML(c Config) error {
+	_, err := stmtUpdateConfig.Exec("config-toml", c.TOMLString())
 	if err == nil {
 		// update global config
 		config = c

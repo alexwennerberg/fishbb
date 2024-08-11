@@ -11,20 +11,19 @@ type Post struct {
 	ID      int
 	Content string // TODO markdown
 	Author  User
-	Created time.Time
-	Edited  *time.Time
+	// TODO
+	ThreadID        string
+	ThreadTitle     string
+	ThreadPostCount int
+	Created         time.Time
+	Edited          *time.Time
 }
 
-// Custom inline parser for user and post links
-
-// TODO reconcile these somehow maybe
-type PostSummary struct {
-	ID          int
-	Author      User
-	ThreadID    string
-	ThreadTitle string
-	Created     time.Time
-	Content     string
+// This does an inefficient db call for now
+// TODO make it work with joins
+func (p Post) Slug() string {
+	s, _ := getPostSlug(p.ID)
+	return s
 }
 
 const previewLength = 150
@@ -76,7 +75,6 @@ func searchPosts(q string) ([]Post, error) {
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
-		fmt.Println(p)
 		if err != nil {
 			return nil, err
 		}

@@ -6,6 +6,12 @@ go + sqlite
 
 no javascript
 
+## Running
+
+`go run main.go`
+
+This will setup a database with the admin user of "admin/admin"
+
 ## Self-hosting
 
 FishBB is intended to require a minimal amount of infrastructure and
@@ -17,7 +23,6 @@ running your own instance!
 Admin configuration is available at `/control`
 
 See the comments in `config.go` for now (better documentation forthcoming)
-
 
 TODO
 
