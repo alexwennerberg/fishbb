@@ -5,11 +5,14 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"fmt"
+	"html"
+	"html/template"
 	"image"
 	"image/png"
 	"io"
 	"math/big"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -151,6 +154,15 @@ func genAvatar(name string) []byte {
 	var buf bytes.Buffer
 	png.Encode(&buf, img)
 	return buf.Bytes()
+}
+
+// turns a url into a string, but only if it's http/https
+func addLinkTags(link string) template.HTML {
+	u, err := url.Parse(link)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return template.HTML(html.EscapeString(link))
+	}
+	return template.HTML(fmt.Sprintf("<a href='%[1]s'>%[1]s</a>", link))
 }
 
 const solarYearSecs = 31556926

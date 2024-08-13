@@ -1,9 +1,8 @@
 Setup fishbb.org (cloud provider)
 
-minor/bugs:
-
-boring stuff:
+Before Launch:
 redirect on edit and delete
+Oauth
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 

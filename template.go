@@ -12,8 +12,9 @@ var views *template.Template
 
 func loadTemplates() *template.Template {
 	views, err := template.New("main").Funcs(template.FuncMap{
-		"timeago": timeago,
-		"pageArr": pageArray,
+		"timeago":     timeago,
+		"addLinkTags": addLinkTags,
+		"pageArr":     pageArray,
 		"inc": func(i int) int {
 			return i + 1
 

@@ -2,7 +2,7 @@
 <div class="div-header">User {{.InfoUser.Username}}</div>
 <div class="body-padded">
 	<b>About</b>: {{.InfoUser.About}}<br>
-	<b>Website</b>: {{.InfoUser.Website}}<br>
+	<b>Website</b>: {{.InfoUser.Website | addLinkTags }}<br>
 	<b>Created</b>: {{.InfoUser.Created}}<br>
 	<b>Post Count</b>: {{.InfoUser.Posts}}<br></div></div>
 {{ template "footer.html" . }}
