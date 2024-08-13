@@ -162,7 +162,7 @@ func addLinkTags(link string) template.HTML {
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
 		return template.HTML(html.EscapeString(link))
 	}
-	return template.HTML(fmt.Sprintf("<a href='%[1]s'>%[1]s</a>", link))
+	return template.HTML(fmt.Sprintf("<a href='%[1]s'>%[1]s</a>", html.EscapeString(link)))
 }
 
 const solarYearSecs = 31556926

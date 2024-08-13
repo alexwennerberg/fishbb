@@ -34,9 +34,9 @@ create table posts (
 
 create table users (
   id integer primary key,
-  username text,
+  username text not null unique,
   hash text,
-  email text not null,
+  email text not null unique,
   role text not null default 'inactive',
   oauth text,
   emailverified int not null default false,

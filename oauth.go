@@ -64,9 +64,24 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	email := jsonData["email"].(string)
-	// TODO get user if exists
-	// TODO don't activate yet...
-	err = createOAuthUser(email, "google")
+	// get user if it exists, then save session
+	uid, err := getUserIDByEmail(email)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	if uid != nil {
+		// TODO DO LOGIN, set cookie etc
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	var role Role
+	if config.RequiresApproval {
+		role = RoleInactive
+	} else {
+		role = RoleUser
+	}
+	err = createOAuthUser(email, "google", role)
 	if err != nil {
 		serverError(w, r, err)
 	}

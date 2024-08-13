@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/argon2id"
+	"github.com/anandvarma/namegen"
 )
 
 type Role string
@@ -64,12 +65,14 @@ func createUser(username, email, password string, role Role) error {
 	return err
 }
 
-// TODO username figure out
-// TODO password
-// TODO allow to link account, add pw later?
-func createOAuthUser(email string, provider string) error {
-	_, err := stmtCreateUser.Exec(email, email, "", RoleUser, provider)
+func createOAuthUser(email string, provider string, role Role) error {
+	ngen := namegen.New()
+	_, err := stmtCreateUser.Exec(ngen.Get(), email, "", role, provider)
 	return err
+}
+
+func getUserIDByEmail(email string) (*int, error) {
+	return nil, nil // TODO
 }
 
 func getUser(username string) (*User, error) {

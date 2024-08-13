@@ -375,6 +375,10 @@ func hexsum(h hash.Hash) string {
 func SetLoginCookie() {
 }
 
+func completeLogin() {
+	// TODO
+}
+
 // Default handler for /dologin
 // Requires username and password form values.
 // Redirects to / on success and /login on failure.
