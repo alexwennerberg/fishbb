@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"strconv"
-	"strings"
-	"text/template"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -17,8 +14,6 @@ import (
 	// I don't love this
 	"github.com/go-chi/httplog/v2"
 )
-
-var views *template.Template
 
 func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[string]any) {
 	l := httplog.LogEntry(r.Context())
@@ -364,55 +359,8 @@ func serveAsset(w http.ResponseWriter, r *http.Request) {
 	if !devMode {
 		w.Header().Set("Cache-Control", "max-age=604800")
 	}
-	http.ServeFile(w, r, ViewDir+r.URL.Path)
+	http.ServeFileFS(w, r, viewBundle, r.URL.Path)
 }
-
-func loadTemplates() *template.Template {
-	var toload []string
-	viewDir := ViewDir
-	temps, err := os.ReadDir(viewDir)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, temp := range temps {
-		name := temp.Name()
-		if strings.HasSuffix(name, ".html") {
-			toload = append(toload, viewDir+name)
-		}
-	}
-
-	// TODO reduce code duplication
-
-	iconDir := ViewDir + "icons/"
-	icons, err := os.ReadDir(iconDir)
-	if err != nil {
-		panic(err)
-	}
-	for _, temp := range icons {
-		name := temp.Name()
-		if strings.HasSuffix(name, ".svg") {
-			toload = append(toload, iconDir+name)
-		}
-	}
-
-	views, err := template.New("main").Funcs(template.FuncMap{
-		"timeago": timeago,
-		"pageArr": pageArray,
-		"inc": func(i int) int {
-			return i + 1
-
-		},
-		"dec": func(i int) int {
-			return i - 1
-		},
-	}).ParseFiles(toload...)
-	if err != nil {
-		panic(err)
-	}
-	return views
-}
-
 func userPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 

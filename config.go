@@ -8,7 +8,6 @@ import (
 
 // non user-configurable config
 var Port = ":8080"
-var ViewDir = "./views/"
 var DBPath = "fishbb.db"
 
 // most of these don't work yet

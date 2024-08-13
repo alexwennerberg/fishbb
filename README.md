@@ -18,6 +18,8 @@ FishBB is intended to require a minimal amount of infrastructure and
 administration for self-hosting. Please reach out if you are interested in
 running your own instance!
 
+All fishBB data is stored in a single sqlite file, configured by -path
+
 ### Configuration
 
 Admin configuration is available at `/control`
