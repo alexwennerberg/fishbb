@@ -11,12 +11,13 @@ import (
 var softwareVersion = "0.1.0"
 
 var config Config
-var devMode = true
+var devMode = false
 var programLevel = new(slog.LevelVar)
 var log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel}))
 
 func main() {
 	flag.BoolVar(&devMode, "dev", devMode, "dev mode")
+	flag.StringVar(&DBPath, "path", "fishbb.db", "db path location")
 	flag.Parse()
 	args := flag.Args()
 

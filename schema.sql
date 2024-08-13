@@ -8,10 +8,6 @@ create table forums (
   created datetime default current_timestamp
 );
 
--- TODO
-create table forum_category (
-)
-
 create table threads (
   id integer primary key,
   forumid integer,

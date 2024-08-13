@@ -51,11 +51,10 @@ func initdb() {
 	if err != nil {
 		panic(err)
 	}
-	if devMode { // create admin / admin
-		err := createUser("admin", "webmaster@foo", "admin", RoleAdmin)
-		if err != nil {
-			panic(err) // TODO
-		}
+	// create admin / admin
+	err = createUser("admin", "webmaster@foo", "admin", RoleAdmin)
+	if err != nil {
+		panic(err) // TODO
 	}
 
 	config := DefaultConfig()
@@ -71,9 +70,7 @@ func initdb() {
 	if err != nil {
 		panic(err)
 	}
-	// default config
 	db.Close()
-	os.Exit(0)
 }
 
 func prepare(db *sql.DB, stmt string) *sql.Stmt {

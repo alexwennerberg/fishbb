@@ -698,7 +698,7 @@ func serve() {
 
 	r.HandleFunc("/*", notFound)
 
-	log.Debug("starting server")
+	log.Info("starting server")
 	err = http.ListenAndServe(Port, r)
 	if err != nil {
 		panic(err)
