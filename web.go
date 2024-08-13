@@ -269,7 +269,6 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		http.Redirect(w, r, slug, http.StatusSeeOther)
-		// TODO redirect to post
 	}
 	tmpl["Post"] = post
 	serveHTML(w, r, "edit-post", tmpl)
@@ -677,15 +676,13 @@ func serve() {
 
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
+		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /f/{forum}/{tid}/pin", doPinThread)
 		r.HandleFunc("POST /f/{forum}/{tid}/lock", doLockThread)
 	})
 	// admin functions
-	// TODO admin auth
 	r.Group(func(r chi.Router) {
 		r.Use(Admin)
-		// TODO mod authorization
-		r.HandleFunc("/control", controlPanelPage)
 		r.HandleFunc("POST /update-config", doUpdateConfig)
 		r.HandleFunc("POST /user/{uid}/set-role", doSetRole)
 		r.HandleFunc("/f/{forum}/edit", editForumPage)

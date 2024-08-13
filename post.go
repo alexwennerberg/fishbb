@@ -11,7 +11,7 @@ type Post struct {
 	ID      int
 	Content string // TODO markdown
 	Author  User
-	// TODO
+	// TODO less ad-hoc
 	ThreadID        string
 	ThreadTitle     string
 	ThreadPostCount int

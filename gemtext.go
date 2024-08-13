@@ -17,7 +17,6 @@ func (p Post) Render() template.HTML {
 
 func (p Post) BuildReply() string {
 	var out bytes.Buffer
-	// TODO link to post
 	out.Write([]byte(fmt.Sprintf("@%s wrote:\n", p.Author.Username)))
 	for _, line := range strings.Split(p.Content, "\n") {
 		out.Write([]byte(">"))

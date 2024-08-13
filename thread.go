@@ -42,7 +42,7 @@ func getThreads(forumID, page int) ([]Thread, error) {
 		if err != nil {
 			return nil, err
 		}
-		// TODO?
+		// TODO -- wonder if I can get away from this
 		t.Latest.Created, err = time.Parse(timeISO8601, created)
 		logIfErr(err)
 		threads = append(threads, t)

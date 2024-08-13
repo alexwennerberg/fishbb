@@ -76,9 +76,7 @@ func Required(handler http.Handler) http.Handler {
 func Roles(handler http.Handler, roles []Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		u := GetUserInfo(r)
-		// TODO better
-		user, _ := getUser(u.Username)
-		if u == nil || !slices.Contains(roles, user.Role) {
+		if u == nil || !slices.Contains(roles, u.Role) {
 			loginredirect(w, r) // TODO unauth?
 			return
 		}
@@ -231,7 +229,7 @@ type LoginInitArgs struct {
 func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash, role from users where username = ? and id > 0") // TODO remove role
+	stmtUserName, err = db.Prepare("select id, hash from users where username = ? and id > 0")
 	if err != nil {
 		panic(err)
 	}
@@ -350,22 +348,20 @@ func checkformtoken(r *http.Request) (*UserInfo, bool) {
 	return userinfo, ok
 }
 
-// TODO use struct
-func loaduser(username string) (int, string, Role, bool) {
+func loaduser(username string) (int, string, bool) {
 	row := stmtUserName.QueryRow(username) // TODO rename
 	var userid int
 	var hash string
-	var role Role
-	err := row.Scan(&userid, &hash, &role)
+	err := row.Scan(&userid, &hash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Info("login: no username found")
 		} else {
 			log.Info("login: error loading username: %s", err)
 		}
-		return -1, "", "", false
+		return -1, "", false
 	}
-	return userid, hash, role, true
+	return userid, hash, true
 }
 
 var userregex = regexp.MustCompile("^[[:alnum:]]+$")
@@ -392,7 +388,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 		loginredirect(w, r)
 		return
 	}
-	userid, hash, _, ok := loaduser(username)
+	userid, hash, ok := loaduser(username)
 	if !ok {
 		SetCookieValue(w, "login-err", "Account does not exist.")
 		loginredirect(w, r)
@@ -495,7 +491,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) error {
 	if len(newpass) < 6 {
 		return fmt.Errorf("newpassword is too short")
 	}
-	userid, hash, _, ok := loaduser(userinfo.Username)
+	userid, hash, ok := loaduser(userinfo.Username)
 	if !ok {
 		return fmt.Errorf("error")
 	}

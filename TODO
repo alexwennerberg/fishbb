@@ -3,12 +3,12 @@ Setup fishbb.org (cloud provider)
 minor/bugs:
 
 boring stuff:
-rate limit registration: 5 accounts per IP per day
-finish up oauth integration
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
+finish up oauth integration
+rate limit registration: 5 accounts per IP per day
 make Post Slug faster / cleaner with a view or something
 csrf doesnt actually work? <--- Why did I write this
 2fa pquerna/otp

@@ -179,7 +179,6 @@ func prepareStatements(db *sql.DB) {
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
-	// TODO also delete posts and threads
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
 
