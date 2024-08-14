@@ -4,6 +4,8 @@ gate Google on register behind feture flag
 Allow uesrname change
 implement change password 
 auth cookie not set until refresh? on oauth
+improve mobile friendliness
+'no threads' should be full width. no 000 junk on no new threads either
 
 PHASED LAUNCH tenative:
 08-13 -- Alpha (single instance)

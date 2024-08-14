@@ -1,6 +1,6 @@
 {{ template "header.html" . }}
 <table class="nav-table" id="threads">
-  <tr><th style="width:50%">Thread</th><th style="text-align:center;width:4rem;">Replies</th><th style="width:30%">Last Post</th></tr>
+  <tr><th style="width:50%">Thread</th><th style="text-align:center;width:4rem;" class="hide-mobile">Replies</th><th style="width:30%">Last Post</th></tr>
   {{ if (and $.User ($.User.Role.Can "user")) }}
   <div class="body-header">
 	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="top-button">New Thread</button></a>
@@ -28,7 +28,7 @@
 		</div>
 	  {{ end }}
     </td>
-	<td style="text-align:center;">{{.Replies}}</td>
+	<td style="text-align:center;" class="hide-mobile">{{.Replies}}</td>
     <td>
 		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
 		by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a>

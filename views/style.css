@@ -7,12 +7,6 @@
   --bg-alt: #ddd;
   --border: #000;
 }
-
-@media only screen and (max-width: 600px) {
-  .hide-mobile {
-    display:none;
-  }
-}
   
 @media(prefers-color-scheme: dark) {
   :root {
@@ -72,7 +66,7 @@ button:not(.link-button) {
 }
 
 .post-body h1,h2,h3,h4,h5 {
-  font-size: 16px;
+  font-size: 1em;
 }
 
 .post-body p {
@@ -161,7 +155,7 @@ body {
 
 footer {
   padding: 0.4rem;
-  font-size: 14px;
+  font-size: 0.8em;
   border-top: 1px solid var(--border);
   text-align:center;
   color: var(--text-alt);
@@ -181,7 +175,7 @@ footer {
 }
 
 .title-link {
-  font-size: 1.3rem;
+  font-size: 1.2em;
   font-weight: bold;
 }
 
@@ -321,3 +315,13 @@ pre {
   text-align: right;
   flex-grow: 1;
 }
+
+@media only screen and (max-width: 600px) {
+  .hide-mobile {
+    display:none;
+  }
+  body {
+    font-size: 14px
+  }
+}
+
