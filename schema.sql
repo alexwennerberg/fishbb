@@ -40,6 +40,7 @@ create table users (
   role text not null default 'inactive',
   oauth text,
   emailverified int not null default false,
+  publicemail int not null default false,
   about text not null default 'someone',
   website text not null default '',
   created datetime default current_timestamp

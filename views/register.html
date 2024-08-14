@@ -15,6 +15,7 @@
 {{ end }}
 <button name="register" value="register">Register</button>
 </form>
+{{ if .Config.GoogleOAuthClientID }}
 Or, link with your Google account:<br>
 <a href="/auth/google/login">
 <button class="gsi-material-button">
@@ -34,5 +35,6 @@ Or, link with your Google account:<br>
   </div>
 </button>
 </a>
+{{ end }}
 </div>
 {{ template "footer.html" . }}

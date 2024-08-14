@@ -20,6 +20,9 @@ running your own instance!
 
 All fishBB data is stored in a single sqlite file, configured by -path
 
+Running FishBB for the first time will create a database file and an admin user 
+with the credentials "admin/admin".
+
 ### Configuration
 
 Admin configuration is available at `/control`

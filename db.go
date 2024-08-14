@@ -168,7 +168,7 @@ func prepareStatements(db *sql.DB) {
 	select posts.id, content, users.id, users.username, posts.created, posts.edited 
 	from posts 
 	join users on posts.authorid = users.id 
-	where content like ? limit 1000`) // TODO paginate
+	where content like ? order by posts.id desc limit 1000`) // TODO paginate
 	stmtGetPost = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 

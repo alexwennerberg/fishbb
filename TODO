@@ -1,16 +1,18 @@
 Setup fishbb.org (cloud provider)
 
+log remote ip properly
+add avatar to user profile
 blockquote 100% width
-
-gate Google on register behind feture flag
 Allow uesrname change
 implement change password 
 auth cookie not set until refresh? on oauth
 improve mobile friendliness
-'no threads' should be full width. no 000 junk on no new threads either
+'no threads' should be full width. 
+no 000 junk on no new threads 
+default admin password must be secure
+letter
 
 PHASED LAUNCH tenative:
-08-13 -- Alpha (single instance)
 09-29 -- Alpha (Public launch)
 
 Allow for everything non-sensitive on port 80
