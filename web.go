@@ -639,7 +639,7 @@ func serve() {
 
 	// Google OAuth URLs if enabled
 	if config.GoogleOAuthClientID != "" {
-		// TODO
+		// TODO don't require server restart?
 		r.HandleFunc("/auth/google/login", oauthGoogleLogin)
 		r.HandleFunc("/auth/google/callback", oauthGoogleCallback)
 	}

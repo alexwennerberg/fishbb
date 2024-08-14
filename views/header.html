@@ -18,10 +18,7 @@
 		  {{ else }}
 		  {{.Config.BoardDescription}}
 		  {{ end }}
-          {{ if and .User (not (.User.Role.Can "user"))}}
-          <div class="alert">Your account is pending approval and not yet active. You are not yet able to post.</div>
-          {{ end }}
-    </div>
+              </div>
     <div id="nav">
       {{ if not .User }}
       <a href="/register">Register</a>
@@ -40,6 +37,10 @@
 		<button type="Submit">Search</button>
 	</form>
     </div>
+
   </div>
+{{ if and .User (not (.User.Role.Can "user"))}}
+          <div class="alert">Your account is pending approval and not yet active. You will be able to post when your account is approved. Check back later!</div>
+          {{ end }}
   </header>
 <main>

@@ -375,8 +375,32 @@ func hexsum(h hash.Hash) string {
 func SetLoginCookie() {
 }
 
-func completeLogin() {
-	// TODO
+func loginSession(w http.ResponseWriter, r *http.Request, userid int) error {
+	hasher := sha512.New512_256()
+	io.CopyN(hasher, rand.Reader, 32)
+	auth := hexsum(hasher)
+
+	maxage := 3600 * 24 * 365
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth",
+		Value:    auth,
+		MaxAge:   maxage,
+		Secure:   securecookies,
+		SameSite: getsamesite(r),
+		Path:     "/",
+		HttpOnly: true,
+	})
+
+	hasher.Reset()
+	hasher.Write([]byte(auth))
+	authhash := hexsum(hasher)
+
+	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
+	_, err := stmtSaveAuth.Exec(userid, authhash, expiry)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Default handler for /dologin
@@ -405,31 +429,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 		loginredirect(w, r)
 		return
 	}
-	hasher := sha512.New512_256()
-	io.CopyN(hasher, rand.Reader, 32)
-	auth := hexsum(hasher)
-
-	maxage := 3600 * 24 * 365
-	http.SetCookie(w, &http.Cookie{
-		Name:     "auth",
-		Value:    auth,
-		MaxAge:   maxage,
-		Secure:   securecookies,
-		SameSite: getsamesite(r),
-		HttpOnly: true,
-	})
-
-	hasher.Reset()
-	hasher.Write([]byte(auth))
-	authhash := hexsum(hasher)
-
-	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
-	_, err = stmtSaveAuth.Exec(userid, authhash, expiry)
-	if err != nil {
-		log.Info("error saving auth: %s", err)
-	}
-
-	log.Info("login: successful login")
+	loginSession(w, r, userid)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 

@@ -36,10 +36,8 @@ func oauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	// Create oauthState cookie
 	oauthState := generateStateOauthCookie(w)
 
-	/*
-		AuthCodeURL receive state that is a token to protect the user from CSRF attacks. You must always provide a non-empty string and
-		validate that it matches the the state query parameter on your redirect callback.
-	*/
+	// AuthCodeURL receive state that is a token to protect the user from CSRF attacks. You must always provide a non-empty string and
+	// validate that it matches the the state query parameter on your redirect callback.
 	u := googleOauthConfig.AuthCodeURL(oauthState)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
@@ -61,6 +59,7 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(data, &jsonData)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 
 	email := jsonData["email"].(string)
@@ -71,7 +70,11 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if uid != nil {
-		// TODO DO LOGIN, set cookie etc
+		err = loginSession(w, r, *uid)
+		if err != nil {
+			serverError(w, r, err)
+			return
+		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -81,11 +84,16 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	} else {
 		role = RoleUser
 	}
-	err = createOAuthUser(email, "google", role)
+	newid, err := createOAuthUser(email, "google", role)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
-
+	err = loginSession(w, r, newid)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 

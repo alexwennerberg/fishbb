@@ -1,8 +1,13 @@
 Setup fishbb.org (cloud provider)
 
 Before Launch:
-redirect on edit and delete
 Oauth
+Allow uesrname change
+implement change password 
+
+PHASED LAUNCH tenative:
+08-13 -- Alpha (single instance)
+09-29 -- Alpha (Public launch)
 
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
@@ -12,7 +17,6 @@ rate limit registration: 5 accounts per IP per day
 make Post Slug faster / cleaner with a view or something
 csrf doesnt actually work? <--- Why did I write this
 2fa pquerna/otp
-implement change password 
 implement reset password
 IP blocking / other antispam
 Delete account: dont delete posts, replace with "(deleted)"?

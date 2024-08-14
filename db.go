@@ -84,7 +84,7 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
-	stmtGetUser, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
+	stmtGetUser, stmtGetUserIDByEmail, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
 	stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
@@ -122,6 +122,7 @@ func prepareStatements(db *sql.DB) {
 		where users.username = ?  
 		group by users.id
 		`)
+	stmtGetUserIDByEmail = prepare(db, "select users.id from users where users.email = ?")
 	stmtGetUsers = prepare(db, `
 		select users.id,username,email,role,about,website,users.created, count(1)
 		from users 

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/mail"
 	"regexp"
@@ -65,14 +67,29 @@ func createUser(username, email, password string, role Role) error {
 	return err
 }
 
-func createOAuthUser(email string, provider string, role Role) error {
+// TODO consolidate with createUser
+func createOAuthUser(email string, provider string, role Role) (int, error) {
 	ngen := namegen.New()
-	_, err := stmtCreateUser.Exec(ngen.Get(), email, "", role, provider)
-	return err
+	res, err := stmtCreateUser.Exec(ngen.Get(), email, "", role, provider)
+	if err != nil {
+		return -1, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+	return int(id), err
 }
 
 func getUserIDByEmail(email string) (*int, error) {
-	return nil, nil // TODO
+	row := stmtGetUserIDByEmail.QueryRow(email)
+	var id int
+	err := row.Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		// return no value
+		return nil, nil
+	}
+	return &id, err
 }
 
 func getUser(username string) (*User, error) {
