@@ -64,6 +64,7 @@ create index idxforums_slug on forums(slug);
 create index idxposts_threadid on posts(threadid);
 create index idxusers_username on users(username);
 
+-- TODO fix this...
 create trigger prevent_last_admin_deletion
 before update of role on users 
 for each row 

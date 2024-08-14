@@ -1,6 +1,6 @@
 {{ template "header.html" . }}
 <div class="body-header">
-	{{ if and (or (not .Thread.Locked) (.User.Role.ModLevel)) (and .User (.User.Role.Can "user")) }}
+	{{ if and (or (not .Thread.Locked) (.User.Role.Can "mod")) (and .User (.User.Role.Can "user")) }}
 <a href="/post/new?thread={{.Thread.ID}}"><button class="padded-button">Reply</button></a>
 	{{ end }}
 {{ template "pagelist.html" . }}
@@ -21,7 +21,7 @@
 </span>
 	  </div>
 	  <div>
-		  {{ if and $.User (or (eq .Author.ID $.User.ID) $.User.Role.ModLevel) }}
+		  {{ if and $.User (or (eq .Author.ID $.User.ID) ($.User.Role.Can "mod")) }}
 		  <a href="/post/{{.ID}}/edit">Edit</a>
 		  <form style="display:inline" action="/post/{{.ID}}" method="POST">
 			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">Delete</button>

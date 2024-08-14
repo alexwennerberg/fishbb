@@ -1,7 +1,6 @@
 Setup fishbb.org (cloud provider)
 
-Before Launch:
-Oauth
+gate Google on register behind feture flag
 Allow uesrname change
 implement change password 
 
