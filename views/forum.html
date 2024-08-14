@@ -18,7 +18,8 @@
 		<a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div>
-			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span>
+			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
+			<span class="mobile">Last reply: <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a></span>
 		</div>
 	  {{ if and $.User ($.User.Role.Can "mod")}}
 	  <span>
