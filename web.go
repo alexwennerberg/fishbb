@@ -359,7 +359,7 @@ func serveAsset(w http.ResponseWriter, r *http.Request) {
 	if !devMode {
 		w.Header().Set("Cache-Control", "max-age=604800")
 	}
-	http.ServeFileFS(w, r, viewBundle, r.URL.Path)
+	http.ServeFileFS(w, r, viewBundle, "views"+r.URL.Path)
 }
 func userPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)

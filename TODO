@@ -9,6 +9,8 @@ PHASED LAUNCH tenative:
 08-13 -- Alpha (single instance)
 09-29 -- Alpha (Public launch)
 
+Allow for everything non-sensitive on port 80
+
 ----- alpha waterline ----- (may push lower to get something more complete out)
 
 # DEFINITELY
