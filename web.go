@@ -588,7 +588,7 @@ func serve() {
 	r.HandleFunc("GET /login", loginPage)
 	// TODO limit registration successes
 	// TODO Consider CSRF wrapping
-	r.HandleFunc("/register", registerPage)
+	r.With(LimitByRealIP(25, 1*time.Hour)).HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
