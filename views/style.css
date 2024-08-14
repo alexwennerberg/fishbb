@@ -8,6 +8,12 @@
   --border: #000;
 }
 
+@media only screen and (max-width: 600px) {
+  .hide-mobile {
+    display:none;
+  }
+}
+  
 @media(prefers-color-scheme: dark) {
   :root {
     --text: #e7e7e7;
@@ -303,4 +309,11 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-alt);
   font-style: italic;
   padding: 0.3rem;
+}
+
+pre {
+    line-height: 1.2;
+    font-size: 1rem;
+    overflow: auto;
+    word-wrap:normal;
 }

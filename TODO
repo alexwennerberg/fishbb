@@ -3,6 +3,7 @@ Setup fishbb.org (cloud provider)
 gate Google on register behind feture flag
 Allow uesrname change
 implement change password 
+auth cookie not set until refresh? on oauth
 
 PHASED LAUNCH tenative:
 08-13 -- Alpha (single instance)

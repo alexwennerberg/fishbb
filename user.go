@@ -116,7 +116,6 @@ func getUsers() ([]User, error) {
 		}
 		users = append(users, u)
 	}
-	fmt.Println(users)
 	return users, nil
 }
 
