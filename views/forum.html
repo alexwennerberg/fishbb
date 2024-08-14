@@ -19,7 +19,7 @@
 		<div class="flex-between">
 		<div>
 			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
-			<span class="mobile">Last reply: <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a></span>
+			<span class="mobile">Lastest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></span>
 		</div>
 	  {{ if and $.User ($.User.Role.Can "mod")}}
 	  <span>
