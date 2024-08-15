@@ -8,6 +8,8 @@ go + sqlite
 
 no javascript
 
+dual hosted on https://git.sr.ht/~aw/fisbb and https://github.com/fishbb
+
 ## Running
 
 `go run main.go`
