@@ -1,4 +1,4 @@
-create table forums (
+create table if not exists forums (
   id integer primary key,
   name text, 
   description text, 
@@ -8,7 +8,7 @@ create table forums (
   created datetime default current_timestamp
 );
 
-create table threads (
+create table if not exists threads (
   id integer primary key,
   forumid integer,
   authorid integer,
@@ -20,7 +20,7 @@ create table threads (
   foreign key (authorid) references users(id)
 );
 
-create table posts (
+create table if not exists posts (
   id integer primary key,
   threadid integer,
   authorid integer,
@@ -32,7 +32,7 @@ create table posts (
   foreign key (threadid) references threads(id)
 );
 
-create table users (
+create table if not exists users (
   id integer primary key,
   username text not null unique,
   hash text,
@@ -46,7 +46,7 @@ create table users (
   created datetime default current_timestamp
 );
 
-create table auth (
+create table if not exists auth (
   userid integer,
   hash text,
   expiry text,
@@ -54,24 +54,23 @@ create table auth (
 );
 
 -- sort of awkward bc it just stores a toml blob. TODO move away from toml
-create table config (
+create table if not exists config (
   id integer primary key,
   key text unique,
   -- toml blob
   value text 
 );
 
-create index idxforums_slug on forums(slug);
-create index idxposts_threadid on posts(threadid);
-create index idxusers_username on users(username);
+create index if not exists idxforums_slug on forums(slug);
+create index if not exists idxposts_threadid on posts(threadid);
+create index if not exists idxusers_username on users(username);
 
--- TODO fix this...
-create trigger prevent_last_admin_deletion
+create trigger if not exists prevent_last_admin_deletion
 before update of role on users 
 for each row 
-when NEW.role != 'admin' and (select count(*) from users where role = 'admin') = 1
+when OLD.role = 'admin' and (select count(*) from users where role = 'admin') = 1
 begin
-  select raise(ABORT, 'Cannot remove the last admin'); end;
+select raise(ABORT, 'Cannot remove the last admin'); end;
 
 pragma journal_mode = wal;
 pragma busy_timeout = 5000;
@@ -79,4 +78,3 @@ pragma synchronous = normal;
 pragma cache_size = 1000000000;
 pragma foreign_keys = true;
 pragma temp_store = memory;
-

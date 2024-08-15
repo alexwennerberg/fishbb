@@ -1,31 +1,38 @@
-# FishBB
+# FishBB (Alpha)
 
-Simple forum software (WIP)
+Simple, sustainable communities. Minimalist bulliten board software.
 
-flagship instance at https://fishbb.fishbb.org
+Flagship instance at [fishbb.fishbb.org](https://fishbb.fishbb.org).
+
+## Tech
 
 go + sqlite
 
 no javascript
 
-dual hosted on https://git.sr.ht/~aw/fisbb and https://github.com/fishbb
+12 dependencies, 2000 lines of code
 
 ## Running
 
-`go run main.go`
+```sh
+go run main.go
+```
 
-This will setup a database with the admin user of "admin/admin"
+This will setup a database with the admin user with username 'admin' and password 'admin'. You can also set a custom db path:
+
+```sh
+go build 
+./fishbb -path foo.db
+```
 
 ## Self-hosting
 
-FishBB is intended to require a minimal amount of infrastructure and
-administration for self-hosting. Please reach out if you are interested in
-running your own instance!
+FishBB is designed to require a minimal amount of infrastructure and
+maintenance burden for self-hosting. Please reach out to me [alex@alexwennerberg.com](mailto:alex@alexwennerberg.com) if you are interested in running your own instance!
 
-All fishBB data is stored in a single sqlite file, configured by -path
+All FishBB data is stored in a single sqlite file. HTML templates are embedded in the Go bindary.
 
-Running FishBB for the first time will create a database file and an admin user 
-with the credentials "admin/admin".
+FishBB is VERY early in development -- expect bugs!
 
 ### Configuration
 
@@ -33,14 +40,14 @@ Admin configuration is available at `/control`
 
 See the comments in `config.go` for now (better documentation forthcoming)
 
-TODO
-
-**robots.txt** -- edit the views/robots.txt file, or, if you're running this service behind a reverse proxy, use that as well.
-
-
 ### Google Signup
 
-Optional Google Signup TODO
+Your forum can optionally allow Google Signup. You will need to create an
+[OAuth App](https://developers.google.com/identity/protocols/oauth2) on Google
+and set the client ID and client secret in the configuration file.
 
-If you are following along, anti-spam is NOT to the point where open signups
-are a good idea. Don't try to self-host with open signups yet
+## Contributing
+
+The mailing list for FishBB is at https://lists.sr.ht/~aw/fishbb-devel
+
+Feel free to use the [flagship instance](https://fishbb.fishbb.org) as well for project discussion and feedback!

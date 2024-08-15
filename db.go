@@ -29,11 +29,6 @@ var sqlSchema string
 
 func initdb() {
 	dbname := DBPath
-	_, err := os.Stat(dbname)
-	if err == nil {
-		panic(dbname + "already exists")
-	}
-
 	db, err := sql.Open("sqlite3", dbname+"?_txlock=immediate")
 	if err != nil {
 		panic(err)
@@ -47,15 +42,10 @@ func initdb() {
 		}
 	}
 	prepareStatements(db)
-	err = createForum("General", "General discussion")
-	if err != nil {
-		panic(err)
-	}
+	// squash errors for idempotence
+	createForum("General", "General discussion")
 	// create admin / admin
-	err = createUser("admin", "webmaster@foo", "admin", RoleAdmin)
-	if err != nil {
-		panic(err) // TODO
-	}
+	createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 
 	config := DefaultConfig()
 	err = UpdateConfigTOML(config)
