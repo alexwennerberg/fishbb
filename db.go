@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"os"
 	"strings"
 
 	_ "embed"
@@ -13,10 +12,7 @@ import (
 var db *sql.DB
 
 func opendb() *sql.DB {
-	_, err := os.Stat(DBPath)
-	if err != nil {
-		initdb() // initialize if no db exists
-	}
+	initdb()
 	db, err := sql.Open("sqlite3", DBPath) // probably not safe variable
 	if err != nil {
 		panic(err)
