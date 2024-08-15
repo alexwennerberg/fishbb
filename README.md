@@ -1,6 +1,8 @@
 # FishBB
 
-Simple forum software
+Simple forum software (WIP)
+
+flagship instance at https://fishbb.fishbb.org
 
 go + sqlite
 
@@ -40,10 +42,3 @@ Optional Google Signup TODO
 
 If you are following along, anti-spam is NOT to the point where open signups
 are a good idea. Don't try to self-host with open signups yet
-
-## Open Source
-Some code and taken from
-* [Honk](https://humungus.tedunangst.com/r/honk)
-
-Dependent code is either trivial or MIT-licensed. Project itself is AGPLv3. If
-you would like a license exception for some part of the code, please contact me.
