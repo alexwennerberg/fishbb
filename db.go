@@ -115,7 +115,7 @@ func prepareStatements(db *sql.DB) {
 		from users 
 		left join posts on users.id = posts.authorid
 		group by users.id
-		order by role, username desc
+		order by role, users.created desc
 		`)
 	stmtCreateThread = prepare(db, "insert into threads (authorid, forumid, title) values (?, ?, ?);")
 	stmtCreatePost = prepare(db, "insert into posts (threadid, authorid, content) values (?, ?, ?)")

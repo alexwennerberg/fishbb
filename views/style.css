@@ -348,9 +348,12 @@ pre {
   }
 
   .post-entry,.post-title {
-    width: 98%;
+    width: 95%;
   }
 
+  .post-title {
+    font-size: 1.2rem;
+  }
   .post-entry {
     font-size: 1.1rem;
   }
