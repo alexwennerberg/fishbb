@@ -234,7 +234,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
 }
 .body-padded {
-  padding: 0.4rem;
+  margin: 0.4rem;
 }
 
 .link-button {
@@ -348,7 +348,8 @@ pre {
   }
 
   .post-entry,.post-title {
-    width: 95%;
+    width: 100%;
+    box-sizing:border-box;
   }
 
   .post-title {
