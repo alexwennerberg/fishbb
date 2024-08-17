@@ -48,9 +48,14 @@ button:not(.link-button) {
 }
 
 .post-entry {
-  width: 90%;
+  width: 80%;
   height: 200px;
-  margin: 0.3rem;
+  margin: 0;
+}
+
+.post-title {
+  width: 80%;
+  margin: 0;
 }
 
 :target {
@@ -93,12 +98,14 @@ input {
   border: 1px solid var(--border);
   background: inherit;
   color: inherit;
+  border-radius: 0px;
 }
 
 textarea {
   color: inherit;
   background: inherit;
   border: 1px solid var(--border);
+  border-radius: 0px;
 }
 
 button:hover:not(.link-button) {
@@ -335,11 +342,17 @@ pre {
     line-height:1.5;
     padding: 0.2rem;
   }
-  textarea {
-  }
   button {
     line-height:1.5;
     padding: 0.2rem;
+  }
+
+  .post-entry,.post-title {
+    width: 98%;
+  }
+
+  .post-entry {
+    font-size: 1.1rem;
   }
 }
 
