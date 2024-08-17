@@ -80,6 +80,7 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// filter forums above your role
+	// TODO move to db layer
 	var forums []Forum
 	for _, ff := range f {
 		if role.Can(ff.ReadPermissions) {

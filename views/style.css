@@ -332,13 +332,14 @@ pre {
     display: inherit;
   }
   input {
-    font-size: 1.5rem;
+    line-height:1.5;
+    padding: 0.2rem;
   }
   textarea {
-    font-size: 1.2rem;
   }
   button {
-    font-size 1.2rem;
+    line-height:1.5;
+    padding: 0.2rem;
   }
 }
 
