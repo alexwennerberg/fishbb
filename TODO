@@ -1,6 +1,8 @@
 Setup fishbb.org (cloud provider)
 
 log remote ip properly
+gemini to plain text
+fix "count" being minimum 1 rather than minimum 0
 blockquote 100% width
 Allow uesrname change
 implement change password 
