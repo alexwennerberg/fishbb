@@ -331,5 +331,14 @@ pre {
   .mobile {
     display: inherit;
   }
+  input {
+    font-size: 1.5rem;
+  }
+  textarea {
+    font-size: 1.2rem;
+  }
+  button {
+    font-size 1.2rem;
+  }
 }
 

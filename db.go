@@ -43,8 +43,9 @@ func initdb() {
 	// create admin / admin
 	createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 
-	config := DefaultConfig()
-	err = UpdateConfigTOML(config)
+	// TODO... config
+	// config := DefaultConfig()
+	// err = UpdateConfigTOML(config)
 	if err != nil {
 		panic(err)
 	}
