@@ -82,7 +82,7 @@ func prepareStatements(db *sql.DB) {
 		select forums.id, name, description, read_permissions, write_permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
-		count(1)
+		count(threads.id)
 		from forums
 		left join (
 			select threadid, threads.title, posts.id, threads.authorid,
@@ -103,7 +103,7 @@ func prepareStatements(db *sql.DB) {
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, oauth) values (?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,role,about,website,users.created, count(1)
+		select users.id,username,email,role,about,website,users.created, count(posts.id)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  
