@@ -22,5 +22,6 @@ func (p Post) BuildReply() string {
 		out.Write([]byte(">"))
 		out.Write([]byte(line))
 	}
+	out.Write([]byte("\n"))
 	return out.String()
 }
