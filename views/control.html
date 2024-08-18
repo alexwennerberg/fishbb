@@ -30,7 +30,7 @@
 	{{ range .Users }}
 	<tr>
 		<td>{{.ID}}</td>
-		<td>{{ .Username }}</td>
+		<td><a href="/u/{{.Username}}">{{ .Username }}</a></td>
 		<td>{{.Email}}</td>
 		<td>{{.Role}}</td>
 			<td>
