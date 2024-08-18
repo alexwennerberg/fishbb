@@ -1,44 +1,26 @@
-Setup fishbb.org (cloud provider)
-
-cleanup change password 
-username change causes logout
+config page rewrite
 log remote ip properly
-auth cookie not set until refresh? on oauth
-improve mobile friendliness
-'no threads' should be full width. 
-default admin password must be secure
-letter
 atom feed
-
-PHASED LAUNCH tenative:
-09-29 -- Alpha (Public launch)
-
+auth cookie not set until refresh? on oauth
+'no threads' should be full width. 
+cleanup change password 
+Forum sections
 Allow for everything non-sensitive on port 80
-
------ alpha waterline ----- (may push lower to get something more complete out)
-
-# DEFINITELY
 finish up oauth integration
 rate limit registration: 5 accounts per IP per day
 make Post Slug faster / cleaner with a view or something
 csrf doesnt actually work? <--- Why did I write this
 2fa pquerna/otp
-implement reset password
 IP blocking / other antispam
 Delete account: dont delete posts, replace with "(deleted)"?
 get anti spam good enough for open signups
 distinguish notfound db error from other errors
-Forum sections
 login package should merge
 JSON API
-
-# MAYBE 
 Delete own account
 reporting system
 panics -> log.Fatal
 better db init / signal handling
 Microformats
 language selection and localization
-
-OPS/DEPLOY:
 RRDtool integration / metrics

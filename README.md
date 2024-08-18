@@ -32,7 +32,7 @@ maintenance burden for self-hosting. Please reach out to me [alex@alexwennerberg
 
 All FishBB data is stored in a single sqlite file. HTML templates are embedded in the Go bindary.
 
-FishBB is VERY early in development -- expect bugs!
+FishBB is VERY early in development -- expect bugs and be very wary of sensitive data. Make sure to change the admin password away from default credentials.
 
 ### Configuration
 
