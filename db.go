@@ -44,8 +44,11 @@ func initdb() {
 	createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 
 	// TODO... config
-	// config := DefaultConfig()
-	// err = UpdateConfigTOML(config)
+	_, err = GetConfig("config-toml")
+	if err != nil {
+		config := DefaultConfig()
+		err = UpdateConfigTOML(config)
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -103,7 +106,7 @@ func prepareStatements(db *sql.DB) {
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, oauth) values (?, ?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,role,about,website,users.created, count(posts.id)
+		select users.id,username,email,email_public,role,about,website,users.created, count(posts.id)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  
@@ -163,7 +166,7 @@ func prepareStatements(db *sql.DB) {
 		where posts.id = ?`)
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
-	stmtUpdateMe = prepare(db, "update users set about = ?, website = ? where id = ?")
+	stmtUpdateMe = prepare(db, "update users set username = ?, email = ?, email_public = ?, about = ?, website = ? where id = ?")
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
 

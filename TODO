@@ -1,10 +1,8 @@
 Setup fishbb.org (cloud provider)
 
-learn web accessibility
+username change causes logout
 log remote ip properly
-fix "count" being minimum 1 rather than minimum 0
-blockquote 100% width
-Allow uesrname change
+atom feed
 implement change password 
 auth cookie not set until refresh? on oauth
 improve mobile friendliness

@@ -371,6 +371,10 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
+	if info == nil {
+		notFound(w, r)
+		return
+	}
 	tmpl["InfoUser"] = info
 	tmpl["Subtitle"] = info.Username
 	// TODO specific DNE error?
@@ -441,7 +445,15 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	if len(about) > 250 || len(website) > 250 {
 		return // TODO err
 	}
-	err := updateMe(u.UserID, r.FormValue("about"), r.FormValue("website"))
+	updateUser := User{
+		ID:          u.UserID,
+		Username:    r.FormValue("username"),
+		Email:       r.FormValue("email"),
+		EmailPublic: r.FormValue("email-public") == "on",
+		About:       r.FormValue("about"),
+		Website:     r.FormValue("website"),
+	}
+	err := updateMe(updateUser)
 	if err != nil {
 		serverError(w, r, err)
 		return

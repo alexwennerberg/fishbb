@@ -39,7 +39,7 @@ create table if not exists users (
   email text not null unique,
   role text not null default 'inactive',
   oauth text,
-  emailverified int not null default false,
+  email_public int not null default false,
   publicemail int not null default false,
   about text not null default 'someone',
   website text not null default '',

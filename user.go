@@ -35,6 +35,8 @@ type User struct {
 	ID       int
 	Username string
 	Email    string
+	// Whether the user wishes to display email publicly
+	EmailPublic bool
 	// TODO fix null schema
 	Role    Role
 	About   string
@@ -95,7 +97,10 @@ func getUserIDByEmail(email string) (*int, error) {
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan row: %w", err)
 	}
@@ -157,8 +162,8 @@ func updateUserRole(id int, role Role) error {
 	return err
 }
 
-// used for self configuration
-func updateMe(id int, about, website string) error {
-	_, err := stmtUpdateMe.Exec(about, website, id)
+// doesn't include all fields
+func updateMe(u User) error {
+	_, err := stmtUpdateMe.Exec(u.Username, u.Email, u.EmailPublic, u.About, u.Website, u.ID)
 	return err
 }
