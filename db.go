@@ -71,7 +71,7 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 	return s
 }
 
-var stmtGetForumID, stmtUpdateMe, stmtSearchPosts,
+var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
 	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUserIDByEmail, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
@@ -167,6 +167,7 @@ func prepareStatements(db *sql.DB) {
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
 	stmtUpdateMe = prepare(db, "update users set username = ?, email = ?, email_public = ?, about = ?, website = ? where id = ?")
+	stmtUpdatePassword = prepare(db, "update users set hash = ? where id = ?")
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
 

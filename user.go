@@ -60,6 +60,15 @@ func validPassword(p string) bool {
 	return len(p) >= 8
 }
 
+func updatePassword(id int, password string) error {
+	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
+	if err != nil {
+		return err
+	}
+	_, err = stmtUpdatePassword.Exec(hash, id)
+	return err
+}
+
 func createUser(username, email, password string, role Role) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {

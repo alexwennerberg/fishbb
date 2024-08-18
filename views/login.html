@@ -2,14 +2,14 @@
 <div class="div-header">Login</div>
 <div class="body-padded">
 <form action="/dologin" method="POST">
-<label for="username" required>Username:</label><br>
-<input tabindex=1 type="text" name="username" autocomplete=off><br>
-<label for="password" required>Password:</label><br>
-<input tabindex=1 type="password" name="password"><br>
+<label for="username" >Username:</label><br>
+<input type="text" name="username" required autocomplete=off><br>
+<label for="password">Password:</label><br>
+<input type="password" name="password" required><br>
 {{ if .LoginErr }}
 <span class="error">{{ .LoginErr }}</span><br>
 {{ end }}
-<button tabindex=1 name="login" value="login">Login</button>
+<button name="login" value="login">Login</button>
 </form>
 No account yet? <a href="/register">Register!</a>
 {{ if .Config.GoogleOAuthClientID }}

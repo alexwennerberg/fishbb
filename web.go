@@ -438,6 +438,25 @@ func changePasswordPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "change-password", tmpl)
 }
 
+func doChangePassword(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	password := r.FormValue("password")
+	password2 := r.FormValue("password2")
+	if password != password2 {
+		// TODO form validation
+		return
+	}
+	if len(password) < 8 {
+		return
+	}
+	err := updatePassword(u.UserID, password)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	http.Redirect(w, r, "/me", http.StatusSeeOther)
+}
+
 func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	about := r.FormValue("about")
@@ -463,9 +482,6 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	tmpl["UserInfo"] = info
 	tmpl["Notice"] = "Updated!"
 	serveHTML(w, r, "me", tmpl)
-}
-
-func doChangePassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchPage(w http.ResponseWriter, r *http.Request) {
@@ -630,6 +646,7 @@ func serve() {
 		// TODO POST -> PUT /user/{id} unify user updates?
 		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
 		r.HandleFunc("GET /change-password", changePasswordPage)
+		r.HandleFunc("POST /change-password", doChangePassword)
 
 		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/change-password", dummy)

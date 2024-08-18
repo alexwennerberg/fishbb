@@ -3,13 +3,12 @@
 <div class="body-padded">
 	<form method="POST">
 <label for="username">Username:</label><br>
-<input tabindex=1 maxlength=250 id="username" name="username" value="{{.UserInfo.Username}}"><br>
+<input maxlength=250 id="username" name="username" value="{{.UserInfo.Username}}"><br>
 <label for="email">Email:</label><br>
-<input tabindex=1 maxlength=250 id="email" name="email" value="{{.UserInfo.Email}}"><br>
+<input maxlength=250 id="email" name="email" value="{{.UserInfo.Email}}"><br>
 <label for="email-public">Share email publicly?</label><input {{if .UserInfo.EmailPublic}}checked{{end}} name="email-public" id="email-public" type="checkbox"><br>
 <label for="about">About:</label><br>
 <input 
-	   tabindex=1 
 	   maxlength=250 
 	   type="text"
 	   name="about" 
@@ -17,10 +16,10 @@
 	   value="{{.UserInfo.About}}"
 	   autocomplete=off ><br>
 <label for="website">Website:</label><br>
-<input tabindex=1 maxlength=250 id="website" name="website" value="{{.UserInfo.Website}}"><br>
+<input maxlength=250 id="website" name="website" value="{{.UserInfo.Website}}"><br>
 <input type="hidden" name="CSRF" value="{{.CSRFToken}}">
-<a href="/">Change Password</a><br>
-<button type="submit" tabindex=1 name="update" value="update">Update</button>
+<a href="/change-password">Change Password</a><br>
+<button type="submit" name="update" value="update">Update</button>
 {{ if .Notice }}
 	<div class="notice">{{.Notice}}</div>
 	{{ end }}
