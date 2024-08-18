@@ -4,6 +4,7 @@
 	<img  style="vertical-align:middle" src="/a?a={{.InfoUser.Username}}" width=36><br>
 	<b>About</b>: {{.InfoUser.About}}<br>
 	<b>Website</b>: {{.InfoUser.Website | addLinkTags }}<br>
+	{{ if .InfoUser.EmailPublic }}<b>Email</b>: {{.InfoUser.Email}}<br>{{end}}
 	<b>Created</b>: {{.InfoUser.Created}}<br>
 	<b>Post Count</b>: {{.InfoUser.Posts}}<br></div></div>
 {{ template "footer.html" . }}

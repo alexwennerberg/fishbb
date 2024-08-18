@@ -461,16 +461,17 @@ func doUpdateMe(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	about := r.FormValue("about")
 	website := r.FormValue("website")
-	if len(about) > 250 || len(website) > 250 {
-		return // TODO err
+	username := r.FormValue("username")
+	if len(about) > 250 || len(website) > 250 || !validUsername(username) {
+		return // TODO validation err
 	}
 	updateUser := User{
 		ID:          u.UserID,
-		Username:    r.FormValue("username"),
+		Username:    username,
 		Email:       r.FormValue("email"),
 		EmailPublic: r.FormValue("email-public") == "on",
-		About:       r.FormValue("about"),
-		Website:     r.FormValue("website"),
+		About:       about,
+		Website:     website,
 	}
 	err := updateMe(updateUser)
 	if err != nil {
