@@ -1,10 +1,10 @@
 :root {
   --text: #000;
   --text-inverse: #fff;
-  --text-alt: #777;
+  --text-alt: #444;
   --bg: #fff;
   --bg-inverse: #222;
-  --bg-alt: #ddd;
+  --bg-alt: #eee;
   --border: #000;
 }
   
@@ -12,7 +12,7 @@
   :root {
     --text: #e7e7e7;
     --text-inverse: #000;
-    --text-alt: #999;
+    --text-alt: #aaa;
     --bg: #0d0d0d;
     --bg-inverse: #ccc;
     --bg-alt: #1c1c1c;

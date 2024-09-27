@@ -12,7 +12,7 @@
 {{ range .Posts }}
 <div class="post" id={{.ID}}>
   <div class="post-meta">
-	  <div>
+	  <div style="color:var(--text-alt);">
   <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
 	  <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <a href="#{{.ID}}"
 																	title="Link to this post">#{{.ID}}</a> <span class="text-alt" title="{{ .Created

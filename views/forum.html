@@ -17,7 +17,7 @@
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
 		<a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
-		<div>
+		<div style="color:var(--text-alt)">
 			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
 			<span class="mobile">Lastest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></span>
 		</div>
@@ -31,8 +31,10 @@
     </td>
 	<td style="text-align:center;" class="hide-mobile">{{.Replies}}</td>
     <td class="hide-mobile">
+		<span style="color:var(--text-alt)">
 		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
 		by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a>
+		</div>
     </td>
   </tr>
   {{ end }}
