@@ -210,7 +210,7 @@ a:hover {
 }
 
 .nav-table td, th {
-  padding: 0.2rem;
+  padding: 0.3rem 0.5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -223,10 +223,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post-meta { 
-  /* TODO -- make perfect */
-  padding-left: 0.3rem;
-  padding-right: 0.3rem;
-  padding-bottom: 0.1rem;
+  padding: 0.3rem 0.5rem;
   border-bottom: 1px solid var(--border);
   background: var(--bg-alt);
   display: flex;
