@@ -8,7 +8,7 @@ import (
 	"log/slog"
 )
 
-var softwareVersion = "0.1.0"
+const softwareVersion = "0.1.0"
 
 var config Config
 var devMode = false

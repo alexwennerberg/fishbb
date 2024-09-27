@@ -96,13 +96,6 @@ func slugify(s string) string {
 	return strings.ReplaceAll(strings.ToLower(s), " ", "-")
 }
 
-func logRequest(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Info("request", "method", r.Method, "url", r.URL)
-		handler.ServeHTTP(w, r)
-	})
-}
-
 // Generate a simple avatar based on a hash of your name
 //
 // Derived from Ted Unangst's Honk

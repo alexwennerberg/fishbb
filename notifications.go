@@ -8,7 +8,7 @@ type Notification struct {
 	Created time.Time
 }
 
-//  Don't keep notifications beyond this
+// Don't keep notifications beyond this
 const maxNotifications = 128
 
 func getNotifications(uid int) ([]Notification, error) {

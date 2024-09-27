@@ -1,8 +1,8 @@
+atom feed
 config page rewrite
 move email and username to change password page
 get forum should 404 instead of 500
 get thread should 404 instead of 500
-atom feed
 auth cookie not set until refresh? on oauth
 TOS privacy policy
 'no threads' should be full width. 
