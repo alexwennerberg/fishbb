@@ -16,7 +16,7 @@
     --bg: #0d0d0d;
     --bg-inverse: #ccc;
     --bg-alt: #1c1c1c;
-    --border: #444;
+    --border: #888;
   }
 }
 
@@ -33,7 +33,7 @@ button:not(.link-button) {
   background-color: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .notice {
