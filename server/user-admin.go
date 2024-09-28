@@ -1,4 +1,4 @@
-package main
+package server
 
 func makeUserAdmin(id int) {
 }

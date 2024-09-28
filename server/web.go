@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -21,12 +21,12 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	var user *User
 	if u != nil {
 		user, _ = getUser(u.Username)
-	} else if u == nil && !devMode {
+	} else if u == nil {
 		w.Header().Set("Cache-control", "max-age=60")
 	}
 	info["User"] = user
 	info["Config"] = config
-	info["Version"] = softwareVersion
+	info["Version"] = SoftwareVersion
 	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
 	if info["Subtitle"] != nil {
@@ -357,9 +357,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveAsset(w http.ResponseWriter, r *http.Request) {
-	if !devMode {
-		w.Header().Set("Cache-Control", "max-age=604800")
-	}
+	w.Header().Set("Cache-Control", "max-age=604800")
 	http.ServeFileFS(w, r, viewBundle, "views"+r.URL.Path)
 }
 func userPage(w http.ResponseWriter, r *http.Request) {
@@ -581,7 +579,7 @@ func doPinThread(w http.ResponseWriter, r *http.Request) {
 func dummy(w http.ResponseWriter, r *http.Request) {
 }
 
-func serve() {
+func Serve() {
 	// order is important here
 	db = opendb()
 	prepareStatements(db)

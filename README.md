@@ -34,6 +34,12 @@ All FishBB data is stored in a single sqlite file. HTML templates are embedded i
 
 FishBB is VERY early in development -- expect bugs and be very wary of sensitive data. Make sure to change the admin password away from default credentials.
 
+## As a package
+
+FishBB also runs as a 'cluster' where multiple forums can be created. These forums can either exist in the 'cluster' (as a sort of broader forum manager) or exported on their own.
+
+The app that hosts the fishbb cluster is https://git.sr.ht/~aw/fishbb-cluster
+
 ### Configuration
 
 Admin configuration is available at `/control`
@@ -51,3 +57,5 @@ and set the client ID and client secret in the configuration file.
 The mailing list for FishBB is at https://lists.sr.ht/~aw/fishbb-devel
 
 Feel free to use the [flagship instance](https://fishbb.fishbb.org) as well for project discussion and feedback!
+
+FishBB is free software, if you'd like to, please <a href="https://www.patreon.com/alexwennerberg">donate</a> to support development

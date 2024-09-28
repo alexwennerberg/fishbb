@@ -1,5 +1,6 @@
 .bundle
 fishbb
 *.db
+deploy.sh
 *.db-*
 TODO

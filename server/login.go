@@ -14,7 +14,7 @@
 
 // Simple cookie and password based logins.
 // See Init for required schema.
-package main
+package server
 
 import (
 	"context"
