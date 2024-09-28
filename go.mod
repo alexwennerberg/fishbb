@@ -1,4 +1,4 @@
-module fishbb
+module git.sr.ht/~aw/fishbb
 
 go 1.22
 
