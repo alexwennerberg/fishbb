@@ -4,14 +4,11 @@
 	<h2>Config</h2>
 	<form method="POST" action="/update-config">
 		<label for="requires-approval">Registration requires admin approval?
-		</label><br>
-		<select name="requires-approval" id="requires-approval">
-			<option value="1">true</option>
-			<option value="0">false</option>
-		</select><br>
-		<label for="board-description">Board description</label><br>
+		</label>
+		<input {{if .Config.RequiresApproval}}checked{{end}} name="requires-approval" id="reqiures-approval" type="checkbox"><br>
+		<label for="board-description">Board description:</label><br>
 		<input name="board-description" id="board-description" value="{{.Config.BoardDescription}}"></input><br>
-		<input type="hidden" name="CSRF" value="{{.CSRFToken}}"><br>
+		<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 		{{ if .SingleInstace }}
 		googleconfig goes here 
 		{{ end }}

@@ -1,10 +1,13 @@
-atom feed
-config page rewrite
-move email and username to change password page
-get forum should 404 instead of 500
-get thread should 404 instead of 500
-auth cookie not set until refresh? on oauth
+MULTI INSTANCE TODO
+finish config page rewrite
+atom feed based on search term
 TOS privacy policy
+login from another instance somehow
+
+-- waterline --
+
+move email and username to change password page
+auth cookie not set until refresh? on oauth
 'no threads' should be full width. 
 cleanup change password 
 Forum sections

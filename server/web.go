@@ -1,6 +1,8 @@
 package server
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -94,7 +96,10 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 func forumPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	f, err := getForumBySlug(r.PathValue("forum"))
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		notFound(w, r)
+		return
+	} else if err != nil {
 		serverError(w, r, err)
 		return
 	}
@@ -126,13 +131,18 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	}
+
 	forum, err := getForumBySlug(r.PathValue("forum"))
 	if err != nil {
 		serverError(w, r, err)
 	}
 	page := page(r)
 	thread, err := getThread(threadID)
-	if err != nil {
+	// TODO -- doesnt work?
+	if errors.Is(err, sql.ErrNoRows) {
+		notFound(w, r)
+		return
+	} else if err != nil {
 		serverError(w, r, err)
 		return
 	}

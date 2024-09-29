@@ -58,8 +58,12 @@ func SaveConfig(c Config) error {
 func GetConfig() (Config, error) {
 	var c Config
 	// TODO cleanup
+	var err error
+	c.BoardName, err = GetConfigValue("board-name")
+	if err != nil {
+		return Config{}, err
+	}
 	c.BoardDescription, _ = GetConfigValue("board-description")
-	c.BoardName, _ = GetConfigValue("board-description")
 	if SingleInstance {
 		c.GoogleOAuthClientID, _ = GetConfigValue("google-oauth-client-id")
 		c.GoogleOAuthClientSecret, _ = GetConfigValue("google-oauth-client-secret")
