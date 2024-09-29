@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/BurntSushi/toml"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
@@ -27,6 +26,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["User"] = user
 	info["Config"] = config
 	info["Version"] = SoftwareVersion
+	info["SingleInstance"] = SingleInstance
 	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
 	if info["Subtitle"] != nil {
@@ -407,26 +407,19 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	cfg, err := GetConfig("config-toml")
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	tmpl["ConfigTOML"] = cfg.TOMLString()
 	serveHTML(w, r, "control", tmpl)
 }
 
 func doUpdateConfig(w http.ResponseWriter, r *http.Request) {
-	var c Config
-	_, err := toml.Decode(r.FormValue("config"), &c)
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	err = UpdateConfigTOML(c)
-	if err != nil {
-		serverError(w, r, err)
-		return
+	fields := []string{"board-description"}
+	for _, key := range fields {
+		val := r.PostFormValue(key)
+		err := UpdateConfig(key, val)
+		if err != nil {
+			serverError(w, r, err)
+			return
+		}
+		config, _ = GetConfig()
 	}
 	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
@@ -582,9 +575,9 @@ func dummy(w http.ResponseWriter, r *http.Request) {
 func Serve() {
 	// order is important here
 	db = opendb()
-	prepareStatements(db)
+	PrepareStatements(db)
 	var err error
-	config, err = GetConfig("config-toml")
+	config, err = GetConfig()
 	if err != nil {
 		panic(err)
 	}

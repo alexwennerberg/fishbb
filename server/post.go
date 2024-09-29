@@ -54,7 +54,7 @@ func getPostSlug(postid int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	postPage := ((count) / config.PageSize) + 1
+	postPage := ((count) / PageSize) + 1
 	var url string
 	// TODO url builder
 	if postPage != 1 {

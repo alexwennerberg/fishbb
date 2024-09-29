@@ -37,17 +37,17 @@ func initdb() {
 			return
 		}
 	}
-	prepareStatements(db)
+	PrepareStatements(db)
 	// squash errors for idempotence
 	createForum("General", "General discussion")
 	// create admin / admin
 	createUser("admin", "webmaster@foo", "admin", RoleAdmin)
 
 	// TODO... config
-	_, err = GetConfig("config-toml")
+	config, err = GetConfig()
 	if err != nil {
 		config := DefaultConfig()
-		err = UpdateConfigTOML(config)
+		err = SaveConfig(config)
 	}
 	if err != nil {
 		panic(err)
@@ -80,7 +80,7 @@ var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
 	stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 
-func prepareStatements(db *sql.DB) {
+func PrepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
 		select forums.id, name, description, read_permissions, write_permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),

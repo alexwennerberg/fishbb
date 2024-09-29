@@ -27,6 +27,8 @@ go build
 
 ## Self-hosting
 
+Tagged versions should be stable. Main branch is not guaranteed to be.
+
 FishBB is designed to require a minimal amount of infrastructure and
 maintenance burden for self-hosting. Please reach out to me [alex@alexwennerberg.com](mailto:alex@alexwennerberg.com) if you are interested in running your own instance!
 

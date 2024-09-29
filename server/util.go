@@ -58,7 +58,7 @@ func GenerateRandomString(n int) (string, error) {
 
 // returns page list
 func pageArray(n int) []int {
-	c := ((n - 1) / config.PageSize) + 1
+	c := ((n - 1) / PageSize) + 1
 	p := make([]int, c)
 	for i := range c {
 		p[i] = i + 1
@@ -69,7 +69,7 @@ func pageArray(n int) []int {
 // returns limit, offset
 // 1-indexed
 func paginate(page int) (int, int) {
-	limit := config.PageSize
+	limit := PageSize
 	offset := (page - 1) * limit
 	return limit, offset
 }

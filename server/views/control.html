@@ -3,12 +3,21 @@
 <div class="body-padded">
 	<h2>Config</h2>
 	<form method="POST" action="/update-config">
-		Configuration is done via TOML.
-		<textarea id="config" name="config" class="post-entry">{{.ConfigTOML}}</textarea>
+		<label for="requires-approval">Registration requires admin approval?
+		</label><br>
+		<select name="requires-approval" id="requires-approval">
+			<option value="1">true</option>
+			<option value="0">false</option>
+		</select><br>
+		<label for="board-description">Board description</label><br>
+		<input name="board-description" id="board-description" value="{{.Config.BoardDescription}}"></input><br>
 		<input type="hidden" name="CSRF" value="{{.CSRFToken}}"><br>
-		<button type="submit">Save</button>
+		{{ if .SingleInstace }}
+		googleconfig goes here 
+		{{ end }}
+		<button type="submit" id="submit">Update</button>
 	</form>
-
+	<hr>
 	<h2>Forums</h2>
 	<table>
       <tr><th>ID</th><th>Name</th></th><th>Description</th><th>Read Permissions</th><th>Write Permissions</th></tr>
