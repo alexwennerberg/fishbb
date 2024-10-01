@@ -118,10 +118,10 @@ func slugify(s string) string {
 // Modify the four colors used
 // TODO align with css
 var avatarcolors = [4][4]byte{
+	{255, 128, 0, 255},
 	{0, 0, 0, 255},
-	{255, 255, 255, 255},
-	{172, 172, 172, 255},
-	{96, 96, 96, 255},
+	{0, 0, 0, 255},
+	{255, 128, 00, 255},
 }
 
 // x and y dimensions in pixels
