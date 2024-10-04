@@ -17,7 +17,7 @@ func (p Post) Render() template.HTML {
 
 func (p Post) BuildReply() string {
 	var out bytes.Buffer
-	out.Write([]byte(fmt.Sprintf("@%s wrote in #%d:\n", p.Author.Username, p.ID)))
+	out.Write([]byte(fmt.Sprintf("@%s wrote:\n", p.Author.Username)))
 	for _, line := range strings.Split(p.Content, "\n") {
 		out.Write([]byte(">"))
 		out.Write([]byte(line))
