@@ -158,7 +158,7 @@ func PrepareStatements(db *sql.DB) {
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 
 		join users on posts.authorid = users.id 
-		where authorid = ? limit ? offset ?`)
+		where authorid = ? order by posts.id desc limit ? offset ?`)
 	stmtSearchPosts = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 
