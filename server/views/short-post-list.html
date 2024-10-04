@@ -1,7 +1,12 @@
+<table class="nav-table">
+	<tr class="shortpost"></tr>
 {{ range .Posts }}
-<div class="shortpost">
+<tr class="shortpost">
+	<td>
 	<img style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
 	<a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</a></b> <a href="{{.Slug}}" title="Link to this post">#{{.ID}}</a> <span class="text-alt">{{ timeago .Created }}</span>
 	{{ .Preview }}
+	</td>
 </div>
 {{ end }}
+</table>
