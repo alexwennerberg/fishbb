@@ -6,7 +6,7 @@ import (
 	"log/slog"
 )
 
-const SoftwareVersion = "0.1.0"
+const SoftwareVersion = "0.1.1"
 
 var config Config
 
