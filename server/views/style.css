@@ -62,10 +62,6 @@ button:not(.link-button) {
   background-color: var(--bg-alt);
 }
 
-:target blockquote {
-  background-color: var(--bg);
-}
-
 .post-body {
   margin: 0.4rem;
 }
@@ -85,10 +81,23 @@ blockquote {
   box-sizing:border-box;
   font-style: italic;
   background: var(--bg-alt);
-  border-left: .5em solid var(--bg-inverse);
-  padding: .3em 10px;
+  border-left: .3em solid var(--bg-inverse);
+  padding: 0.3rem;
 }
 
+/* awkward */
+blockquote blockquote { background: var(--bg); }
+blockquote blockquote blockquote { background: var(--bg-alt); }
+blockquote blockquote blockquote blockquote { background: var(--bg); }
+blockquote blockquote blockquote blockquote blockquote { background: var(--bg-alt); }
+blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
+blockquote blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
+:target blockquote { background: var(--bg); }
+:target  blockquote blockquote { background: var(--bg-alt); }
+:target  blockquote blockquote blockquote { background: var(--bg); }
+:target  blockquote blockquote blockquote blockquote { background: var(--bg-alt); }
+:target  blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
+:target  blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
 .error {
   font-weight: bold;
 }
