@@ -42,7 +42,7 @@ type User struct {
 	About   string
 	Website string
 	Created time.Time
-	Posts   int // TODO perf
+	Posts   int
 }
 
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")

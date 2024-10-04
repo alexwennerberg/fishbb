@@ -97,6 +97,21 @@ func getPosts(threadid, page int) []Post {
 	return posts
 }
 
+func getPostsByUser(uid int, page int) ([]Post, error) {
+	var posts []Post
+	limit, offset := paginate(page)
+	rows, _ := stmtGetPostsByUser.Query(uid, limit, offset)
+	for rows.Next() {
+		var p Post
+		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, nil
+}
+
 func getPost(postid int) (Post, error) {
 	var p Post
 	row := stmtGetPost.QueryRow(postid)

@@ -23,6 +23,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	if u != nil {
 		user, _ = getUser(u.Username)
 	} else if u == nil {
+		// TODO -- caching broken
 		w.Header().Set("Cache-control", "max-age=60")
 	}
 	info["User"] = user
@@ -383,7 +384,13 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	}
+	posts, err := getPostsByUser(info.ID, page(r))
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
 	tmpl["InfoUser"] = info
+	tmpl["Posts"] = posts
 	tmpl["Subtitle"] = info.Username
 	// TODO specific DNE error?
 	serveHTML(w, r, "user", tmpl)

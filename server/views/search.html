@@ -1,12 +1,6 @@
 {{ template "header.html" . }}
 <div class="div-header">Posts that match "{{.Query}}"</div>
 <div class="body-padded">
-{{ range .Posts }}
-<div class="shortpost">
-	<img style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
-	<a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</a></b> <a href="{{.Slug}}" title="Link to this post">#{{.ID}}</a> <span class="text-alt">{{ timeago .Created }}</span>
-	{{ .Preview }}
-</div>
-{{ end }}
+{{ template "short-post-list.html" . }}
 </div>
 {{ template "footer.html" . }}

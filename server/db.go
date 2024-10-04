@@ -76,7 +76,7 @@ var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUserIDByEmail, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
-	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetThreadCount,
+	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetPostsByUser, stmtGetThreadCount,
 	stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 
@@ -154,11 +154,16 @@ func PrepareStatements(db *sql.DB) {
 		from posts 
 		join users on posts.authorid = users.id 
 		where threadid = ? limit ? offset ?`)
+	stmtGetPostsByUser = prepare(db, `
+		select posts.id, content, users.id, users.username, posts.created, posts.edited 
+		from posts 
+		join users on posts.authorid = users.id 
+		where authorid = ? limit ? offset ?`)
 	stmtSearchPosts = prepare(db, `
-	select posts.id, content, users.id, users.username, posts.created, posts.edited 
-	from posts 
-	join users on posts.authorid = users.id 
-	where content like ? order by posts.id desc limit 1000`) // TODO paginate
+		select posts.id, content, users.id, users.username, posts.created, posts.edited 
+		from posts 
+		join users on posts.authorid = users.id 
+		where content like ? order by posts.id desc limit 1000`) // TODO paginate
 	stmtGetPost = prepare(db, `
 		select posts.id, content, users.id, users.username, posts.created, posts.edited 
 		from posts 

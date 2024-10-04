@@ -26,3 +26,4 @@ better db init / signal handling
 Microformats
 language selection and localization
 RRDtool integration / metrics
+delete old sessions, other cleanup jobs
