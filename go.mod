@@ -9,13 +9,11 @@ require (
 
 require (
 	git.sr.ht/~aw/gmi2html v0.1.4
-	github.com/BurntSushi/toml v1.4.0
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/anandvarma/namegen v1.0.1
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/httplog/v2 v2.0.11
 	github.com/go-chi/httprate v0.9.0
-	github.com/k3a/html2text v1.2.1
 	github.com/pquerna/otp v1.4.0
 	golang.org/x/oauth2 v0.21.0
 )
