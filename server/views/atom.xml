@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>TODO</title>
+<id>https://fishbb.fishbb.org/atom.xml</id>
+<link rel="self" href="https://fishbb.fishbb.org/atom.xml" />
+<updated>2024-01-06T00:00:00Z</updated>
+<entry>
+  <title>Hello World</title>
+  <id>https://alexw.nyc/blog/2024-01-06.html</id>
+  <link href="https://alexw.nyc/blog/2024-01-06.html" />
+  <updated>2024-01-06T00:00:00Z</updated>
+  <summary>Introductory blog post</summary>
+</entry>
+</feed>
