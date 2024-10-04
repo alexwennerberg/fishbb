@@ -1,11 +1,7 @@
-MULTI INSTANCE TODO
-finish config page rewrite
 atom feed based on search term
+finish config page rewrite
 TOS privacy policy
 login from another instance somehow
-
--- waterline --
-
 move email and username to change password page
 auth cookie not set until refresh? on oauth
 'no threads' should be full width. 
