@@ -1,15 +1,15 @@
 package server
 
 import (
+	"bufio"
 	"fmt"
+	"strings"
 	"time"
-
-	"github.com/k3a/html2text"
 )
 
 type Post struct {
 	ID      int
-	Content string // TODO markdown
+	Content string
 	Author  User
 	// TODO less ad-hoc
 	ThreadID        string
@@ -30,9 +30,20 @@ const previewLength = 150
 
 // unused atm
 func (p Post) Preview() string {
-	text := html2text.HTML2Text(p.Content)
+	var text string
+	scanner := bufio.NewScanner(strings.NewReader(p.Content))
+	for scanner.Scan() {
+		t := scanner.Text()
+		// TODO better stripping of gmi directives maybe
+		if !(strings.HasPrefix(t, ">") || strings.HasSuffix(t, "wrote:") || strings.HasPrefix(t, "=>") || strings.HasPrefix(t, "```")) {
+			text += t
+		}
+	}
 	if len(text) > previewLength-3 {
 		return text[:previewLength-3] + "..."
+	}
+	if text == "" {
+
 	}
 	return text
 }
