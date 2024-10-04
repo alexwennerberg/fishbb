@@ -3,7 +3,7 @@
   <tr><th>Thread</th><th style="text-align:center;width:4rem;" class="hide-mobile">Replies</th><th style="width:30%" class="hide-mobile">Last Post</th></tr>
   {{ if (and $.User ($.User.Role.Can "user")) }}
   <div class="body-header">
-	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="top-button">New Thread</button></a>
+	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="padded-button">New Thread</button></a>
       {{ end }}
   {{ template "pagelist.html" . }}
 </div>
