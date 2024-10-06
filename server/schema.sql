@@ -38,12 +38,12 @@ create table if not exists users (
   hash text,
   email text not null unique,
   role text not null default 'inactive',
-  oauth text,
   email_public int not null default false,
   publicemail int not null default false,
   about text not null default 'someone',
   website text not null default '',
-  created datetime default current_timestamp
+  created datetime default current_timestamp,
+  notification_read datetime default current_timestamp
 );
 
 create table if not exists auth (

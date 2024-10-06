@@ -48,12 +48,6 @@ Admin configuration is available at `/control`
 
 See the comments in `config.go` for now (better documentation forthcoming)
 
-### Google Signup
-
-Your forum can optionally allow Google Signup. You will need to create an
-[OAuth App](https://developers.google.com/identity/protocols/oauth2) on Google
-and set the client ID and client secret in the configuration file.
-
 ## Contributing
 
 The mailing list for FishBB is at https://lists.sr.ht/~aw/fishbb-devel

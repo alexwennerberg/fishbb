@@ -104,9 +104,9 @@ func PrepareStatements(db *sql.DB) {
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
 	stmtUpdateForum = prepare(db, "update forums set description = ?, read_permissions = ?, write_permissions = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
-	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role, oauth) values (?, ?, ?, ?, ?)")
+	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role) values (?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,email_public,role,about,website,users.created, count(posts.id)
+		select users.id,username,email,email_public,role,about,website,users.created,users.notification_read,count(posts.id)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  

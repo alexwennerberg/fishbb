@@ -599,7 +599,6 @@ func Serve() {
 		panic(err)
 	}
 	views = loadTemplates()
-	SetupGoogleOAuth()
 
 	logger := httplog.NewLogger("fishbb", httplog.Options{
 		LogLevel:        slog.LevelDebug,
@@ -675,13 +674,6 @@ func Serve() {
 		r.HandleFunc("/f/{forum}/edit", editForumPage)
 		r.HandleFunc("POST /forum/new", doCreateForum)
 	})
-
-	// Google OAuth URLs if enabled
-	if config.GoogleOAuthClientID != "" {
-		// TODO don't require server restart?
-		r.HandleFunc("/auth/google/login", oauthGoogleLogin)
-		r.HandleFunc("/auth/google/callback", oauthGoogleCallback)
-	}
 
 	r.HandleFunc("/*", notFound)
 

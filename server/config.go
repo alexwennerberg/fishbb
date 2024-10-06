@@ -21,10 +21,7 @@ type Config struct {
 	// The description of the bulletin board
 	BoardDescription string
 
-	// optional (for oauth)
-	Domain                  string // todo not exactly
-	GoogleOAuthClientID     string
-	GoogleOAuthClientSecret string
+	Domain string // todo not exactly
 
 	// optional (but required for email sending)
 	SMTPUsername string
@@ -38,12 +35,10 @@ type SharedConfig struct {
 
 func DefaultConfig() Config {
 	return Config{
-		BoardName:               "fishbb",
-		BoardDescription:        "A discussion board",
-		RequiresApproval:        true,
-		Domain:                  "http://localhost:8080",
-		GoogleOAuthClientID:     "",
-		GoogleOAuthClientSecret: "",
+		BoardName:        "fishbb",
+		BoardDescription: "A discussion board",
+		RequiresApproval: true,
+		Domain:           "http://localhost:8080",
 	}
 }
 
@@ -65,8 +60,6 @@ func GetConfig() (Config, error) {
 	}
 	c.BoardDescription, _ = GetConfigValue("board-description")
 	if SingleInstance {
-		c.GoogleOAuthClientID, _ = GetConfigValue("google-oauth-client-id")
-		c.GoogleOAuthClientSecret, _ = GetConfigValue("google-oauth-client-secret")
 		c.SMTPUsername, _ = GetConfigValue("smtp-username")
 		c.SMTPPassword, _ = GetConfigValue("smtp-password")
 	}

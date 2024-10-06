@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/alexedwards/argon2id"
-	"github.com/anandvarma/namegen"
 )
 
 type Role string
@@ -43,6 +42,8 @@ type User struct {
 	Website string
 	Created time.Time
 	Posts   int
+	// last time notifications were read
+	NotificationRead time.Time
 }
 
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
@@ -74,22 +75,8 @@ func createUser(username, email, password string, role Role) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmtCreateUser.Exec(username, email, hash, role, nil)
+	_, err = stmtCreateUser.Exec(username, email, hash, role)
 	return err
-}
-
-// TODO consolidate with createUser
-func createOAuthUser(email string, provider string, role Role) (int, error) {
-	ngen := namegen.New()
-	res, err := stmtCreateUser.Exec(ngen.Get(), email, "", role, provider)
-	if err != nil {
-		return -1, err
-	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-	return int(id), err
 }
 
 func getUserIDByEmail(email string) (*int, error) {
@@ -106,7 +93,7 @@ func getUserIDByEmail(email string) (*int, error) {
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.NotificationRead, &u.Posts)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
