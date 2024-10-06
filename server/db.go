@@ -106,7 +106,7 @@ func PrepareStatements(db *sql.DB) {
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role) values (?, ?, ?, ?)")
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,email_public,role,about,website,users.created,users.notification_read,count(posts.id)
+		select users.id,username,email,email_public,role,about,website,users.created,count(posts.id)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  

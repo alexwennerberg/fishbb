@@ -42,8 +42,6 @@ type User struct {
 	Website string
 	Created time.Time
 	Posts   int
-	// last time notifications were read
-	NotificationRead time.Time
 }
 
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
@@ -93,7 +91,7 @@ func getUserIDByEmail(email string) (*int, error) {
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.NotificationRead, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
