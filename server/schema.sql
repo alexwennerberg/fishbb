@@ -43,6 +43,7 @@ create table if not exists users (
   about text not null default 'someone',
   website text not null default '',
   created datetime default current_timestamp,
+  mentions_checked datetime default current_timestamp
 );
 
 create table if not exists auth (

@@ -72,11 +72,12 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 }
 
 var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
-	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum,
+	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum, stmtGetMentionsUnread,
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUserIDByEmail, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
 	stmtCreatePost, stmtGetThread, stmtGetPosts, stmtGetPostsByUser, stmtGetThreadCount,
+	stmtUpdateMentionsChecked,
 	stmtDeleteUser, stmtUpdateUserRole, stmtUpdateBanStatus, stmtUpdateConfig, stmtGetConfig,
 	stmtGetThreads, stmtCreateThread, stmtCreateForum *sql.Stmt
 
@@ -105,8 +106,10 @@ func PrepareStatements(db *sql.DB) {
 	stmtUpdateForum = prepare(db, "update forums set description = ?, read_permissions = ?, write_permissions = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
 	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role) values (?, ?, ?, ?)")
+	// kinda awk
+	stmtGetMentionsUnread = prepare(db, `select count(1) from posts where content like ? and created > ?`)
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,email_public,role,about,website,users.created,count(posts.id)
+		select users.id,username,email,email_public,role,about,website,users.created,count(posts.id),mentions_checked
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  
@@ -175,6 +178,7 @@ func PrepareStatements(db *sql.DB) {
 	stmtUpdatePassword = prepare(db, "update users set hash = ? where id = ?")
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
+	stmtUpdateMentionsChecked = prepare(db, "update users set mentions_checked = ? where id = ?")
 
 	stmtThreadPin = prepare(db, "update threads set pinned = ? where id = ?")
 	stmtThreadLock = prepare(db, "update threads set locked = ? where id = ?")

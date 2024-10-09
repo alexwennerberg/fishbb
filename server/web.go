@@ -20,11 +20,16 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	l := httplog.LogEntry(r.Context())
 	u := GetUserInfo(r)
 	var user *User
+	var err error
 	if u != nil {
-		user, _ = getUser(u.Username)
+		user, err = getUser(u.Username)
+		if err != nil {
+			*l = *l.With(httplog.ErrAttr(err))
+			w.Write([]byte("<h1>TEMPLATE ERROR</h1>"))
+		}
 	} else if u == nil {
 		// TODO -- caching broken
-		w.Header().Set("Cache-control", "max-age=60")
+		// w.Header().Set("Cache-control", "max-age=60")
 	}
 	info["User"] = user
 	info["Config"] = config
@@ -38,7 +43,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 		title = name + " - " + title
 	}
 	info["Title"] = title
-	err := views.ExecuteTemplate(w, name+".html", info)
+	err = views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
 		*l = *l.With(httplog.ErrAttr(err))
 		w.Write([]byte("<h1>TEMPLATE ERROR</h1>"))
@@ -506,6 +511,25 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "search", tmpl)
 }
 
+func notificationsPage(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	tmpl := make(map[string]any)
+	q := fmt.Sprintf("@%s", u.Username)
+	tmpl["Query"] = q
+	posts, err := searchPosts(q)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	err = setNotificationsRead(u.UserID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["Posts"] = posts
+	serveHTML(w, r, "search", tmpl)
+}
+
 func doSetRole(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("role")
 	uid, err := strconv.Atoi(r.PathValue("uid"))
@@ -627,6 +651,7 @@ func Serve() {
 	// TODO Consider CSRF wrapping
 	r.With(LimitByRealIP(25, 1*time.Hour)).HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
+	r.HandleFunc("GET /notifications", notificationsPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
 	// autogenerate favicon

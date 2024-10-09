@@ -35,6 +35,8 @@ import (
 	"humungus.tedunangst.com/r/webs/cache"
 )
 
+// TODO rework this
+
 type UserInfo struct {
 	UserID   int
 	Username string

@@ -37,11 +37,12 @@ type User struct {
 	// Whether the user wishes to display email publicly
 	EmailPublic bool
 	// TODO fix null schema
-	Role    Role
-	About   string
-	Website string
-	Created time.Time
-	Posts   int
+	Role           Role
+	About          string
+	Website        string
+	Created        time.Time
+	Posts          int
+	MentionsUnread int
 }
 
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
@@ -90,13 +91,21 @@ func getUserIDByEmail(email string) (*int, error) {
 
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
+	var mentionsChecked time.Time
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts)
+	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts, &mentionsChecked)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan row: %w", err)
+	}
+	// probably super inefficient
+	row = stmtGetMentionsUnread.QueryRow(fmt.Sprintf("%%@%s%%", u.Username), mentionsChecked)
+	fmt.Println(u.MentionsUnread)
+	err = row.Scan(&u.MentionsUnread)
+	if err != nil {
+		return nil, err
 	}
 	return &u, err
 }
@@ -153,6 +162,11 @@ func deleteUser(id int) error {
 
 func updateUserRole(id int, role Role) error {
 	_, err := stmtUpdateUserRole.Exec(role, id)
+	return err
+}
+
+func setNotificationsRead(id int) error {
+	_, err := stmtUpdateMentionsChecked.Exec(time.Now().UTC(), id)
 	return err
 }
 
