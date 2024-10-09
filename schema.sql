@@ -1,3 +1,8 @@
+create table if not exists instances (
+  id integer primary key,
+  subdomain text
+);
+
 create table if not exists forums (
   id integer primary key,
   name text, 

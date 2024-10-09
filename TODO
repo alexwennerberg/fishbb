@@ -1,3 +1,10 @@
+ACTUAL MULTI INSTNACE STRATEGY
+
+1. De-emphasize self-hosting: no one will do this! It should be supported but
+   is not my #1 short term goal
+2. Share same sqlite instance, but parameterize so you can run single instance
+
+
 notifications properly -> https://stackoverflow.com/a/7273989
 atom feed based on search term
 edit thread title -> move lock and pin to there

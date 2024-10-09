@@ -1,4 +1,4 @@
-package server
+package main
 
 import "github.com/pquerna/otp/totp"
 
