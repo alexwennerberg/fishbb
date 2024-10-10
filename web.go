@@ -444,15 +444,25 @@ func controlPanelPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func doUpdateConfig(w http.ResponseWriter, r *http.Request) {
-	fields := []string{"board-description"}
+	fields := []string{"board-description", "requires-approval"}
+	var err error
 	for _, key := range fields {
 		val := r.PostFormValue(key)
-		err := UpdateConfig(key, val)
+		// hack
+		if val == "on" {
+			err = UpdateConfig(key, true)
+		} else {
+			err = UpdateConfig(key, val)
+		}
 		if err != nil {
 			serverError(w, r, err)
 			return
 		}
-		config, _ = GetConfig()
+		config, err = GetConfig()
+		if err != nil {
+			serverError(w, r, err)
+			return
+		}
 	}
 	http.Redirect(w, r, "/control", http.StatusSeeOther)
 }
