@@ -1,6 +1,7 @@
 create table if not exists instances (
   id integer primary key,
-  subdomain text
+  subdomain text,
+  description text
 );
 
 create table if not exists forums (

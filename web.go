@@ -75,7 +75,18 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 	errorPage(w, r, http.StatusUnauthorized, "You are not authorized to perform this action, sorry!")
 }
 
+// new index will be a list of instances
 func indexPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	i, err := GetInstances()
+	if err != nil {
+		serverError(w, r, err)
+	}
+	tmpl["Forums"] = i
+	serveHTML(w, r, "index", tmpl)
+}
+
+func instanceIndex(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	var role Role
 	if u != nil {
@@ -96,7 +107,7 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	tmpl["Forums"] = forums
-	serveHTML(w, r, "index", tmpl)
+	serveHTML(w, r, "instance", tmpl)
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
@@ -642,7 +653,9 @@ func Serve() {
 	r.Use(ChangePostToHiddenMethod)
 
 	// Setup Templates
-	r.HandleFunc("/", indexPage)
+	// TODO -- forums are self-contained units, this is where we do subdomain parameterization
+	r.HandleFunc("/tmp", indexPage)
+	r.HandleFunc("/", instanceIndex)
 	r.HandleFunc("GET /f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)

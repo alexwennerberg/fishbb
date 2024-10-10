@@ -1,26 +1,25 @@
-{{ template "header.html" . }}
-<table class="nav-table" id="forums">
-	<tr><th style="width:50%">Forum</th><th style="text-align:center;" class="hide-mobile">Threads</th><th class="hide-mobile" style="width:30%">Last Post</th></tr>
-  {{ range .Forums }}
-  <tr>
-    <td>
-      <a class="title-link" href="/f/{{.Slug}}">{{.Name}}</a><br>
-	  {{.Description}}<br>
-	  <span class="mobile">Threads: <b>{{.ThreadCount}}</b> (Last post <a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a>) </span>
-    </td>
-	<td class="hide-mobile" style="text-align:center;">{{.ThreadCount}}</td>
-    <td class="hide-mobile">
-		<span style="color:var(--text-alt)">
-		{{ if .LastPost.ID }}<a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a> 
-		by <a href="/u/{{.LastPost.Author.Username}}">{{.LastPost.Author.Username}}</a><br>
-		in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
-		</div>
-		{{else}}No posts yet!
-		{{ end }}
-    </td>
-  </tr>
-  {{ end }}
-</td>
-</tr>
-</table>
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+	<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="{{.Config.BoardDescription}}" />
+<link rel="stylesheet" type="text/css" href="/style.css">
+<title>{{.Title}}</title>
+</head>
+<body>
+	<div style="margin:1rem;">
+	<h1>FishBB</h1>
+	<h2>Simple, sustainable communities.</h2> 	<p>Opt out of the attention economy and focus on what's important: building robust, sustainable digital communities. 
+	</p>
+	<p><b><a href="/new-instance">Create</a> a new discussion board for free today.</p></b>
+
+	<p>Here are some that exist:</p>
+	<a href="fishbb.fishbb.org">fishbb.fishbb.org</a>
+	{{ range .Instances }}
+	tbd
+	{{ end }}
+	</p>
+	</div>
+</body>
 {{ template "footer.html" . }}

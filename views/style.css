@@ -66,7 +66,7 @@ button:not(.link-button) {
   margin: 0.4rem;
 }
 
-.post-body h1,h2,h3,h4,h5 {
+.post-body h1, .post-body h2, .post-body h3, .post-body h4, .post-body h5, .post-body h6 {
   font-size: 1em;
 }
 
