@@ -160,6 +160,11 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "new-thread", tmpl)
 }
 
+func createForumPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	serveHTML(w, r, "new-forum", tmpl)
+}
+
 func newPostPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
@@ -501,7 +506,7 @@ func doCreateForum(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	http.Redirect(w, r, "/control", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func doLockThread(w http.ResponseWriter, r *http.Request) {
@@ -608,21 +613,19 @@ func Serve() {
 
 		r.With(CSRFWrap).HandleFunc("POST /thread/{threadid}/update-meta", dummy)
 		r.HandleFunc("POST /user/{userid}/change-password", dummy)
+		r.HandleFunc("GET /forum/new", createForumPage)
+		r.HandleFunc("POST /forum/new", doCreateForum)
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
 		r.HandleFunc("/control", controlPanelPage)
-		r.HandleFunc("POST /f/{forum}/{tid}/pin", doPinThread)
-		r.HandleFunc("POST /f/{forum}/{tid}/lock", doLockThread)
 	})
 	// admin functions
 	r.Group(func(r chi.Router) {
 		r.Use(Admin)
 		r.HandleFunc("POST /update-config", doUpdateConfig)
 		r.HandleFunc("POST /user/{uid}/set-role", doSetRole)
-		r.HandleFunc("/f/{forum}/edit", editForumPage)
-		r.HandleFunc("POST /forum/new", doCreateForum)
 	})
 
 	r.HandleFunc("/*", notFound)

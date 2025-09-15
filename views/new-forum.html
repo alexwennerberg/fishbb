@@ -1,0 +1,13 @@
+{{ template "header.html" . }}
+	<div class="div-header">Creating New Forum</div>
+    <form method="POST">
+        <div class="body-padded" >
+			<label for="name">Forum Name:</label><br>
+			<input class="post-title" required name="name" type="text" id="name"><br>
+			<label for="description">Description:</label><br>
+			<textarea class="post-entry" required name="description" id="description" placeholder='Describe what this forum is for...'></textarea><br>
+			<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
+            <button type="submit" style="link-button">Create Forum</button>
+        </div>
+    </form>
+{{ template "footer.html" . }}

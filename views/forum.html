@@ -6,7 +6,7 @@
 {{ else }} 
   {{ range .Threads }}
   <div>
-	  <a href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> activity
+	  <a href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> active
 		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
 		<br>
   </div>

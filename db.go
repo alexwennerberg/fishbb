@@ -86,7 +86,8 @@ func PrepareStatements(db *sql.DB) {
 		select forums.id, name, description, 
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
-		count(threads.id)
+		count(threads.id),
+		coalesce(unique_users.user_count, 0)
 		from forums
 		left join (
 			select threadid, threads.title, posts.id, threads.authorid,
@@ -97,6 +98,12 @@ func PrepareStatements(db *sql.DB) {
 			group by forumid 
 		) latest on latest.forumid = forums.id
 		left join threads on threads.forumid = forums.id
+		left join (
+			select threads.forumid, count(distinct posts.authorid) as user_count
+			from posts
+			join threads on posts.threadid = threads.id
+			group by threads.forumid
+		) unique_users on unique_users.forumid = forums.id
 		group by 1
 
 `)
