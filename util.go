@@ -167,18 +167,21 @@ func timeago(t *time.Time) string {
 	var amount int
 	if d.Seconds() < 60 {
 		amount = int(d.Seconds())
-		metric = "s"
+		metric = "second"
 	} else if d.Minutes() < 60 {
 		amount = int(d.Minutes())
-		metric = "m"
+		metric = "minute"
 	} else if d.Hours() < 24 {
 		amount = int(d.Hours())
-		metric = "h"
+		metric = "hour"
 	} else if d.Seconds() < solarYearSecs {
 		amount = int(d.Hours()) / 24
-		metric = "d"
+		metric = "day"
 	} else {
 		return t.Format("2006-02-01")
 	}
-	return fmt.Sprintf("%d%s", amount, metric)
+	if amount == 1 {
+		return fmt.Sprintf("%d %s ago", amount, metric)
+	}
+	return fmt.Sprintf("%d %ss ago", amount, metric)
 }

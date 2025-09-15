@@ -6,10 +6,9 @@
 {{ else }} 
   {{ range .Threads }}
   <div>
-		<a href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a>
-		<span style="color:var(--text-alt)">
-		<span class="emph">{{.Latest.Author.Username}}</span>
+	  <a href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> activity
 		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
+		<br>
   </div>
   {{ end }}
 {{ end }}

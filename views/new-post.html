@@ -1,6 +1,6 @@
 {{ template "header.html" . }}
 <main>
-	<div class="div-header">New Post in <a href="/f/{{.Forum.Slug}}/{{.Thread.ID}}">{{.Thread.Title}}</a></div>
+	<h2>New Post in <a href="/f/{{.Forum.Slug}}/{{.Thread.ID}}">{{.Thread.Title}}</a></h2>
 	{{ if .Notice }}
 		<div class="notice">{{.Notice}}</div>
 	{{ end }}
