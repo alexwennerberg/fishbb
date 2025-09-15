@@ -112,6 +112,7 @@ body {
   background: var(--bg);
   color: var(--text);
   margin: auto;
+  padding: 0.5rem;
   font-family: "Roboto", Helvetica, Arial, Sans-serif;
   word-wrap: break-word;
   line-height: 1.5;

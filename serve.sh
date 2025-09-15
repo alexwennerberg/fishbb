@@ -1,1 +1,1 @@
-go build && ./fishbb -dev
+go build && ./fishbb 
