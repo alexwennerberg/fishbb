@@ -41,7 +41,7 @@ func initdb() {
 	// squash errors for idempotence
 	createForum("General", "General discussion")
 	// create admin / admin
-	createUser("admin", "webmaster@foo", "admin", RoleAdmin)
+	createUser("admin", "admin", RoleAdmin)
 
 	// TODO... config
 	config, err = GetConfig()
@@ -71,8 +71,8 @@ func prepare(db *sql.DB, stmt string) *sql.Stmt {
 	return s
 }
 
-var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
-	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum, stmtGetMentionsUnread,
+var stmtGetForumID, stmtUpdatePassword, stmtSearchPosts,
+	stmtEditPost, stmtGetPost, stmtGetPostSlug, stmtGetForum, 
 	stmtGetForumBySlug, stmtCreateUser, stmtGetForums, stmtUpdateForum,
 	stmtGetUser, stmtGetUserIDByEmail, stmtGetUsers, stmtGetPostAuthorID, stmtDeletePost,
 	stmtThreadPin, stmtThreadLock, stmtActivateUser, stmtGetAllUsernames,
@@ -83,7 +83,7 @@ var stmtGetForumID, stmtUpdateMe, stmtUpdatePassword, stmtSearchPosts,
 
 func PrepareStatements(db *sql.DB) {
 	stmtGetForums = prepare(db, `
-		select forums.id, name, description, read_permissions, write_permissions,
+		select forums.id, name, description, 
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
 		count(threads.id)
@@ -100,24 +100,22 @@ func PrepareStatements(db *sql.DB) {
 		group by 1
 
 `)
-	stmtGetForum = prepare(db, "select id, name, description, slug, read_permissions, write_permissions from forums where id = ?")
-	stmtGetForumBySlug = prepare(db, "select id, name, description, slug, read_permissions, write_permissions from forums where slug = ?")
+	stmtGetForum = prepare(db, "select id, name, description, slug from forums where id = ?")
+	stmtGetForumBySlug = prepare(db, "select id, name, description, slug from forums where slug = ?")
 	stmtGetForumID = prepare(db, "select id from forums where slug = ?")
-	stmtUpdateForum = prepare(db, "update forums set description = ?, read_permissions = ?, write_permissions = ? where id = ?")
+	stmtUpdateForum = prepare(db, "update forums set description = ? where id = ?")
 	stmtCreateForum = prepare(db, "insert into forums (name, description, slug) values (?, ?, ?)")
-	stmtCreateUser = prepare(db, "insert into users (username, email, hash, role) values (?, ?, ?, ?)")
+	stmtCreateUser = prepare(db, "insert into users (username, hash, role) values (?, ?, ?)")
 	// kinda awk
-	stmtGetMentionsUnread = prepare(db, `select count(1) from posts where content like ? and created > ?`)
 	stmtGetUser = prepare(db, `
-		select users.id,username,email,email_public,role,about,website,users.created,count(posts.id),mentions_checked
+		select users.id,username,role,users.created,count(posts.id)
 		from users 
 		left join posts on users.id = posts.authorid
 		where users.username = ?  
 		group by users.id
 		`)
-	stmtGetUserIDByEmail = prepare(db, "select users.id from users where users.email = ?")
 	stmtGetUsers = prepare(db, `
-		select users.id,username,email,role,about,website,users.created, count(1)
+		select users.id,username,role,users.created, count(1)
 		from users 
 		left join posts on users.id = posts.authorid
 		group by users.id
@@ -128,7 +126,7 @@ func PrepareStatements(db *sql.DB) {
 	stmtGetPostAuthorID = prepare(db, "select authorid from posts where id = ?")
 	stmtGetThreads = prepare(db, `
 		select threadid, forumid, threads.authorid, users.username, title, 
-		threads.created, threads.pinned, threads.locked,
+		threads.created, 
 		latest.id, latest.authorid, latest.username, latest.content,
 		latest.created, latest.replies - 1
 		from threads 
@@ -141,11 +139,11 @@ func PrepareStatements(db *sql.DB) {
 		) latest
 		on latest.threadid = threads.id
 		where forumid = ?
-		order by pinned desc, latest.created desc limit ? offset ?
+		order by latest.created desc limit ? offset ?
 	`)
 	stmtGetThread = prepare(db, `
 		select threads.id, forumid, title, threads.authorid, users.username, 
-		threads.created, threads.pinned, threads.locked, count(1) - 1 as replies 
+		threads.created, count(1) - 1 as replies 
 		from threads 
 		join users on users.id = threads.authorid
 		join posts on threads.id = posts.threadid
@@ -174,14 +172,10 @@ func PrepareStatements(db *sql.DB) {
 		where posts.id = ?`)
 	stmtEditPost = prepare(db, "update posts set content = ?, edited = current_timestamp where id = ?")
 	stmtDeletePost = prepare(db, "delete from posts where id = ?")
-	stmtUpdateMe = prepare(db, "update users set username = ?, email = ?, email_public = ?, about = ?, website = ? where id = ?")
 	stmtUpdatePassword = prepare(db, "update users set hash = ? where id = ?")
 	stmtDeleteUser = prepare(db, "delete from users where id = ?")
 	stmtUpdateUserRole = prepare(db, "update users set role = ? where id = ?")
-	stmtUpdateMentionsChecked = prepare(db, "update users set mentions_checked = ? where id = ?")
 
-	stmtThreadPin = prepare(db, "update threads set pinned = ? where id = ?")
-	stmtThreadLock = prepare(db, "update threads set locked = ? where id = ?")
 	// get stuff we need for a post slug
 	stmtGetPostSlug = prepare(db, `
 		select 

@@ -42,7 +42,6 @@ type User struct {
 	Website        string
 	Created        time.Time
 	Posts          int
-	MentionsUnread int
 }
 
 var unameRegex, _ = regexp.Compile("^[a-zA-Z0-9]{1,25}$")
@@ -69,12 +68,12 @@ func updatePassword(id int, password string) error {
 	return err
 }
 
-func createUser(username, email, password string, role Role) error {
+func createUser(username, password string, role Role) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
-	_, err = stmtCreateUser.Exec(username, email, hash, role)
+	_, err = stmtCreateUser.Exec(username, hash, role)
 	return err
 }
 
@@ -91,21 +90,13 @@ func getUserIDByEmail(email string) (*int, error) {
 
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
-	var mentionsChecked time.Time
 	var u User
-	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.EmailPublic, &u.Role, &u.About, &u.Website, &u.Created, &u.Posts, &mentionsChecked)
+	err := row.Scan(&u.ID, &u.Username, &u.Role, &u.Created, &u.Posts)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan row: %w", err)
-	}
-	// probably super inefficient
-	row = stmtGetMentionsUnread.QueryRow(fmt.Sprintf("%%@%s%%", u.Username), mentionsChecked)
-	fmt.Println(u.MentionsUnread)
-	err = row.Scan(&u.MentionsUnread)
-	if err != nil {
-		return nil, err
 	}
 	return &u, err
 }
@@ -167,11 +158,5 @@ func updateUserRole(id int, role Role) error {
 
 func setNotificationsRead(id int) error {
 	_, err := stmtUpdateMentionsChecked.Exec(time.Now().UTC(), id)
-	return err
-}
-
-// doesn't include all fields
-func updateMe(u User) error {
-	_, err := stmtUpdateMe.Exec(u.Username, u.Email, u.EmailPublic, u.About, u.Website, u.ID)
 	return err
 }

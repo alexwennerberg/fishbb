@@ -10,8 +10,6 @@ type Forum struct {
 	Description string
 	Slug        string
 	// lowest level that can view this for
-	ReadPermissions  Role
-	WritePermissions Role
 	LastPost         Post
 	ThreadCount      int
 }
@@ -24,20 +22,20 @@ func createForum(name, description string) error {
 func getForum(id int) (Forum, error) {
 	row := stmtGetForum.QueryRow(id)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
 	return f, err
 }
 
 // forum name should be invariant -- it messes with the URL
-func updateForum(id int, description string, readRole Role, writeRole Role) error {
-	_, err := stmtUpdateForum.Exec(description, readRole, writeRole, id)
+func updateForum(id int, description string) error {
+	_, err := stmtUpdateForum.Exec(description, id)
 	return err
 }
 
 func getForumBySlug(slug string) (Forum, error) {
 	row := stmtGetForumBySlug.QueryRow(slug)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug)
 	return f, err
 }
 
@@ -58,7 +56,7 @@ func getForums() ([]Forum, error) {
 	for rows.Next() {
 		var f Forum
 		var created string
-		err := rows.Scan(&f.ID, &f.Name, &f.Description, &f.ReadPermissions, &f.WritePermissions,
+		err := rows.Scan(&f.ID, &f.Name, &f.Description, 
 			&f.LastPost.ThreadID, &f.LastPost.ThreadTitle,
 			&f.LastPost.ID,
 			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created, &f.ThreadCount)

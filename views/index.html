@@ -15,9 +15,8 @@
 	<p><b><a href="/new-instance">Create</a> a new discussion board for free today.</p></b>
 
 	<p>Here are some that exist:</p>
-	<a href="https://fishbb.fishbb.org">fishbb.fishbb.org</a>
-	{{ range .Instances }}
-	tbd
+	{{ range .Forums }}
+	<a class="title-link" href="/f/{{.Slug}}">{{.Name}}</a><br>
 	{{ end }}
 	</p>
 	</div>

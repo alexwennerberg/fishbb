@@ -1,47 +1,22 @@
 {{ template "header.html" . }}
-<table class="nav-table" id="threads">
-  <tr><th>Thread</th><th style="text-align:center;width:4rem;" class="hide-mobile">Replies</th><th style="width:30%" class="hide-mobile">Last Post</th></tr>
-  {{ if (and $.User ($.User.Role.Can "user")) }}
-  <div class="body-header">
-	  <a href="/thread/new?forumid={{.Forum.ID}}"><button class="padded-button">New Thread</button></a>
-      {{ end }}
-  {{ template "pagelist.html" . }}
-</div>
+<main>
+{{ template "pagelist.html" . }}
 {{ if not (len .Threads) }}
-<tr><td>No threads in this forum yet. Be the first to create one!</td></tr>
+<p>No threads in this forum yet. Be the first to create one!</p>
 {{ else }} 
   {{ range .Threads }}
-  <tr>
-    <td>
-		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
-		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
 		<a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
-		<div class="flex-between">
 		<div style="color:var(--text-alt)">
-			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
 			<span class="mobile">Lastest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></span>
-		</div>
-	  {{ if and $.User ($.User.Role.Can "mod")}}
-	  <span>
-		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
-		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
-	  </span>
-		</div>
-	  {{ end }}
-    </td>
-	<td style="text-align:center;" class="hide-mobile">{{.Replies}}</td>
-    <td class="hide-mobile">
 		<span style="color:var(--text-alt)">
-		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
-		by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a>
+		latest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
+		by <b>{{.Latest.Author.Username}}</b>
 		</div>
-    </td>
   </tr>
   {{ end }}
-</td>
-</tr>
 {{ end }}
-</table>
+<a href="/thread/new">New Thread</a>
+</main>
 {{ $pages := pageArr .ItemCount }}
 {{ $length := len $pages }}
 {{ if ne $length 1 }}
