@@ -5,17 +5,16 @@
 <p>No threads in this forum yet. Be the first to create one!</p>
 {{ else }} 
   {{ range .Threads }}
-		<a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
-		<div style="color:var(--text-alt)">
-			<span class="mobile">Lastest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></span>
+  <div>
+		<a href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a>
 		<span style="color:var(--text-alt)">
-		latest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
-		by <b>{{.Latest.Author.Username}}</b>
-		</div>
-  </tr>
+		<span class="emph">{{.Latest.Author.Username}}</span>
+		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>
+  </div>
   {{ end }}
 {{ end }}
-<a href="/thread/new">New Thread</a>
+<br>
+<a href="/thread/new?forumid={{.Forum.ID}}">New Thread</a>
 </main>
 {{ $pages := pageArr .ItemCount }}
 {{ $length := len $pages }}

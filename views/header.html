@@ -14,6 +14,9 @@
 		  <a href="/" class="title-link">FishBB</a>
 		  {{ if .Forum }}
 		  &gt; <a class="title-link" href="/f/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
+		  {{ end }}
+		  {{ if .Thread }}
+		  &gt; <span class="title-link">{{ .Thread.Title }}</span>
 		  {{ end }}<br>
               </div>
     <div id="nav">

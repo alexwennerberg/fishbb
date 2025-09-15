@@ -1,41 +1,36 @@
 {{ template "header.html" . }}
-<div class="body-header">
-	{{ if and (or (not .Thread.Locked) (.User.Role.Can "mod")) (and .User (.User.Role.Can "user")) }}
-<a href="/post/new?thread={{.Thread.ID}}">Reply</a>
-	{{ end }}
 {{ template "pagelist.html" . }}
-</div>
 {{ range .Posts }}
 <div class="post" id={{.ID}}>
   <div class="post-meta">
-	  <div style="color:var(--text-alt);">
-	  <b>{{.Author.Username}}</b> <a href="#{{.ID}}"
-																	title="Link to this post">{{ timeago .Created}}
-	  {{ if .Edited }}<em>(edited {{timeago .Edited}})</em>{{end}}
-</span>
+	  <div>
+		  <b>{{.Author.Username}}</b> <a href="#{{.ID}}" title="Link to this post">{{ timeago .Created}}</a>{{ if .Edited }}<em title="edited">*</em>{{end}}
+{{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
+<a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}">reply</a>
+{{ end }}
+
 		  {{ if and $.User (or (eq .Author.ID $.User.ID) ($.User.Role.Can "mod")) }}
-		  <a href="/post/{{.ID}}/edit">Edit</a>
+		  <a href="/post/{{.ID}}/edit">edit</a>
 		  <form style="display:inline" action="/post/{{.ID}}" method="POST">
-			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">Delete</button>
+			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">delete</button>
 		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
 		  </form>
+
 		  {{ end }}
 
 	  </div>
   </div>
   <div class="post-body">
   {{ .Render }}
-  </div>
-  {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
-	  <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}">Reply</a>
-  {{ end }}
+    </div>
 </div>
 {{ end }}
 {{ $pages := pageArr .ItemCount }}
 {{ $length := len $pages }}
 {{ if ne $length 1 }}
-<div class="body-footer">
+{{ if and (or (not .Thread.Locked) (.User.Role.Can "mod")) (and .User (.User.Role.Can "user")) }}
+<a href="/post/new?thread={{.Thread.ID}}">Reply</a>
+	{{ end }}
 {{ template "pagelist.html" . }}
-</div>
 {{end }}
 {{ template "footer.html" . }}
