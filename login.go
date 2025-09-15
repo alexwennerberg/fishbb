@@ -97,19 +97,6 @@ func Admin(handler http.Handler) http.Handler {
 	return Roles(handler, []Role{RoleAdmin})
 }
 
-// Check that the form value "token" is valid auth token
-func TokenRequired(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userinfo, ok := checkformtoken(r)
-		if ok {
-			ctx := context.WithValue(r.Context(), thekey, userinfo)
-			r = r.WithContext(ctx)
-			handler.ServeHTTP(w, r)
-		} else {
-			http.Error(w, "valid token required", http.StatusForbidden)
-		}
-	})
-}
 
 // Get UserInfo for this request, if any.
 func GetUserInfo(r *http.Request) *UserInfo {
@@ -182,9 +169,6 @@ func CSRFWrap(handler http.Handler) http.Handler {
 	})
 }
 
-func CSRFWrapFunc(fn http.HandlerFunc) http.Handler {
-	return CSRFWrap(fn)
-}
 
 func loginredirect(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
@@ -374,8 +358,6 @@ func hexsum(h hash.Hash) string {
 	return fmt.Sprintf("%x", h.Sum(nil))[0:authlen]
 }
 
-func SetLoginCookie() {
-}
 
 func loginSession(w http.ResponseWriter, r *http.Request, userid int) error {
 	hasher := sha512.New512_256()
@@ -477,100 +459,4 @@ func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// Change password helper.
-// Requires oldpass and newpass form values.
-// Requires logout csrf token.
-func ChangePassword(w http.ResponseWriter, r *http.Request) error {
-	userinfo, ok := checkauthcookie(r)
-	if !ok || !CheckCSRF(r) {
-		return fmt.Errorf("unauthorized")
-	}
 
-	oldpass := r.FormValue("oldpass")
-	newpass := r.FormValue("newpass")
-
-	if len(oldpass) == 0 || len(oldpass) > passlen ||
-		len(newpass) == 0 || len(newpass) > passlen {
-		log.Info("login: invalid password attempt")
-		return fmt.Errorf("bad password")
-	}
-	if len(newpass) < 6 {
-		return fmt.Errorf("newpassword is too short")
-	}
-	userid, hash, ok := loaduser(userinfo.Username)
-	if !ok {
-		return fmt.Errorf("error")
-	}
-
-	match, err := argon2id.ComparePasswordAndHash(oldpass, hash)
-	if err != nil {
-		log.Info("error comparing password and hash: %s", err)
-		return fmt.Errorf("error")
-	}
-	if !match {
-		log.Info("login: incorrect password")
-		return fmt.Errorf("bad password")
-	}
-	hash, err = argon2id.CreateHash(newpass, argon2id.DefaultParams)
-	if err != nil {
-		log.Info("error generating hash: %s", err)
-		return fmt.Errorf("error")
-	}
-	_, err = stmtUpdateUser.Exec(hash, userinfo.UserID)
-	if err != nil {
-		log.Info("login: error updating user: %s", err)
-		return fmt.Errorf("error")
-	}
-
-	err = deleteauth(userid)
-	if err != nil {
-		log.Info("login: error deleting old auth: %s", err)
-		return fmt.Errorf("error")
-	}
-
-	hasher := sha512.New512_256()
-	io.CopyN(hasher, rand.Reader, 32)
-	auth := hexsum(hasher)
-
-	maxage := 3600 * 24 * 365
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "auth",
-		Value:    auth,
-		MaxAge:   maxage,
-		Secure:   securecookies,
-		SameSite: getsamesite(r),
-		HttpOnly: true,
-	})
-
-	hasher.Reset()
-	hasher.Write([]byte(auth))
-	authhash := hexsum(hasher)
-
-	expiry := time.Now().UTC().Add(7 * 24 * time.Hour).Format(dbtimeformat)
-	_, err = stmtSaveAuth.Exec(userid, authhash, expiry)
-	if err != nil {
-		log.Info("error saving auth: %e", err)
-	}
-
-	return nil
-}
-
-func SetPassword(userid int, newpass string) error {
-	hash, err := argon2id.CreateHash(newpass, argon2id.DefaultParams)
-	if err != nil {
-		log.Info("error generating hash: %s", err)
-		return fmt.Errorf("error")
-	}
-	_, err = stmtUpdateUser.Exec(hash, userid)
-	if err != nil {
-		log.Info("login: error updating user: %s", err)
-		return fmt.Errorf("error")
-	}
-	err = deleteauth(userid)
-	if err != nil {
-		log.Info("login: error deleting old auth: %s", err)
-		return fmt.Errorf("error")
-	}
-	return nil
-}

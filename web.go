@@ -456,24 +456,6 @@ func doChangePassword(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/me", http.StatusSeeOther)
 }
 
-func notificationsPage(w http.ResponseWriter, r *http.Request) {
-	u := GetUserInfo(r)
-	tmpl := make(map[string]any)
-	q := fmt.Sprintf("@%s", u.Username)
-	tmpl["Query"] = q
-	posts, err := searchPosts(q)
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	err = setNotificationsRead(u.UserID)
-	if err != nil {
-		serverError(w, r, err)
-		return
-	}
-	tmpl["Posts"] = posts
-	serveHTML(w, r, "search", tmpl)
-}
 
 func doSetRole(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("role")

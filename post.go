@@ -77,22 +77,6 @@ func getPostSlug(postid int) (string, error) {
 }
 
 // TODO maybe consolidate with query builder
-func searchPosts(q string) ([]Post, error) {
-	var posts []Post
-	rows, err := stmtSearchPosts.Query("%" + q + "%")
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var p Post
-		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
-		if err != nil {
-			return nil, err
-		}
-		posts = append(posts, p)
-	}
-	return posts, nil
-}
 
 // page is 1-indexed
 func getPosts(threadid, page int) []Post {
