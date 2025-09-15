@@ -80,24 +80,10 @@ blockquote {
   margin: 0.2rem;
   box-sizing:border-box;
   font-style: italic;
-  background: var(--bg-alt);
   border-left: .3em solid var(--bg-inverse);
   padding: 0.3rem;
 }
 
-/* awkward */
-blockquote blockquote { background: var(--bg); }
-blockquote blockquote blockquote { background: var(--bg-alt); }
-blockquote blockquote blockquote blockquote { background: var(--bg); }
-blockquote blockquote blockquote blockquote blockquote { background: var(--bg-alt); }
-blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
-blockquote blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
-:target blockquote { background: var(--bg); }
-:target  blockquote blockquote { background: var(--bg-alt); }
-:target  blockquote blockquote blockquote { background: var(--bg); }
-:target  blockquote blockquote blockquote blockquote { background: var(--bg-alt); }
-:target  blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
-:target  blockquote blockquote blockquote blockquote blockquote blockquote { background: var(--bg); }
 .error {
   font-weight: bold;
 }
@@ -142,7 +128,6 @@ body {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--border);
 }
 
 .flex-between {
@@ -210,16 +195,10 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0;
 }
 
-.post {
-  border-top: 1px solid var(--border);
-}
+.post {}
 
 .post-meta { 
   padding: 0.3rem 0.5rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-alt);
-  display: flex;
-  justify-content: space-between;
 }
 .body-padded {
   margin: 0.4rem;
