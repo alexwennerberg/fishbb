@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+directory="/root" # TODO -- data file somewhere proper
+command="/usr/local/bin/fishbb"
+command_user="alpine"
+pidfile="/run/$RC_SVCNAME/$RC_SVCNAME.pid"
+command_background="yes"
+output_log="/var/log/fishbb.log"
+error_log="/var/log/fishbb.log"
+
+start_pre() {
+    checkpath -f --owner $command_user:$command_user --m 0775 /var/log/fishbb.log
+}
