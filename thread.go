@@ -43,8 +43,10 @@ func getThreads(forumID, page int) ([]Thread, error) {
 			return nil, err
 		}
 		// TODO -- wonder if I can get away from this
-		t.Latest.Created, err = time.Parse(timeISO8601, created)
-		logIfErr(err)
+		if created != "" {
+			t.Latest.Created, err = time.Parse(timeISO8601, created)
+			logIfErr(err)
+		}
 		threads = append(threads, t)
 	}
 	return threads, nil

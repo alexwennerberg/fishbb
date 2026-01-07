@@ -64,8 +64,10 @@ func getForums() ([]Forum, error) {
 		if err != nil {
 			return nil, err
 		}
-		f.LastPost.Created, err = time.Parse(timeISO8601, created)
-		logIfErr(err)
+		if created != "" {
+			f.LastPost.Created, err = time.Parse(timeISO8601, created)
+			logIfErr(err)
+		}
 		f.Slug = slugify(f.Name)
 		forums = append(forums, f)
 	}
