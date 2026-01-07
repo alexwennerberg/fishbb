@@ -461,7 +461,6 @@ func doChangePassword(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/me", http.StatusSeeOther)
 }
 
-
 func doSetRole(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("role")
 	uid, err := strconv.Atoi(r.PathValue("uid"))
@@ -630,7 +629,7 @@ func Serve() {
 
 	r.HandleFunc("/*", notFound)
 
-	log.Info("starting server", Port)
+	log.Info(fmt.Sprintf("starting server on port %s", Port))
 	err = http.ListenAndServe(Port, r)
 	if err != nil {
 		panic(err)

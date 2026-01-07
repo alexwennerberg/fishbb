@@ -13,7 +13,7 @@ no javascript
 ## Running
 
 ```sh
-go run main.go
+go build && ./fishbb
 ```
 
 This will setup a database with the admin user with username 'admin' and password 'admin'. You can also set a custom db path:
