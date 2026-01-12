@@ -3,7 +3,7 @@ package main
 import "strconv"
 
 // non user-configurable config
-var Port = ":8080"
+var Port = ":8081"
 var DBPath = "fishbb.db"
 
 // Changing this will break existing URLs
@@ -17,8 +17,6 @@ type Config struct {
 	BoardName string
 	// The description of the bulletin board
 	BoardDescription string
-
-	Domain string // todo not exactly
 
 	// optional (but required for email sending)
 	SMTPUsername string
@@ -35,7 +33,6 @@ func DefaultConfig() Config {
 		BoardName:        "fishbb",
 		BoardDescription: "A discussion board",
 		RequiresApproval: false,
-		Domain:           "http://localhost:8080",
 	}
 }
 
