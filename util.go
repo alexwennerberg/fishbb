@@ -178,7 +178,7 @@ func timeago(t *time.Time) string {
 		amount = int(d.Hours()) / 24
 		metric = "day"
 	} else {
-		return t.Format("2006-02-01")
+		return t.Format("2006-01-02")
 	}
 	if amount == 1 {
 		return fmt.Sprintf("%d %s ago", amount, metric)

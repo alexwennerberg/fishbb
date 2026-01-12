@@ -844,7 +844,7 @@ func getformtoken(r *http.Request) string {
 		return ""
 	}
 	if !(len(token) == authlen && authregex.MatchString(token)) {
-		log.Info("login: bad token: %s", token)
+		log.Info("login: bad token", "token", token)
 		return ""
 	}
 	return token
@@ -863,7 +863,7 @@ var validcookies = NewCache(CacheOptions{Filler: func(cookie string) (*UserInfo,
 		if err == sql.ErrNoRows {
 			log.Info("login: no auth found")
 		} else {
-			log.Info("login: error scanning auth row: %s", err)
+			log.Info("login: error scanning auth row", "error", err)
 		}
 		return nil, false
 	}
@@ -904,7 +904,7 @@ func loaduser(username string) (int, string, bool) {
 		if err == sql.ErrNoRows {
 			log.Info("login: no username found")
 		} else {
-			log.Info("login: error loading username: %s", err)
+			log.Info("login: error loading username", "error", err)
 		}
 		return -1, "", false
 	}
@@ -998,7 +998,7 @@ func LogoutFunc(w http.ResponseWriter, r *http.Request) {
 	if ok && CheckCSRF(r) {
 		err := deleteauth(userinfo.UserID)
 		if err != nil {
-			log.Info("login: error deleting old auth: %s", err)
+			log.Info("login: error deleting old auth", "error", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
