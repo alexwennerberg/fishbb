@@ -115,6 +115,9 @@ body {
   max-width: 950px;
 }
 
+main { background: var(--bg); }
+header { background: var(--bg); }
+
 header {
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
