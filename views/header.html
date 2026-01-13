@@ -25,17 +25,14 @@
       <a href="/login">Login</a>
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>.
-	  {{ if (.User.Role.Can "mod") }}<a href="/control">Control</a>{{ end }}
-	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">Logout</button>
+	  {{ if (.User.Role.Can "mod") }}<a href="/control">control</a>{{ end }}
+	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">logout</button>
 	<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 	  </form>
       {{ end }}
 	  <br>
     </div>
-
   </div>
 {{ if and .User (not (.User.Role.Can "user"))}}
           <div class="alert">Your account is pending approval and not yet active. You will be able to post when your account is approved. Check back later!</div>
-          {{ end }}
-  </header>
-<main>
+      {{ end }}

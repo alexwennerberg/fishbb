@@ -66,9 +66,12 @@ button:not(.link-button) {
 .post-body p {
   margin-top: 0px;
   margin-bottom: 0;
-  padding-bottom: 0.2rem;
+  padding-bottom: 0.3rem;
 }
 
+.item-list {
+    padding-left: 0.3rem;
+}
 
 blockquote {
   margin: 0.2rem;
@@ -109,7 +112,10 @@ body {
 }
 
 header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.2rem;
+  border-bottom: 1px solid var(--border);
 }
 
 #page-header {

@@ -1,11 +1,13 @@
 {{ template "header.html" . }}
+{{ if .Forum }} {{ .Forum.Description }} {{ end }}
+</header>
 <main>
 {{ template "pagelist.html" . }}
 {{ if not (len .Threads) }}
 <p>No threads in this forum yet. Be the first to create one!</p>
 {{ else }} 
   {{ range .Threads }}
-  <div>
+  <div class="item-list">
 	  <a href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> (active
 		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>)
 		<br>
@@ -14,7 +16,6 @@
 {{ end }}
 <br>
 <a href="/thread/new?forumid={{.Forum.ID}}">New Thread</a>
-</main>
 {{ $pages := pageArr .ItemCount }}
 {{ $length := len $pages }}
 {{ if ne $length 1 }}
