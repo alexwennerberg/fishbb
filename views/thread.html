@@ -6,7 +6,7 @@
 <div class="post" id={{.ID}}>
   <div class="post-meta">
 	  <div>
-		  <b>{{.Author.Username}}</b> <a href="#{{.ID}}" title="Link to this post">{{ timeago .Created}}</a>{{ if .Edited }}<em title="edited">*</em>{{end}}
+          <a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</a></b> <a href="#{{.ID}}" title="Link to this post">{{ timeago .Created}}</a>{{ if .Edited }}<em title="edited">*</em>{{end}}
 {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
 <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}">reply</a>
 {{ end }}

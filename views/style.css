@@ -73,6 +73,10 @@ button:not(.link-button) {
     padding-left: 0.3rem;
 }
 
+main > * {
+    padding-left: 0.3rem;
+}
+
 blockquote {
   margin: 0.2rem;
   box-sizing:border-box;
@@ -115,7 +119,6 @@ header {
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
   padding-left: 0.2rem;
-  border-bottom: 1px solid var(--border);
 }
 
 #page-header {

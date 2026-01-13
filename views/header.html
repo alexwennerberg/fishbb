@@ -11,7 +11,7 @@
   <header>
   <div id="page-header">
 	  <div>
-		  <a href="/" class="title-link">FishBB</a>
+		  <a href="/" class="title-link">fishbb</a>
 		  {{ if .Forum }}
 		  &gt; <a class="title-link" href="/f/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
 		  {{ end }}
@@ -21,8 +21,8 @@
               </div>
     <div id="nav">
       {{ if not .User }}
-      <a href="/register">Register</a>
-      <a href="/login">Login</a>
+      <a href="/register">register</a>
+      <a href="/login">login</a>
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>.
 	  {{ if (.User.Role.Can "mod") }}<a href="/control">control</a>{{ end }}
