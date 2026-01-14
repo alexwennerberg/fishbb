@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/mail"
 	"regexp"
 	"slices"
 	"time"
@@ -50,6 +51,14 @@ func validUsername(u string) bool {
 	return unameRegex.MatchString(u)
 }
 
+func validEmail(e string) bool {
+	_, err := mail.ParseAddress(e)
+	return err == nil
+}
+
+func validPassword(p string) bool {
+	return len(p) >= 8
+}
 
 func updatePassword(id int, password string) error {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
@@ -69,6 +78,16 @@ func createUser(username, email, password string, role Role) error {
 	return err
 }
 
+func getUserIDByEmail(email string) (*int, error) {
+	row := stmtGetUserIDByEmail.QueryRow(email)
+	var id int
+	err := row.Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		// return no value
+		return nil, nil
+	}
+	return &id, err
+}
 
 func getUser(username string) (*User, error) {
 	row := stmtGetUser.QueryRow(username)
@@ -108,6 +127,38 @@ func getUsers() ([]User, error) {
 	return users, nil
 }
 
+// unused
+func getAllUsernames() ([]string, error) {
+	var usernames []string
+	rows, err := stmtGetUsers.Query()
+	if err != nil {
+		return nil, fmt.Errorf("could not execute query: %w", err)
+	}
+	for rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan rows: %w", err)
+		}
+		usernames = append(usernames, username)
+	}
+	return usernames, nil
+}
+
+func activateUser(id int) error {
+	_, err := stmtActivateUser.Exec(id)
+	return err
+}
+
+func updateUserBanStatus(id int, banned bool) error {
+	_, err := stmtUpdateBanStatus.Exec(!banned, id)
+	return err
+}
+
+func deleteUser(id int) error {
+	_, err := stmtDeleteUser.Exec(id)
+	return err
+}
 
 func updateUserRole(id int, role Role) error {
 	_, err := stmtUpdateUserRole.Exec(role, id)
