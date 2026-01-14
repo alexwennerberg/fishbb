@@ -10,13 +10,13 @@
   
 @media(prefers-color-scheme: dark) {
   :root {
-    --text: #e7e7e7;
+    --text: #fff;
     --text-inverse: #000;
-    --text-alt: #aaa;
-    --bg: #0d0d0d;
-    --bg-inverse: #ccc;
-    --bg-alt: #1c1c1c;
-    --border: #888;
+    --text-alt: #ccc;
+    --bg-alt: #040404;
+    --bg-inverse: #ddd;
+    --bg: #111;
+    --border: #555;
   }
 }
 
@@ -104,7 +104,7 @@ blockquote blockquote blockquote blockquote blockquote blockquote blockquote { b
 
 input {
   border: 1px solid var(--border);
-  background: inherit;
+  background: var(--bg-alt);
   color: inherit;
   border-radius: 0px;
 }
@@ -114,6 +114,10 @@ textarea {
   background: inherit;
   border: 1px solid var(--border);
   border-radius: 0px;
+}
+
+a {
+    color
 }
 
 button:hover:not(.link-button) {

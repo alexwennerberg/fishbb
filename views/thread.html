@@ -13,8 +13,7 @@
 <div class="post" id={{.ID}}>
   <div class="post-meta">
 	  <div style="color:var(--text-alt);">
-  <img  style="vertical-align:middle" src="/a?a={{.Author.Username}}" width=18>
-	  <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <a href="#{{.ID}}"
+  <a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</b></a> <a href="#{{.ID}}"
 																	title="Link to this post">#{{.ID}}</a> <span class="text-alt" title="{{ .Created
 	  }}">{{ timeago .Created}}
 	  {{ if .Edited }}<em>(edited {{timeago .Edited}})</em>{{end}}
