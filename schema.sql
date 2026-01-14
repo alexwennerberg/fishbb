@@ -2,6 +2,7 @@ create table if not exists board (
   id integer primary key,
   ownerid integer,
   name text,
+  slug text not null unique,
   description text,
   foreign key (ownerid) references user(id)
 );

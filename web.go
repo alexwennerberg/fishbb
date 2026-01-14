@@ -106,7 +106,7 @@ func boardIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	tmpl["Forums"] = forums
-	serveHTML(w, r, "instance", tmpl)
+	serveHTML(w, r, "board", tmpl)
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
@@ -669,6 +669,8 @@ func Serve() {
 	// TODO -- forums are self-contained units, this is where we do subdomain parameterization
 	r.HandleFunc("/", indexPage)
 	r.HandleFunc("/{board}", boardIndex)
+	r.HandleFunc("GET /{board}/f/{forum}", forumPage)
+	r.HandleFunc("GET /{board}/f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)
@@ -681,9 +683,10 @@ func Serve() {
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
 	// autogenerate favicon
+	// TODO -> Used Fixed icon
 	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "max-age=604800")
-		w.Write(genAvatar(config.BoardName))
+		w.Write(genAvatar("asdf"))
 	})
 	r.HandleFunc("GET /a", avatarHandler)
 	// TODO Consider CSRF wrapping

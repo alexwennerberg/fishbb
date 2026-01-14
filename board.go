@@ -8,3 +8,6 @@ type Board struct {
 
 func getBoards() {
 }
+
+func getBoard(slug string) {
+}
