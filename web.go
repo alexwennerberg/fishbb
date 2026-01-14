@@ -34,7 +34,6 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["User"] = user
 	info["Config"] = config
 	info["Version"] = SoftwareVersion
-	info["SingleInstance"] = SingleInstance
 	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
 	if info["Subtitle"] != nil {
