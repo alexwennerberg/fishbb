@@ -6,8 +6,32 @@ type Board struct {
 	Slug string
 }
 
-func getBoards() {
+func createBoard(name string) error {
+	_, err := db.Exec("insert into board (name, slug) values (?, ?)", name, slugify(name))
+	return err
 }
 
-func getBoard(slug string) {
+func getBoards() ([]Board, error) {
+	var boards []Board
+	rows, err := db.Query("select id, name, slug from board")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var b Board
+		err := rows.Scan(&b.ID, &b.Name, &b.Slug)
+		if err != nil {
+			return nil, err
+		}
+		boards = append(boards, b)
+	}
+	return boards, nil
+}
+
+func getBoard(slug string) (Board, error) {
+	row := db.QueryRow("select id, name, slug from board where slug = ?", slug)
+	var b Board
+	err := row.Scan(&b.ID, &b.Name, &b.Slug)
+	return b, err
 }

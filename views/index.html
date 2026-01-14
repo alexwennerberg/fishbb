@@ -17,10 +17,10 @@
 	<p><b><a href="/forum/new">Create</a> a new discussion board for free today.</p></b>
 
 	<p>Here are some that exist:</p>
-    <a href="/foo">Test</a>
-	</p>
+	{{range .Forums}}
+		<a href="/{{.Slug}}">{{.Name}}</a><br>
+	{{end}}
 	</div>
-    <div style="text-align:center;"><a href="/">Foo</a> | <a href="/">Bar</a> | <a href="/">Baz</a></div>
     </main>
 </body>
 {{ template "footer.html" . }}

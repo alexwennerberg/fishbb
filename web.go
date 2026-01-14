@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -35,6 +36,16 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["Config"] = config
 	info["Version"] = SoftwareVersion
 	info["CSRFToken"] = GetCSRF(r)
+
+	// Extract board from path
+	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
+	if len(pathParts) > 0 && pathParts[0] != "" {
+		board, err := getBoard(pathParts[0])
+		if err == nil {
+			info["Board"] = board
+		}
+	}
+
 	var title = config.BoardName
 	if info["Subtitle"] != nil {
 		title = info["Subtitle"].(string) + " - " + title
@@ -77,7 +88,7 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 // new index will be a list of instances
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
-	i, err := GetInstances()
+	i, err := getBoards()
 	if err != nil {
 		serverError(w, r, err)
 	}
@@ -594,7 +605,7 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 
 func doCreateForum(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
-	err := createForum(name, "Default Description")
+	err := createForum(name, "Default Description", 1)
 	if err != nil {
 		serverError(w, r, err)
 		return
@@ -666,7 +677,6 @@ func Serve() {
 	r.Use(ChangePostToHiddenMethod)
 
 	// Setup Templates
-	// TODO -- forums are self-contained units, this is where we do subdomain parameterization
 	r.HandleFunc("/", indexPage)
 	r.HandleFunc("/{board}", boardIndex)
 	r.HandleFunc("GET /{board}/f/{forum}", forumPage)

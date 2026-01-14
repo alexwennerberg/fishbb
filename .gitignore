@@ -1,4 +1,5 @@
 .bundle
+fishbb-server
 fishbb
 *.db
 deploy.sh

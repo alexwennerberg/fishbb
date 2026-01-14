@@ -4,7 +4,7 @@
   {{ range .Forums }}
   <tr>
     <td>
-      <a class="title-link" href="/f/{{.Slug}}">{{.Name}}</a><br>
+        <a class="title-link" href="/{{$.Board.Slug}}/f/{{.Slug}}">{{.Name}}</a><br>
 	  {{.Description}}<br>
 	  <span class="mobile">Threads: <b>{{.ThreadCount}}</b> (Last post <a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a>) </span>
     </td>

@@ -17,8 +17,8 @@ type Forum struct {
 	UniqueUsers      int
 }
 
-func createForum(name, description string) error {
-	_, err := db.Exec("insert into forum (name, description, slug) values (?, ?, ?)", name, description, slugify(name))
+func createForum(name, description string, boardid int) error {
+	_, err := db.Exec("insert into forum (name, description, slug, boardid) values (?, ?, ?, ?)", name, description, slugify(name), boardid)
 	return err
 }
 
