@@ -8,9 +8,9 @@
 {{ else }} 
   {{ range .Threads }}
   <div class="item-list">
-	  <a href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> (active
-		<a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a>)
-		<br>
+	  <a class="bigger" href="/f/{{$.Forum.Slug}}/{{.ID}}"><b>{{.Title}}</b></a> 
+      <div class="light">by <a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</b></a> N replies latest 
+          <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></div>
   </div>
   {{ end }}
 {{ end }}

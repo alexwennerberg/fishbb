@@ -6,24 +6,25 @@
 <div class="post" id={{.ID}}>
   <div class="post-meta">
 	  <div>
-          <a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</a></b> <a href="#{{.ID}}" title="Link to this post">{{ timeago .Created}}</a>{{ if .Edited }}<em title="edited">*</em>{{end}}
-{{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
-<a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}">reply</a>
-{{ end }}
-
-		  {{ if and $.User (or (eq .Author.ID $.User.ID) ($.User.Role.Can "mod")) }}
-		  <a href="/post/{{.ID}}/edit">edit</a>
-		  <form style="display:inline" action="/post/{{.ID}}" method="POST">
-			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">delete</button>
-		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
-		  </form>
-
-		  {{ end }}
+          <a href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</a></b> <a class="light"  href="#{{.ID}}" title="Link to this post">{{ timeago .Created}}</a>{{ if .Edited }}<em class="light" title="edited">*</em>{{end}}
 
 	  </div>
   </div>
   <div class="post-body">
   {{ .Render }}
+    </div>
+    <div class="light">
+{{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
+<a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}">reply</a>
+{{ end }}
+
+          {{ if and $.User (or (eq .Author.ID $.User.ID) ($.User.Role.Can "mod")) }}
+          <a href="/post/{{.ID}}/edit">edit</a>
+          <form style="display:inline" action="/post/{{.ID}}" method="POST">
+              <input type="hidden" name="_method" value="DELETE"><button class="link-button">delete</button>
+        <input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
+          </form>
+		  {{ end }}
     </div>
 </div>
 {{ end }}

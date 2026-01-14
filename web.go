@@ -46,7 +46,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	err = views.ExecuteTemplate(w, name+".html", info)
 	if err != nil {
 		*l = *l.With(httplog.ErrAttr(err))
-		w.Write([]byte("<h1>TEMPLATE ERROR</h1>"))
+		w.Write([]byte("<h1>Error Rending Template</h1>"))
 	}
 }
 
