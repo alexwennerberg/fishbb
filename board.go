@@ -1,9 +1,10 @@
 package main
 
 type Board struct {
-	ID   int
-	Name string
-	Slug string
+	ID          int
+	Name        string
+	Slug        string
+	Description string
 }
 
 func createBoard(name string) error {

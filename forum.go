@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -8,24 +9,35 @@ type Forum struct {
 	ID          int
 	Name        string
 	Description string
-	Slug        string
+	Slug        string // TODO rename
 	// lowest level that can view this for
 	ReadPermissions  Role
 	WritePermissions Role
 	LastPost         Post
 	ThreadCount      int
 	UniqueUsers      int
+	Board            Board
 }
 
+func (f Forum) FullSlug() string { // TODO rename
+	// TODO -- escape?
+	return fmt.Sprintf("/%s/f/%s/", f.Board.Slug, f.Slug)
+}
 func createForum(name, description string, boardid int) error {
 	_, err := db.Exec("insert into forum (name, description, slug, boardid) values (?, ?, ?, ?)", name, description, slugify(name), boardid)
 	return err
 }
 
 func getForum(id int) (Forum, error) {
-	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forum where id = ?", id)
+	row := db.QueryRow(`
+		select forum.id, forum.name, forum.description, forum.slug, forum.read_permissions, forum.write_permissions,
+		board.id, board.name, board.slug
+		from forum
+		join board on forum.boardid = board.id
+		where forum.id = ?`, id)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions,
+		&f.Board.ID, &f.Board.Name, &f.Board.Slug)
 	return f, err
 }
 

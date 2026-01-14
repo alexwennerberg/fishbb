@@ -38,11 +38,13 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["CSRFToken"] = GetCSRF(r)
 
 	// Extract board from path
-	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
-	if len(pathParts) > 0 && pathParts[0] != "" {
-		board, err := getBoard(pathParts[0])
-		if err == nil {
-			info["Board"] = board
+	if info["Board"] == nil {
+		pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
+		if len(pathParts) > 0 && pathParts[0] != "" {
+			board, err := getBoard(pathParts[0])
+			if err == nil {
+				info["Board"] = board
+			}
 		}
 	}
 
@@ -187,11 +189,13 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
 	var err error
-	tmpl["Forum"], err = getForum(forumID)
+	forum, err := getForum(forumID)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
+	tmpl["Forum"] = forum
+	tmpl["Board"] = forum.Board
 	serveHTML(w, r, "new-thread", tmpl)
 }
 
@@ -219,11 +223,13 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 		tmpl["Content"] = ""
 	}
 	tmpl["Thread"] = thread
-	tmpl["Forum"], err = getForum(thread.ForumID)
+	forum, err := getForum(thread.ForumID)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
+	tmpl["Forum"] = forum
+	tmpl["Board"] = forum.Board
 	serveHTML(w, r, "new-post", tmpl)
 }
 
@@ -335,8 +341,7 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		// handle
 	}
-	slug := f.Slug
-	http.Redirect(w, r, fmt.Sprintf("/f/%s/%d", slug, tid), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/%s/%d", f.FullSlug(), tid), http.StatusSeeOther)
 }
 
 // hashes string and builds png avatar
@@ -679,10 +684,9 @@ func Serve() {
 	// Setup Templates
 	r.HandleFunc("/", indexPage)
 	r.HandleFunc("/{board}", boardIndex)
+	// TODO these paths are kinda ugly
 	r.HandleFunc("GET /{board}/f/{forum}", forumPage)
-	r.HandleFunc("GET /{board}/f/{forum}", forumPage)
-	r.HandleFunc("GET /f/{forum}", forumPage)
-	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
+	r.HandleFunc("GET /{board}/f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)
 	r.HandleFunc("GET /login", loginPage)
 	// TODO limit registration successes

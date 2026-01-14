@@ -15,7 +15,7 @@
     <td>
 		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
-        <a class="title-link" href="/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
+        <a class="title-link" href="/{{$.Board.Slug}}/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div style="color:var(--text-alt)">
 			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>

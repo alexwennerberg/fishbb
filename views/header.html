@@ -11,19 +11,17 @@
   <header>
   <div id="page-header">
 	  <div>
-          🐟
-          <a href="/" class="title-link">FishBB</a>
+          <a href="/" class="title-link">🐟</a>
           {{ if .Board }}
-          &gt;
           <a href="/{{.Board.Slug}}" class="title-link">{{.Board.Name}}</a>
           {{ end }}
 		  {{ if .Forum }}
-		  &gt; <a class="title-link" href="/f/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
+          &gt; <a class="title-link" href="/{{.Board.Slug}}/f/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
 		  {{ end }}<br>
 		  {{ if .Forum }}
 		  {{ .Forum.Description }}
-		  {{ else }}
-		  {{.Config.BoardDescription}}
+		  {{ else if .Board }}
+		  {{ .Board.Description }}
 		  {{ end }}
               </div>
     <div id="nav">
