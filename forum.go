@@ -18,12 +18,12 @@ type Forum struct {
 }
 
 func createForum(name, description string) error {
-	_, err := stmtCreateForum.Exec(name, description, slugify(name))
+	_, err := db.Exec("insert into forums (name, description, slug) values (?, ?, ?)", name, description, slugify(name))
 	return err
 }
 
 func getForum(id int) (Forum, error) {
-	row := stmtGetForum.QueryRow(id)
+	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forums where id = ?", id)
 	var f Forum
 	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
 	return f, err
@@ -31,19 +31,19 @@ func getForum(id int) (Forum, error) {
 
 // forum name should be invariant -- it messes with the URL
 func updateForum(id int, description string, readRole Role, writeRole Role) error {
-	_, err := stmtUpdateForum.Exec(description, readRole, writeRole, id)
+	_, err := db.Exec("update forums set description = ?, read_permissions = ?, write_permissions = ? where id = ?", description, readRole, writeRole, id)
 	return err
 }
 
 func getForumBySlug(slug string) (Forum, error) {
-	row := stmtGetForumBySlug.QueryRow(slug)
+	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forums where slug = ?", slug)
 	var f Forum
 	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
 	return f, err
 }
 
 func getForumID(forumSlug string) int {
-	row := stmtGetForumID.QueryRow(forumSlug)
+	row := db.QueryRow("select id from forums where slug = ?", forumSlug)
 	var id int
 	err := row.Scan(&id)
 	logIfErr(err)
@@ -52,7 +52,31 @@ func getForumID(forumSlug string) int {
 
 func getForums() ([]Forum, error) {
 	var forums []Forum
-	rows, err := stmtGetForums.Query()
+	rows, err := db.Query(`
+		select forums.id, name, description, read_permissions, write_permissions,
+		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
+		coalesce(latest.username, ''), coalesce(latest.created, ''),
+		count(threads.id),
+		coalesce(unique_users.user_count, 0)
+		from forums
+		left join (
+			select threadid, threads.title, posts.id, threads.authorid,
+			users.username, max(posts.created) as created, forumid
+			from posts
+			join users on users.id = posts.authorid
+			join threads on posts.threadid = threads.id
+			group by forumid
+		) latest on latest.forumid = forums.id
+		left join threads on threads.forumid = forums.id
+		left join (
+			select threads.forumid, count(distinct posts.authorid) as user_count
+			from posts
+			join threads on posts.threadid = threads.id
+			group by threads.forumid
+		) unique_users on unique_users.forumid = forums.id
+		group by 1
+
+`)
 	if err != nil {
 		return nil, err
 	}

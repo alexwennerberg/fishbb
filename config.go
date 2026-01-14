@@ -9,9 +9,6 @@ var DBPath = "fishbb.db"
 // Changing this will break existing URLs
 const PageSize int = 50
 
-// TODO -- start gating features on self hosted or not
-var SingleInstance = false
-
 // most of these don't work yet
 type Config struct {
 	// Whether new signups require admin approval before users can post
@@ -20,10 +17,6 @@ type Config struct {
 	BoardName string
 	// The description of the bulletin board
 	BoardDescription string
-
-	// optional (but required for email sending)
-	SMTPUsername string
-	SMTPPassword string
 }
 
 // in multi-instance, config values that are shared by the cluster
@@ -56,17 +49,13 @@ func GetConfig() (Config, error) {
 		return Config{}, err
 	}
 	c.BoardDescription, _ = GetConfigValue("board-description")
-	if SingleInstance {
-		c.SMTPUsername, _ = GetConfigValue("smtp-username")
-		c.SMTPPassword, _ = GetConfigValue("smtp-password")
-	}
 	r, _ := GetConfigValue("requires-approval")
 	c.RequiresApproval, _ = strconv.ParseBool(r)
 	return c, nil
 }
 
 func GetConfigValue(key string) (string, error) {
-	row := stmtGetConfig.QueryRow(key)
+	row := db.QueryRow("select value from config where key = ?", key)
 	var val string
 	err := row.Scan(&val)
 	if err != nil {
@@ -76,6 +65,6 @@ func GetConfigValue(key string) (string, error) {
 }
 
 func UpdateConfig(key string, value any) error {
-	_, err := stmtUpdateConfig.Exec(key, value)
+	_, err := db.Exec("insert into config(key,value) values(?1,?2) on conflict(key) do update set value = ?2", key, value)
 	return err
 }

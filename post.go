@@ -60,7 +60,16 @@ func getPostSlug(postid int) (string, error) {
 	var threadid int
 	var forumname string
 	var count int
-	row := stmtGetPostSlug.QueryRow(postid)
+	row := db.QueryRow(`
+		select
+		threads.id,
+		forums.slug,
+		(select count(1) from posts where threads.id = posts.threadid and id < ?1) as count
+		from posts
+		left join threads on posts.threadid = threads.id
+		left join forums on threads.forumid = forums.id
+		where posts.id = ?1
+	`, postid)
 	err := row.Scan(&threadid, &forumname, &count)
 	if err != nil {
 		return "", err
@@ -79,7 +88,11 @@ func getPostSlug(postid int) (string, error) {
 // TODO maybe consolidate with query builder
 func searchPosts(q string) ([]Post, error) {
 	var posts []Post
-	rows, err := stmtSearchPosts.Query("%" + q + "%")
+	rows, err := db.Query(`
+		select posts.id, content, users.id, users.username, posts.created, posts.edited
+		from posts
+		join users on posts.authorid = users.id
+		where content like ? order by posts.id desc limit 1000`, "%" + q + "%")
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +111,11 @@ func searchPosts(q string) ([]Post, error) {
 func getPosts(threadid, page int) []Post {
 	var posts []Post
 	limit, offset := paginate(page)
-	rows, _ := stmtGetPosts.Query(threadid, limit, offset)
+	rows, _ := db.Query(`
+		select posts.id, content, users.id, users.username, posts.created, posts.edited
+		from posts
+		join users on posts.authorid = users.id
+		where threadid = ? limit ? offset ?`, threadid, limit, offset)
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
@@ -111,7 +128,11 @@ func getPosts(threadid, page int) []Post {
 func getPostsByUser(uid int, page int) ([]Post, error) {
 	var posts []Post
 	limit, offset := paginate(page)
-	rows, _ := stmtGetPostsByUser.Query(uid, limit, offset)
+	rows, _ := db.Query(`
+		select posts.id, content, users.id, users.username, posts.created, posts.edited
+		from posts
+		join users on posts.authorid = users.id
+		where authorid = ? order by posts.id desc limit ? offset ?`, uid, limit, offset)
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
@@ -125,14 +146,18 @@ func getPostsByUser(uid int, page int) ([]Post, error) {
 
 func getPost(postid int) (Post, error) {
 	var p Post
-	row := stmtGetPost.QueryRow(postid)
+	row := db.QueryRow(`
+		select posts.id, content, users.id, users.username, posts.created, posts.edited
+		from posts
+		join users on posts.authorid = users.id
+		where posts.id = ?`, postid)
 	err := row.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
 	return p, err
 }
 
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
-	res, err := stmtCreatePost.Exec(threadid, authorid, body)
+	res, err := db.Exec("insert into posts (threadid, authorid, content) values (?, ?, ?)", threadid, authorid, body)
 
 	if err != nil {
 		return 0, err
@@ -141,7 +166,7 @@ func createPost(authorid int, threadid int, body string) (int64, error) {
 }
 
 func editPost(postid int, content string) error {
-	res, err := stmtEditPost.Exec(content, postid)
+	res, err := db.Exec("update posts set content = ?, edited = current_timestamp where id = ?", content, postid)
 	aff, err := res.RowsAffected()
 	if err != nil {
 		return err
@@ -153,6 +178,6 @@ func editPost(postid int, content string) error {
 }
 
 func deletePost(postid int) error {
-	_, err := stmtDeletePost.Exec(postid)
+	_, err := db.Exec("delete from posts where id = ?", postid)
 	return err
 }

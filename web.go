@@ -642,7 +642,6 @@ func dummy(w http.ResponseWriter, r *http.Request) {
 func Serve() {
 	// order is important here
 	db = opendb()
-	PrepareStatements(db)
 	var err error
 	config, err = GetConfig()
 	if err != nil {

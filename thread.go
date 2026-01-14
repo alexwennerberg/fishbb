@@ -18,7 +18,7 @@ type Thread struct {
 
 func getThreadCount(forumID int) (int, error) {
 	var c int
-	row := stmtGetThreadCount.QueryRow(forumID)
+	row := db.QueryRow("select count(1) from threads where forumid = ?", forumID)
 	err := row.Scan(&c)
 	return c, err
 }
@@ -26,7 +26,23 @@ func getThreadCount(forumID int) (int, error) {
 func getThreads(forumID, page int) ([]Thread, error) {
 	var threads []Thread
 	limit, offset := paginate(page)
-	rows, err := stmtGetThreads.Query(forumID, limit, offset)
+	rows, err := db.Query(`
+		select threadid, forumid, threads.authorid, users.username, title,
+		threads.created, threads.pinned, threads.locked,
+		latest.id, latest.authorid, latest.username, latest.content,
+		latest.created, latest.replies - 1
+		from threads
+		join users on users.id = threads.authorid
+		join (
+			select threadid, posts.id, authorid, users.username, posts.content, max(posts.created) as created, count(1) as replies
+			from posts
+			join users on users.id = posts.authorid
+			group by threadid
+		) latest
+		on latest.threadid = threads.id
+		where forumid = ?
+		order by pinned desc, latest.created desc limit ? offset ?
+	`, forumID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -53,17 +69,24 @@ func getThreads(forumID, page int) ([]Thread, error) {
 }
 
 func setThreadPin(threadid int, pinned bool) error {
-	_, err := stmtThreadPin.Exec(pinned, threadid)
+	_, err := db.Exec("update threads set pinned = ? where id = ?", pinned, threadid)
 	return err
 }
 
 func setThreadLock(threadid int, locked bool) error {
-	_, err := stmtThreadLock.Exec(locked, threadid)
+	_, err := db.Exec("update threads set locked = ? where id = ?", locked, threadid)
 	return err
 }
 
 func getThread(threadid int) (Thread, error) {
-	row := stmtGetThread.QueryRow(threadid)
+	row := db.QueryRow(`
+		select threads.id, forumid, title, threads.authorid, users.username,
+		threads.created, threads.pinned, threads.locked, count(1) - 1 as replies
+		from threads
+		join users on users.id = threads.authorid
+		join posts on threads.id = posts.threadid
+		join forums on threads.forumid = forums.id
+		where threads.id = ?`, threadid)
 	var t Thread
 	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Latest.Created, &t.Pinned, &t.Locked, &t.Replies)
 	return t, err
@@ -71,7 +94,7 @@ func getThread(threadid int) (Thread, error) {
 
 // returns inserted thread ID
 func createThread(authorid, forumid int, title string) (int64, error) {
-	res, err := stmtCreateThread.Exec(authorid, forumid, title)
+	res, err := db.Exec("insert into threads (authorid, forumid, title) values (?, ?, ?);", authorid, forumid, title)
 	if err != nil {
 		return 0, err
 	}
