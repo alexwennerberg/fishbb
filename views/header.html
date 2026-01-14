@@ -29,6 +29,7 @@
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>.
 	  {{ if (.User.Role.Can "mod") }}<a href="/control">Control</a>{{ end }}
+	  <a href="/notifications">✉️ ({{ if .User.MentionsUnread }}<b>{{end}}{{.User.MentionsUnread }}{{if .User.MentionsUnread}}</b>{{end}})</a>
 	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">Logout</button>
 	<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 	  </form>

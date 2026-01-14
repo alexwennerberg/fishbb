@@ -35,7 +35,7 @@ func getThreads(forumID, page int) ([]Thread, error) {
 		var created string
 		err := rows.Scan(
 			&t.ID, &t.ForumID, &t.Author.ID, &t.Author.Username, &t.Title,
-			&t.Created, 
+			&t.Created, &t.Pinned, &t.Locked,
 			&t.Latest.ID, &t.Latest.Author.ID, &t.Latest.Author.Username,
 			&t.Latest.Content,
 			&created, &t.Replies)
@@ -65,7 +65,7 @@ func setThreadLock(threadid int, locked bool) error {
 func getThread(threadid int) (Thread, error) {
 	row := stmtGetThread.QueryRow(threadid)
 	var t Thread
-	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Latest.Created, &t.Replies)
+	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Latest.Created, &t.Pinned, &t.Locked, &t.Replies)
 	return t, err
 }
 

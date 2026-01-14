@@ -1,11 +1,17 @@
+create table if not exists boards (
+  id integer primary key,
+  subdomain text,
+  description text
+);
+
 create table if not exists forums (
   id integer primary key,
   name text, 
-  description text,
+  description text, 
   slug text not null unique, 
-  ownerid integer,
-  created datetime default current_timestamp,
-  foreign key (ownerid) references users(id)
+  read_permissions text not null default '',
+  write_permissions text not null default 'user',
+  created datetime default current_timestamp
 );
 
 create table if not exists threads (
@@ -13,6 +19,8 @@ create table if not exists threads (
   forumid integer,
   authorid integer,
   title text,
+  locked int not null default false,
+  pinned int not null default false,
   created datetime default current_timestamp,
   foreign key (forumid) references forums(id),
   foreign key (authorid) references users(id)
@@ -34,8 +42,14 @@ create table if not exists users (
   id integer primary key,
   username text not null unique,
   hash text,
-  role text not null default 'admin',
-  created datetime default current_timestamp
+  email text not null unique,
+  role text not null default 'inactive',
+  email_public int not null default false,
+  publicemail int not null default false,
+  about text not null default 'someone',
+  website text not null default '',
+  created datetime default current_timestamp,
+  mentions_checked datetime default '2000-01-01'
 );
 
 create table if not exists auth (
@@ -45,9 +59,11 @@ create table if not exists auth (
   foreign key (userid) references users(id)
 );
 
+-- sort of awkward bc it just stores a toml blob. TODO move away from toml
 create table if not exists config (
   id integer primary key,
   key text unique,
+  -- toml blob
   value text 
 );
 

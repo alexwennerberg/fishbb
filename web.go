@@ -24,7 +24,6 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	if u != nil {
 		user, err = getUser(u.Username)
 		if err != nil {
-			// WRONG ERROR HANDLING TODO
 			*l = *l.With(httplog.ErrAttr(err))
 			w.Write([]byte("<h1>TEMPLATE ERROR</h1>"))
 		}
@@ -35,6 +34,7 @@ func serveHTML(w http.ResponseWriter, r *http.Request, name string, info map[str
 	info["User"] = user
 	info["Config"] = config
 	info["Version"] = SoftwareVersion
+	info["SingleInstance"] = SingleInstance
 	info["CSRFToken"] = GetCSRF(r)
 	var title = config.BoardName
 	if info["Subtitle"] != nil {
@@ -75,15 +75,39 @@ func unauthorized(w http.ResponseWriter, r *http.Request) {
 	errorPage(w, r, http.StatusUnauthorized, "You are not authorized to perform this action, sorry!")
 }
 
+// new index will be a list of instances
 func indexPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	i, err := GetInstances()
+	if err != nil {
+		serverError(w, r, err)
+	}
+	tmpl["Forums"] = i
+	serveHTML(w, r, "index", tmpl)
+}
+
+func instanceIndex(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	var role Role
+	if u != nil {
+		role = u.Role
+	}
 	tmpl := make(map[string]any)
 	f, err := getForums()
 	if err != nil {
-		serverError(w, r, fmt.Errorf("failed get forums query: %w", err))
+		serverError(w, r, err)
 		return
 	}
-	tmpl["Forums"] = f
-	serveHTML(w, r, "index", tmpl)
+	// filter forums above your role
+	// TODO move to db layer
+	var forums []Forum
+	for _, ff := range f {
+		if role.Can(ff.ReadPermissions) {
+			forums = append(forums, ff)
+		}
+	}
+	tmpl["Forums"] = forums
+	serveHTML(w, r, "instance", tmpl)
 }
 
 func forumPage(w http.ResponseWriter, r *http.Request) {
@@ -93,18 +117,18 @@ func forumPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	} else if err != nil {
-		serverError(w, r, fmt.Errorf("error getting forum: %w", err))
+		serverError(w, r, err)
 		return
 	}
 	page := page(r)
 	threads, err := getThreads(f.ID, page)
 	if err != nil {
-		serverError(w, r, fmt.Errorf("error getting threads: %w", err))
+		serverError(w, r, err)
 		return
 	}
 	count, err := getThreadCount(f.ID)
 	if err != nil {
-		serverError(w, r, fmt.Errorf("error getting threads count: %w", err))
+		serverError(w, r, err)
 		return
 	}
 	tmpl["Forum"] = f
@@ -124,9 +148,10 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	}
+
 	forum, err := getForumBySlug(r.PathValue("forum"))
 	if err != nil {
-		serverError(w, r, fmt.Errorf("error getting forum by slug: %w", err))
+		serverError(w, r, err)
 	}
 	page := page(r)
 	thread, err := getThread(threadID)
@@ -135,7 +160,7 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 		notFound(w, r)
 		return
 	} else if err != nil {
-		serverError(w, r, fmt.Errorf("error getting thread: %w", err))
+		serverError(w, r, err)
 		return
 	}
 	tmpl["Thread"] = thread
@@ -284,6 +309,10 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		serverError(w, r, err)
 	}
+	if !u.Role.Can(f.WritePermissions) {
+		unauthorized(w, r)
+		return
+	}
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	tid, err := createThread(u.UserID, forumID, title)
@@ -317,6 +346,7 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := make(map[string]any)
 	if r.Method == "POST" {
 		username := r.FormValue("username")
+		email := r.FormValue("email")
 		password := r.FormValue("password")
 		password2 := r.FormValue("password2")
 
@@ -338,11 +368,16 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 			formErr("Invalid username. Must contain only letters and numbers and be maximum of 25 characters.")
 			return
 		}
+		if !validEmail(email) {
+			formErr("Invalid email.")
+			return
+		}
+
 		role := RoleUser
 		if config.RequiresApproval {
 			role = RoleInactive
 		}
-		err := createUser(username, password, role)
+		err := createUser(username, email, password, role)
 		if err != nil {
 			serverError(w, r, err)
 		}
@@ -461,6 +496,66 @@ func doChangePassword(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/me", http.StatusSeeOther)
 }
 
+func doUpdateMe(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	about := r.FormValue("about")
+	website := r.FormValue("website")
+	username := r.FormValue("username")
+	if len(about) > 250 || len(website) > 250 || !validUsername(username) {
+		return // TODO validation err
+	}
+	updateUser := User{
+		ID:          u.UserID,
+		Username:    username,
+		Email:       r.FormValue("email"),
+		EmailPublic: r.FormValue("email-public") == "on",
+		About:       about,
+		Website:     website,
+	}
+	err := updateMe(updateUser)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl := make(map[string]any)
+	info, _ := getUser(u.Username)
+	tmpl["UserInfo"] = info
+	tmpl["Notice"] = "Updated!"
+	serveHTML(w, r, "me", tmpl)
+}
+
+func searchPage(w http.ResponseWriter, r *http.Request) {
+	tmpl := make(map[string]any)
+	q := r.URL.Query().Get("q")
+	tmpl["Query"] = q
+	posts, err := searchPosts(q)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["Posts"] = posts
+	serveHTML(w, r, "search", tmpl)
+}
+
+func notificationsPage(w http.ResponseWriter, r *http.Request) {
+	u := GetUserInfo(r)
+	tmpl := make(map[string]any)
+	q := fmt.Sprintf("@%s", u.Username)
+	tmpl["Query"] = q
+	posts, err := searchPosts(q)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	err = setNotificationsRead(u.UserID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	tmpl["Posts"] = posts
+	serveHTML(w, r, "search", tmpl)
+}
+
 func doSetRole(w http.ResponseWriter, r *http.Request) {
 	action := r.FormValue("role")
 	uid, err := strconv.Atoi(r.PathValue("uid"))
@@ -488,7 +583,7 @@ func editForumPage(w http.ResponseWriter, r *http.Request) {
 	id := getForumID(fs)
 	if r.Method == "POST" {
 		// TODO field validation
-		err := updateForum(id, r.FormValue("description"))
+		err := updateForum(id, r.FormValue("description"), Role(r.FormValue("read-permissions")), Role(r.FormValue("write-permissions")))
 		if err != nil {
 			serverError(w, r, err)
 		}
@@ -574,8 +669,8 @@ func Serve() {
 
 	// Setup Templates
 	// TODO -- forums are self-contained units, this is where we do subdomain parameterization
-	r.HandleFunc("/", indexPage)
-	// r.HandleFunc("/f/new", indexPage) // TODO
+	r.HandleFunc("/tmp", indexPage)
+	r.HandleFunc("/", instanceIndex)
 	r.HandleFunc("GET /f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)
@@ -583,6 +678,8 @@ func Serve() {
 	// TODO limit registration successes
 	// TODO Consider CSRF wrapping
 	r.With(LimitByRealIP(25, 1*time.Hour)).HandleFunc("/register", registerPage)
+	r.HandleFunc("GET /search", searchPage)
+	r.HandleFunc("GET /notifications", notificationsPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
 	// autogenerate favicon
@@ -607,6 +704,8 @@ func Serve() {
 		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
 		r.With(CSRFWrap).HandleFunc("DELETE /post/{postid}", doDeletePost)
 		r.HandleFunc("GET /me", mePage)
+		// TODO POST -> PUT /user/{id} unify user updates?
+		r.With(CSRFWrap).HandleFunc("POST /me", doUpdateMe)
 		r.HandleFunc("GET /change-password", changePasswordPage)
 		r.HandleFunc("POST /change-password", doChangePassword)
 
