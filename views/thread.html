@@ -7,7 +7,7 @@
 </div>
 <div class="div-header">
 
-	<a href="/f/{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{ if .Thread.Locked }} {{ template "lock.svg" }} {{end}} {{.Thread.Title}}
+	<a href="{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{ if .Thread.Locked }} {{ template "lock.svg" }} {{end}} {{.Thread.Title}}
 </div>
 {{ range .Posts }}
 <div class="post" id={{.ID}}>

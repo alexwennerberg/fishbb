@@ -4,7 +4,7 @@
   {{ range .Forums }}
   <tr>
     <td>
-        <a class="title-link" href="/{{$.Board.Slug}}/f/{{.Slug}}">{{.Name}}</a><br>
+        <a class="title-link" href="{{.Slug}}">{{.Name}}</a><br>
 	  {{.Description}}<br>
 	  <span class="mobile">Threads: <b>{{.ThreadCount}}</b> (Last post <a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a>) </span>
     </td>
@@ -13,7 +13,7 @@
 		<span style="color:var(--text-alt)">
 		{{ if .LastPost.ID }}<a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a> 
 		by <a href="/u/{{.LastPost.Author.Username}}">{{.LastPost.Author.Username}}</a><br>
-		in <a href="/f/{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
+		in <a href="{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
 		</div>
 		{{else}}No posts yet!
 		{{ end }}

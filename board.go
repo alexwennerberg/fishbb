@@ -7,8 +7,8 @@ type Board struct {
 	Description string
 }
 
-func createBoard(name string) error {
-	_, err := db.Exec("insert into board (name, slug) values (?, ?)", name, slugify(name))
+func createBoard(name string, description string, ownerid int) error {
+	_, err := db.Exec("insert into board (name, slug, description, ownerid) values (?, ?, ?, ?)", name, slugify(name), description, ownerid)
 	return err
 }
 

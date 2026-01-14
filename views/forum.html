@@ -15,7 +15,7 @@
     <td>
 		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
-        <a class="title-link" href="/{{$.Board.Slug}}/f/{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
+        <a class="title-link" href="{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div style="color:var(--text-alt)">
 			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
@@ -23,8 +23,8 @@
 		</div>
 	  {{ if and $.User ($.User.Role.Can "mod")}}
 	  <span>
-		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
-		  <form style="display:inline;" method="POST" action="/f/{{$.Forum.Slug}}/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
+		  <form style="display:inline;" method="POST" action="/thread/{{.ID}}/lock?s={{not .Locked}}"><button class="link-button" id="submit">{{ if .Locked}}Unl{{else}}L{{end}}ock</button></form>
+		  <form style="display:inline;" method="POST" action="/thread/{{.ID}}/pin?s={{ not .Pinned}}"><button class="link-button" id="submit">{{ if .Pinned}}Unp{{else}}P{{end}}in</button></form>
 	  </span>
 		</div>
 	  {{ end }}

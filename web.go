@@ -341,7 +341,7 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		// handle
 	}
-	http.Redirect(w, r, fmt.Sprintf("/%s/%d", f.FullSlug(), tid), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/%s/%d", f.Slug, tid), http.StatusSeeOther)
 }
 
 // hashes string and builds png avatar
@@ -625,13 +625,25 @@ func doLockThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state, _ := strconv.ParseBool(r.URL.Query().Get("s"))
+
+	thread, err := getThread(threadID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	forum, err := getForum(thread.ForumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+
 	err = setThreadLock(threadID, state)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
-	// TODO paginate redirect
-	http.Redirect(w, r, "/f/"+r.PathValue("forum"), http.StatusSeeOther)
+
+	http.Redirect(w, r, forum.Slug, http.StatusSeeOther)
 }
 
 func doPinThread(w http.ResponseWriter, r *http.Request) {
@@ -641,13 +653,25 @@ func doPinThread(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state, _ := strconv.ParseBool(r.URL.Query().Get("s"))
+
+	thread, err := getThread(threadID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+	forum, err := getForum(thread.ForumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+
 	err = setThreadPin(threadID, state)
 	if err != nil {
 		serverError(w, r, err)
 		return
 	}
-	// TODO paginate redirect
-	http.Redirect(w, r, "/f/"+r.PathValue("forum"), http.StatusSeeOther)
+
+	http.Redirect(w, r, forum.Slug, http.StatusSeeOther)
 }
 
 // placeholder
@@ -733,6 +757,8 @@ func Serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Mod)
 		r.HandleFunc("/control", controlPanelPage)
+		r.HandleFunc("POST /thread/{tid}/lock", doLockThread)
+		r.HandleFunc("POST /thread/{tid}/pin", doPinThread)
 	})
 	// admin functions
 	r.Group(func(r chi.Router) {

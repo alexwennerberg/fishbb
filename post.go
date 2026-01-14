@@ -58,19 +58,22 @@ func postValid(body string) bool {
 // requires a lot of stuff
 func getPostSlug(postid int) (string, error) {
 	var threadid int
-	var forumname string
+	var forumslug string
+	var boardslug string
 	var count int
 	row := db.QueryRow(`
 		select
 		thread.id,
 		forum.slug,
+		board.slug,
 		(select count(1) from post where thread.id = post.threadid and id < ?1) as count
 		from post
 		left join thread on post.threadid = thread.id
 		left join forum on thread.forumid = forum.id
+		left join board on forum.boardid = board.id
 		where post.id = ?1
 	`, postid)
-	err := row.Scan(&threadid, &forumname, &count)
+	err := row.Scan(&threadid, &forumslug, &boardslug, &count)
 	if err != nil {
 		return "", err
 	}
@@ -78,9 +81,9 @@ func getPostSlug(postid int) (string, error) {
 	var url string
 	// TODO url builder
 	if postPage != 1 {
-		url = fmt.Sprintf("/f/%s/%d?p=%d#%d", forumname, threadid, postPage, postid)
+		url = fmt.Sprintf("/%s/f/%s/%d?p=%d#%d", boardslug, forumslug, threadid, postPage, postid)
 	} else {
-		url = fmt.Sprintf("/f/%s/%d#%d", forumname, threadid, postid)
+		url = fmt.Sprintf("/%s/f/%s/%d#%d", boardslug, forumslug, threadid, postid)
 	}
 	return url, nil
 }
@@ -92,7 +95,7 @@ func searchPosts(q string) ([]Post, error) {
 		select post.id, content, user.id, user.username, post.created, post.edited
 		from post
 		join user on post.authorid = user.id
-		where content like ? order by post.id desc limit 1000`, "%" + q + "%")
+		where content like ? order by post.id desc limit 1000`, "%"+q+"%")
 	if err != nil {
 		return nil, err
 	}

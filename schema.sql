@@ -2,7 +2,7 @@ create table if not exists board (
   id integer primary key,
   ownerid integer,
   name text,
-  slug text not null unique,
+  slug text not null unique, /* TODO RENAME */
   description text,
   foreign key (ownerid) references user(id)
 );

@@ -43,7 +43,7 @@ func initdb() {
 		}
 	}
 	// squash errors for idempotence
-	createBoard("NewBoard")
+	createBoard("NewBoard", "My Best Board", 1)
 	createForum("General", "General discussion", 1)
 	// create admin / admin
 	createUser("admin", "webmaster@foo", "admin", RoleAdmin)

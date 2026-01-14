@@ -9,7 +9,7 @@ type Forum struct {
 	ID          int
 	Name        string
 	Description string
-	Slug        string // TODO rename
+	Slug        string
 	// lowest level that can view this for
 	ReadPermissions  Role
 	WritePermissions Role
@@ -19,10 +19,6 @@ type Forum struct {
 	Board            Board
 }
 
-func (f Forum) FullSlug() string { // TODO rename
-	// TODO -- escape?
-	return fmt.Sprintf("/%s/f/%s/", f.Board.Slug, f.Slug)
-}
 func createForum(name, description string, boardid int) error {
 	_, err := db.Exec("insert into forum (name, description, slug, boardid) values (?, ?, ?, ?)", name, description, slugify(name), boardid)
 	return err
@@ -36,8 +32,10 @@ func getForum(id int) (Forum, error) {
 		join board on forum.boardid = board.id
 		where forum.id = ?`, id)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions,
+	var u string
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &u, &f.ReadPermissions, &f.WritePermissions,
 		&f.Board.ID, &f.Board.Name, &f.Board.Slug)
+	f.Slug = fmt.Sprintf("/%s/f/%s", f.Board.Slug, u)
 	return f, err
 }
 
@@ -48,9 +46,17 @@ func updateForum(id int, description string, readRole Role, writeRole Role) erro
 }
 
 func getForumBySlug(slug string) (Forum, error) {
-	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forum where slug = ?", slug)
+	row := db.QueryRow(`
+		select forum.id, forum.name, forum.description, forum.slug, forum.read_permissions, forum.write_permissions,
+		board.id, board.name, board.slug
+		from forum
+		join board on forum.boardid = board.id
+		where forum.slug = ?`, slug)
 	var f Forum
-	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
+	var u string
+	err := row.Scan(&f.ID, &f.Name, &f.Description, &u, &f.ReadPermissions, &f.WritePermissions,
+		&f.Board.ID, &f.Board.Name, &f.Board.Slug)
+	f.Slug = fmt.Sprintf("/%s/f/%s", f.Board.Slug, u)
 	return f, err
 }
 
@@ -65,12 +71,14 @@ func getForumID(forumSlug string) int {
 func getForums() ([]Forum, error) {
 	var forums []Forum
 	rows, err := db.Query(`
-		select forum.id, name, description, read_permissions, write_permissions,
+		select forum.id, forum.name, forum.description, forum.slug, forum.read_permissions, forum.write_permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
 		count(thread.id),
-		coalesce(unique_users.user_count, 0)
+		coalesce(unique_users.user_count, 0),
+		board.id, board.name, board.slug
 		from forum
+		join board on forum.boardid = board.id
 		left join (
 			select threadid, thread.title, post.id, thread.authorid,
 			user.username, max(post.created) as created, forumid
@@ -95,10 +103,12 @@ func getForums() ([]Forum, error) {
 	for rows.Next() {
 		var f Forum
 		var created string
-		err := rows.Scan(&f.ID, &f.Name, &f.Description, &f.ReadPermissions, &f.WritePermissions,
+		var forumSlug string
+		err := rows.Scan(&f.ID, &f.Name, &f.Description, &forumSlug, &f.ReadPermissions, &f.WritePermissions,
 			&f.LastPost.ThreadID, &f.LastPost.ThreadTitle,
 			&f.LastPost.ID,
-			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created, &f.ThreadCount, &f.UniqueUsers)
+			&f.LastPost.Author.ID, &f.LastPost.Author.Username, &created, &f.ThreadCount, &f.UniqueUsers,
+			&f.Board.ID, &f.Board.Name, &f.Board.Slug)
 		if err != nil {
 			return nil, err
 		}
@@ -106,7 +116,7 @@ func getForums() ([]Forum, error) {
 			f.LastPost.Created, err = time.Parse(timeISO8601, created)
 			logIfErr(err)
 		}
-		f.Slug = slugify(f.Name)
+		f.Slug = fmt.Sprintf("/%s/f/%s", f.Board.Slug, forumSlug)
 		forums = append(forums, f)
 	}
 	return forums, nil
