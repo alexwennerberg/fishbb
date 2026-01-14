@@ -18,12 +18,12 @@ type Forum struct {
 }
 
 func createForum(name, description string) error {
-	_, err := db.Exec("insert into forums (name, description, slug) values (?, ?, ?)", name, description, slugify(name))
+	_, err := db.Exec("insert into forum (name, description, slug) values (?, ?, ?)", name, description, slugify(name))
 	return err
 }
 
 func getForum(id int) (Forum, error) {
-	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forums where id = ?", id)
+	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forum where id = ?", id)
 	var f Forum
 	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
 	return f, err
@@ -31,19 +31,19 @@ func getForum(id int) (Forum, error) {
 
 // forum name should be invariant -- it messes with the URL
 func updateForum(id int, description string, readRole Role, writeRole Role) error {
-	_, err := db.Exec("update forums set description = ?, read_permissions = ?, write_permissions = ? where id = ?", description, readRole, writeRole, id)
+	_, err := db.Exec("update forum set description = ?, read_permissions = ?, write_permissions = ? where id = ?", description, readRole, writeRole, id)
 	return err
 }
 
 func getForumBySlug(slug string) (Forum, error) {
-	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forums where slug = ?", slug)
+	row := db.QueryRow("select id, name, description, slug, read_permissions, write_permissions from forum where slug = ?", slug)
 	var f Forum
 	err := row.Scan(&f.ID, &f.Name, &f.Description, &f.Slug, &f.ReadPermissions, &f.WritePermissions)
 	return f, err
 }
 
 func getForumID(forumSlug string) int {
-	row := db.QueryRow("select id from forums where slug = ?", forumSlug)
+	row := db.QueryRow("select id from forum where slug = ?", forumSlug)
 	var id int
 	err := row.Scan(&id)
 	logIfErr(err)
@@ -53,27 +53,27 @@ func getForumID(forumSlug string) int {
 func getForums() ([]Forum, error) {
 	var forums []Forum
 	rows, err := db.Query(`
-		select forums.id, name, description, read_permissions, write_permissions,
+		select forum.id, name, description, read_permissions, write_permissions,
 		coalesce(threadid, 0), coalesce(latest.title, ''), coalesce(latest.id, 0), coalesce(latest.authorid, 0),
 		coalesce(latest.username, ''), coalesce(latest.created, ''),
-		count(threads.id),
+		count(thread.id),
 		coalesce(unique_users.user_count, 0)
-		from forums
+		from forum
 		left join (
-			select threadid, threads.title, posts.id, threads.authorid,
-			users.username, max(posts.created) as created, forumid
-			from posts
-			join users on users.id = posts.authorid
-			join threads on posts.threadid = threads.id
+			select threadid, thread.title, post.id, thread.authorid,
+			user.username, max(post.created) as created, forumid
+			from post
+			join user on user.id = post.authorid
+			join thread on post.threadid = thread.id
 			group by forumid
-		) latest on latest.forumid = forums.id
-		left join threads on threads.forumid = forums.id
+		) latest on latest.forumid = forum.id
+		left join thread on thread.forumid = forum.id
 		left join (
-			select threads.forumid, count(distinct posts.authorid) as user_count
-			from posts
-			join threads on posts.threadid = threads.id
-			group by threads.forumid
-		) unique_users on unique_users.forumid = forums.id
+			select thread.forumid, count(distinct post.authorid) as user_count
+			from post
+			join thread on post.threadid = thread.id
+			group by thread.forumid
+		) unique_users on unique_users.forumid = forum.id
 		group by 1
 
 `)

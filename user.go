@@ -65,7 +65,7 @@ func updatePassword(id int, password string) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("update users set hash = ? where id = ?", hash, id)
+	_, err = db.Exec("update user set hash = ? where id = ?", hash, id)
 	return err
 }
 
@@ -74,12 +74,12 @@ func createUser(username, email, password string, role Role) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("insert into users (username, email, hash, role) values (?, ?, ?, ?)", username, email, hash, role)
+	_, err = db.Exec("insert into user (username, email, hash, role) values (?, ?, ?, ?)", username, email, hash, role)
 	return err
 }
 
 func getUserIDByEmail(email string) (*int, error) {
-	row := db.QueryRow("select users.id from users where users.email = ?", email)
+	row := db.QueryRow("select user.id from user where user.email = ?", email)
 	var id int
 	err := row.Scan(&id)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -91,11 +91,11 @@ func getUserIDByEmail(email string) (*int, error) {
 
 func getUser(username string) (*User, error) {
 	row := db.QueryRow(`
-		select users.id,username,email,email_public,role,about,website,users.created,count(posts.id),mentions_checked
-		from users
-		left join posts on users.id = posts.authorid
-		where users.username = ?
-		group by users.id
+		select user.id,username,email,email_public,role,about,website,user.created,count(post.id),mentions_checked
+		from user
+		left join post on user.id = post.authorid
+		where user.username = ?
+		group by user.id
 		`, username)
 	var mentionsChecked time.Time
 	var u User
@@ -107,7 +107,7 @@ func getUser(username string) (*User, error) {
 		return nil, fmt.Errorf("failed to scan row: %w", err)
 	}
 	// probably super inefficient
-	row = db.QueryRow(`select count(1) from posts where content like ? and created > ?`, fmt.Sprintf("%%@%s%%", u.Username), mentionsChecked)
+	row = db.QueryRow(`select count(1) from post where content like ? and created > ?`, fmt.Sprintf("%%@%s%%", u.Username), mentionsChecked)
 	fmt.Println(u.MentionsUnread)
 	err = row.Scan(&u.MentionsUnread)
 	if err != nil {
@@ -117,13 +117,13 @@ func getUser(username string) (*User, error) {
 }
 
 func getUsers() ([]User, error) {
-	var users []User
+	var user []User
 	rows, err := db.Query(`
-		select users.id,username,email,role,about,website,users.created, count(1)
-		from users
-		left join posts on users.id = posts.authorid
-		group by users.id
-		order by role, users.created desc
+		select user.id,username,email,role,about,website,user.created, count(1)
+		from user
+		left join post on user.id = post.authorid
+		group by user.id
+		order by role, user.created desc
 		`)
 	if err != nil {
 		return nil, fmt.Errorf("could not execute query: %w", err)
@@ -134,15 +134,15 @@ func getUsers() ([]User, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan rows: %w", err)
 		}
-		users = append(users, u)
+		user = append(user, u)
 	}
-	return users, nil
+	return user, nil
 }
 
 // unused
 func getAllUsernames() ([]string, error) {
 	var usernames []string
-	rows, err := db.Query("select username from users;")
+	rows, err := db.Query("select username from user;")
 	if err != nil {
 		return nil, fmt.Errorf("could not execute query: %w", err)
 	}
@@ -158,7 +158,7 @@ func getAllUsernames() ([]string, error) {
 }
 
 func activateUser(id int) error {
-	_, err := db.Exec("update users set role = 'user' where id = ?", id)
+	_, err := db.Exec("update user set role = 'user' where id = ?", id)
 	return err
 }
 
@@ -167,27 +167,27 @@ func updateUserBanStatus(id int, banned bool) error {
 	if !banned {
 		role = "user"
 	}
-	_, err := db.Exec("update users set role = ? where id = ?", role, id)
+	_, err := db.Exec("update user set role = ? where id = ?", role, id)
 	return err
 }
 
 func deleteUser(id int) error {
-	_, err := db.Exec("delete from users where id = ?", id)
+	_, err := db.Exec("delete from user where id = ?", id)
 	return err
 }
 
 func updateUserRole(id int, role Role) error {
-	_, err := db.Exec("update users set role = ? where id = ?", role, id)
+	_, err := db.Exec("update user set role = ? where id = ?", role, id)
 	return err
 }
 
 func setNotificationsRead(id int) error {
-	_, err := db.Exec("update users set mentions_checked = ? where id = ?", time.Now().UTC(), id)
+	_, err := db.Exec("update user set mentions_checked = ? where id = ?", time.Now().UTC(), id)
 	return err
 }
 
 // doesn't include all fields
 func updateMe(u User) error {
-	_, err := db.Exec("update users set username = ?, email = ?, email_public = ?, about = ?, website = ? where id = ?", u.Username, u.Email, u.EmailPublic, u.About, u.Website, u.ID)
+	_, err := db.Exec("update user set username = ?, email = ?, email_public = ?, about = ?, website = ? where id = ?", u.Username, u.Email, u.EmailPublic, u.About, u.Website, u.ID)
 	return err
 }

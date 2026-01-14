@@ -1,20 +1,24 @@
-create table if not exists boards (
+create table if not exists board (
   id integer primary key,
-  subdomain text,
-  description text
+  ownerid integer,
+  name text,
+  description text,
+  foreign key (ownerid) references user(id)
 );
 
-create table if not exists forums (
+create table if not exists forum (
   id integer primary key,
-  name text, 
-  description text, 
-  slug text not null unique, 
+  boardid integer,
+  name text,
+  description text,
+  slug text not null unique,
   read_permissions text not null default '',
   write_permissions text not null default 'user',
-  created datetime default current_timestamp
+  created datetime default current_timestamp,
+  foreign key (boardid) references board(id)
 );
 
-create table if not exists threads (
+create table if not exists thread (
   id integer primary key,
   forumid integer,
   authorid integer,
@@ -22,23 +26,23 @@ create table if not exists threads (
   locked int not null default false,
   pinned int not null default false,
   created datetime default current_timestamp,
-  foreign key (forumid) references forums(id),
-  foreign key (authorid) references users(id)
+  foreign key (forumid) references forum(id),
+  foreign key (authorid) references user(id)
 );
 
-create table if not exists posts (
+create table if not exists post (
   id integer primary key,
   threadid integer,
   authorid integer,
   content text,
-  in_reply_to integer, 
+  in_reply_to integer,
   created datetime default current_timestamp,
   edited datetime,
-  foreign key (authorid) references users(id),
-  foreign key (threadid) references threads(id)
+  foreign key (authorid) references user(id),
+  foreign key (threadid) references thread(id)
 );
 
-create table if not exists users (
+create table if not exists user (
   id integer primary key,
   username text not null unique,
   hash text,
@@ -56,7 +60,7 @@ create table if not exists auth (
   userid integer,
   hash text,
   expiry text,
-  foreign key (userid) references users(id)
+  foreign key (userid) references user(id)
 );
 
 -- sort of awkward bc it just stores a toml blob. TODO move away from toml
@@ -64,17 +68,17 @@ create table if not exists config (
   id integer primary key,
   key text unique,
   -- toml blob
-  value text 
+  value text
 );
 
-create index if not exists idxforums_slug on forums(slug);
-create index if not exists idxposts_threadid on posts(threadid);
-create index if not exists idxusers_username on users(username);
+create index if not exists idxforum_slug on forum(slug);
+create index if not exists idxpost_threadid on post(threadid);
+create index if not exists idxuser_username on user(username);
 
 create trigger if not exists prevent_last_admin_deletion
-before update of role on users 
-for each row 
-when OLD.role = 'admin' and (select count(*) from users where role = 'admin') = 1
+before update of role on user
+for each row
+when OLD.role = 'admin' and (select count(*) from user where role = 'admin') = 1
 begin
 select raise(ABORT, 'Cannot remove the last admin'); end;
 

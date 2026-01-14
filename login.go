@@ -776,15 +776,15 @@ type LoginInitArgs struct {
 func LoginInit(args LoginInitArgs) {
 	db := args.Db
 	var err error
-	stmtUserName, err = db.Prepare("select id, hash from users where username = ? and id > 0")
+	stmtUserName, err = db.Prepare("select id, hash from user where username = ? and id > 0")
 	if err != nil {
 		panic(err)
 	}
-	stmtUserAuth, err = db.Prepare("select users.id, username, role, expiry from users join auth on users.id= auth.userid where auth.hash = ? and expiry > ?")
+	stmtUserAuth, err = db.Prepare("select user.id, username, role, expiry from user join auth on user.id= auth.userid where auth.hash = ? and expiry > ?")
 	if err != nil {
 		panic(err)
 	}
-	stmtUpdateUser, err = db.Prepare("update users set hash = ? where id = ?")
+	stmtUpdateUser, err = db.Prepare("update user set hash = ? where id = ?")
 	if err != nil {
 		panic(err)
 	}

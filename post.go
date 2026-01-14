@@ -62,13 +62,13 @@ func getPostSlug(postid int) (string, error) {
 	var count int
 	row := db.QueryRow(`
 		select
-		threads.id,
-		forums.slug,
-		(select count(1) from posts where threads.id = posts.threadid and id < ?1) as count
-		from posts
-		left join threads on posts.threadid = threads.id
-		left join forums on threads.forumid = forums.id
-		where posts.id = ?1
+		thread.id,
+		forum.slug,
+		(select count(1) from post where thread.id = post.threadid and id < ?1) as count
+		from post
+		left join thread on post.threadid = thread.id
+		left join forum on thread.forumid = forum.id
+		where post.id = ?1
 	`, postid)
 	err := row.Scan(&threadid, &forumname, &count)
 	if err != nil {
@@ -89,10 +89,10 @@ func getPostSlug(postid int) (string, error) {
 func searchPosts(q string) ([]Post, error) {
 	var posts []Post
 	rows, err := db.Query(`
-		select posts.id, content, users.id, users.username, posts.created, posts.edited
-		from posts
-		join users on posts.authorid = users.id
-		where content like ? order by posts.id desc limit 1000`, "%" + q + "%")
+		select post.id, content, user.id, user.username, post.created, post.edited
+		from post
+		join user on post.authorid = user.id
+		where content like ? order by post.id desc limit 1000`, "%" + q + "%")
 	if err != nil {
 		return nil, err
 	}
@@ -112,9 +112,9 @@ func getPosts(threadid, page int) []Post {
 	var posts []Post
 	limit, offset := paginate(page)
 	rows, _ := db.Query(`
-		select posts.id, content, users.id, users.username, posts.created, posts.edited
-		from posts
-		join users on posts.authorid = users.id
+		select post.id, content, user.id, user.username, post.created, post.edited
+		from post
+		join user on post.authorid = user.id
 		where threadid = ? limit ? offset ?`, threadid, limit, offset)
 	for rows.Next() {
 		var p Post
@@ -129,10 +129,10 @@ func getPostsByUser(uid int, page int) ([]Post, error) {
 	var posts []Post
 	limit, offset := paginate(page)
 	rows, _ := db.Query(`
-		select posts.id, content, users.id, users.username, posts.created, posts.edited
-		from posts
-		join users on posts.authorid = users.id
-		where authorid = ? order by posts.id desc limit ? offset ?`, uid, limit, offset)
+		select post.id, content, user.id, user.username, post.created, post.edited
+		from post
+		join user on post.authorid = user.id
+		where authorid = ? order by post.id desc limit ? offset ?`, uid, limit, offset)
 	for rows.Next() {
 		var p Post
 		err := rows.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
@@ -147,17 +147,17 @@ func getPostsByUser(uid int, page int) ([]Post, error) {
 func getPost(postid int) (Post, error) {
 	var p Post
 	row := db.QueryRow(`
-		select posts.id, content, users.id, users.username, posts.created, posts.edited
-		from posts
-		join users on posts.authorid = users.id
-		where posts.id = ?`, postid)
+		select post.id, content, user.id, user.username, post.created, post.edited
+		from post
+		join user on post.authorid = user.id
+		where post.id = ?`, postid)
 	err := row.Scan(&p.ID, &p.Content, &p.Author.ID, &p.Author.Username, &p.Created, &p.Edited)
 	return p, err
 }
 
 // returns post id
 func createPost(authorid int, threadid int, body string) (int64, error) {
-	res, err := db.Exec("insert into posts (threadid, authorid, content) values (?, ?, ?)", threadid, authorid, body)
+	res, err := db.Exec("insert into post (threadid, authorid, content) values (?, ?, ?)", threadid, authorid, body)
 
 	if err != nil {
 		return 0, err
@@ -166,7 +166,7 @@ func createPost(authorid int, threadid int, body string) (int64, error) {
 }
 
 func editPost(postid int, content string) error {
-	res, err := db.Exec("update posts set content = ?, edited = current_timestamp where id = ?", content, postid)
+	res, err := db.Exec("update post set content = ?, edited = current_timestamp where id = ?", content, postid)
 	aff, err := res.RowsAffected()
 	if err != nil {
 		return err
@@ -178,6 +178,6 @@ func editPost(postid int, content string) error {
 }
 
 func deletePost(postid int) error {
-	_, err := db.Exec("delete from posts where id = ?", postid)
+	_, err := db.Exec("delete from post where id = ?", postid)
 	return err
 }

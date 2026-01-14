@@ -85,7 +85,7 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 	serveHTML(w, r, "index", tmpl)
 }
 
-func instanceIndex(w http.ResponseWriter, r *http.Request) {
+func boardIndex(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	var role Role
 	if u != nil {
@@ -667,8 +667,8 @@ func Serve() {
 
 	// Setup Templates
 	// TODO -- forums are self-contained units, this is where we do subdomain parameterization
-	r.HandleFunc("/tmp", indexPage)
-	r.HandleFunc("/", instanceIndex)
+	r.HandleFunc("/", indexPage)
+	r.HandleFunc("/{board}", boardIndex)
 	r.HandleFunc("GET /f/{forum}", forumPage)
 	r.HandleFunc("GET /f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)
