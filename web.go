@@ -275,11 +275,30 @@ func doDeletePost(w http.ResponseWriter, r *http.Request) {
 		unauthorized(w, r)
 		return
 	}
+
+	// Get thread and forum info for redirect
+	var threadID int
+	var forumID int
+	row := db.QueryRow("select threadid, thread.forumid from post join thread on post.threadid = thread.id where post.id = ?", pid)
+	err = row.Scan(&threadID, &forumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+
 	err = deletePost(pid)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	forum, err := getForum(forumID)
+	if err != nil {
+		serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("%s/%d", forum.Slug, threadID), http.StatusSeeOther)
 }
 
 func editPostPage(w http.ResponseWriter, r *http.Request) {
@@ -720,6 +739,7 @@ func Serve() {
 	r.HandleFunc("GET /notifications", notificationsPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
+	r.HandleFunc("GET /fixi.js", serveAsset)
 	// autogenerate favicon
 	// TODO -> Used Fixed icon
 	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {

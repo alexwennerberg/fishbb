@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="{{.Config.BoardDescription}}" />
 <link rel="stylesheet" type="text/css" href="/style.css">
+<script src="/fixi.js"></script>
 <title>{{.Title}}</title>
 	</head>
 <body>
@@ -16,7 +17,7 @@
           <a href="/{{.Board.Slug}}" class="title-link">{{.Board.Name}}</a>
           {{ end }}
 		  {{ if .Forum }}
-          &gt; <a class="title-link" href="/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
+          &gt; <a class="title-link" href="{{.Forum.Slug}}">{{ .Forum.Name }}</a>
 		  {{ end }}<br>
 		  {{ if .Forum }}
 		  {{ .Forum.Description }}
