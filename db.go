@@ -18,6 +18,9 @@ func opendb() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
+	LoginInit(LoginInitArgs{
+		Db: db,
+	})
 	return db
 }
 
@@ -61,8 +64,5 @@ func initdb() {
 	if err != nil {
 		panic(err)
 	}
-	LoginInit(LoginInitArgs{
-		Db: db,
-	})
 	db.Close()
 }
