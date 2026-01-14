@@ -6,6 +6,7 @@
   --bg-inverse: #222;
   --bg-alt: #eee;
   --border: #000;
+  --link: var(--text);
 }
   
 @media(prefers-color-scheme: dark) {
@@ -17,6 +18,7 @@
     --bg-inverse: #ddd;
     --bg: #111;
     --border: #555;
+    --link: var(--text);
   }
 }
 
@@ -30,8 +32,8 @@ svg {
 button:not(.link-button) {
   /* box-shadow: var(--border) 2px 2px; */
   font-weight: bold;
-  background-color: var(--bg);
-  color: var(--text);
+  background-color: inherit;
+  color: inherit;
   border: 1px solid var(--border);
   font-size: 16px;
 }
@@ -116,8 +118,18 @@ textarea {
   border-radius: 0px;
 }
 
-a {
-    color
+.link-button {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  font-size: inherit;
+  display: inline;
+}
+
+
+a, .link-button {
+    text-decoration: underline;
+    color: var(--link);
 }
 
 button:hover:not(.link-button) {
@@ -204,10 +216,6 @@ table.nav-table {
   table-layout: fixed;
 }
 
-a {
-  color: var(--text);
-}
-
 .nav-table tr:nth-child(even) td { background-color: var(--bg-alt); }
 .nav-table th { background-color: var(--bg-inverse); color: var(--text-inverse);}
 .div-header { 
@@ -245,16 +253,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 .body-padded {
   margin: 0.4rem;
-}
-
-.link-button {
-  background: none!important;
-  border: none;
-  padding: 0!important;
-  text-decoration: underline;
-  font-size: inherit;
-  color:inherit;
-  display: inline;
 }
 
 .link-button:hover {
