@@ -1,7 +1,28 @@
 {{ template "header.html" . }}
-<div class="div-header">Editing settings</div>
-WIP
+<div class="div-header">Editing settings and <a href="/u/{{.User.Username}}">profile</a></div>
+<div class="body-padded">
+	<form method="POST">
+<label for="username">Username:</label><br>
+<input maxlength=250 id="username" name="username" value="{{.UserInfo.Username}}"><br>
+<label for="email">Email:</label><br>
+<input maxlength=250 id="email" name="email" value="{{.UserInfo.Email}}"><br>
+<label for="email-public">Share email publicly?</label><input {{if .UserInfo.EmailPublic}}checked{{end}} name="email-public" id="email-public" type="checkbox"><br>
+<label for="about">About:</label><br>
+<input 
+	   maxlength=250 
+	   type="text"
+	   name="about" 
+	   id="about" 
+	   value="{{.UserInfo.About}}"
+	   autocomplete=off ><br>
+<label for="website">Website:</label><br>
+<input maxlength=250 id="website" name="website" value="{{.UserInfo.Website}}"><br>
+<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 <a href="/change-password">Change Password</a><br>
+<button type="submit" name="update" value="update">Update</button>
+{{ if .Notice }}
+	<div class="notice">{{.Notice}}</div>
+	{{ end }}
 </form>
 </div>
 {{ template "footer.html" . }}

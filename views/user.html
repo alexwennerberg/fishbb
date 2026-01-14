@@ -1,7 +1,5 @@
 {{ template "header.html" . }}
-</header>
-<main>
-<div class="div-header">THIS PAGE IS WIP User {{.InfoUser.Username}}</div>
+<div class="div-header">User {{.InfoUser.Username}}</div>
 <div class="body-padded">
 	<b>About</b>: {{.InfoUser.About}}<br>
 	<b>Website</b>: {{.InfoUser.Website | addLinkTags }}<br>

@@ -11,28 +11,39 @@
   <header>
   <div id="page-header">
 	  <div>
-		  <a href="/" class="title-link">fishbb</a>
+		  <img src="/a?a={{.Config.BoardName}}" width=18px>
+		  <a href="/" class="title-link">{{.Config.BoardName}}</a>
 		  {{ if .Forum }}
 		  &gt; <a class="title-link" href="/f/{{.Forum.Slug}}">{{ .Forum.Name }}</a>
-		  {{ end }}
-		  {{ if .Thread }}
-		  &gt; <span class="title-link">{{ .Thread.Title }}</span>
 		  {{ end }}<br>
+		  {{ if .Forum }}
+		  {{ .Forum.Description }}
+		  {{ else }}
+		  {{.Config.BoardDescription}}
+		  {{ end }}
               </div>
     <div id="nav">
       {{ if not .User }}
-      <a href="/register">register</a>
-      <a href="/login">login</a>
+      <a href="/register">Register</a>
+      <a href="/login">Login</a>
       {{ else }}
 	  Hello, <a href="/me">{{.User.Username}}</a>.
-	  {{ if (.User.Role.Can "mod") }}<a href="/control">control</a>{{ end }}
-	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">logout</button>
+	  {{ if (.User.Role.Can "mod") }}<a href="/control">Control</a>{{ end }}
+	  <a href="/notifications">✉️ ({{ if .User.MentionsUnread }}<b>{{end}}{{.User.MentionsUnread }}{{if .User.MentionsUnread}}</b>{{end}})</a>
+	  <form style="display:inline" action="/logout" method="POST"><button class="link-button">Logout</button>
 	<input type="hidden" name="CSRF" value="{{.CSRFToken}}">
 	  </form>
       {{ end }}
 	  <br>
+	<form method="GET" action="/search" class="form-inline">
+		<input id="query" name="q" style="width:10rem;"></input>	
+		<button type="Submit">Search</button>
+	</form>
     </div>
+
   </div>
 {{ if and .User (not (.User.Role.Can "user"))}}
           <div class="alert">Your account is pending approval and not yet active. You will be able to post when your account is approved. Check back later!</div>
-      {{ end }}
+          {{ end }}
+  </header>
+<main>
