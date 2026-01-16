@@ -360,7 +360,7 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		// handle
 	}
-	http.Redirect(w, r, fmt.Sprintf("/%s/%d", f.Slug, tid), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("%s/%d", f.Slug, tid), http.StatusSeeOther)
 }
 
 // hashes string and builds png avatar
