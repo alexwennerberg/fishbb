@@ -634,7 +634,17 @@ func doCreateForum(w http.ResponseWriter, r *http.Request) {
 		serverError(w, r, err)
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	f, err := getForumBySlug(slugify(name))
+	if errors.Is(err, sql.ErrNoRows) {
+		notFound(w, r)
+		return
+	} else if err != nil {
+		serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, f.Slug, http.StatusSeeOther)
 }
 
 func doLockThread(w http.ResponseWriter, r *http.Request) {
