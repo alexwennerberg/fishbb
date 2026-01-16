@@ -750,11 +750,11 @@ func Serve() {
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
 	r.HandleFunc("GET /fixi.js", serveAsset)
-	// autogenerate favicon
-	// TODO -> Used Fixed icon
 	r.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "max-age=604800")
-		w.Write(genAvatar("asdf"))
+		w.Header().Set("Content-Type", "image/svg+xml")
+		svg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="80">🐟</text></svg>`
+		w.Write([]byte(svg))
 	})
 	r.HandleFunc("GET /a", avatarHandler)
 	// TODO Consider CSRF wrapping
