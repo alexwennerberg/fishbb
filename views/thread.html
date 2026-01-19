@@ -33,7 +33,7 @@
   <div class="post-body">
   {{ .Render }}
   </div>
-  {{ if and (or (not $.Thread.Locked) ($.User.Role.ModLevel)) (and $.User ($.User.Role.Can "user")) }}
+  {{ if and (or (not $.Thread.Locked) ($.User.Role.Can "mod")) (and $.User ($.User.Role.Can "user")) }}
   <div class="flex-end">
 	  <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a></div>
   {{ end }}
