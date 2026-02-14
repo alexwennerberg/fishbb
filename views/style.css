@@ -229,6 +229,9 @@ table.nav-table {
 .div-header a {
   color: var(--text-inverse);
 }
+.div-header svg {
+  fill: var(--text-inverse);
+}
 
 a:hover {
   text-decoration: none;
