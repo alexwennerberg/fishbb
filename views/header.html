@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="{{.Config.BoardDescription}}" />
 <link rel="stylesheet" type="text/css" href="/style.css">
+{{ if .Forum }}<link rel="alternate" type="application/atom+xml" title="{{ .Forum.Name }} Feed" href="{{ .Forum.Slug }}/feed">{{ end }}
 <script src="/fixi.js"></script>
 <title>{{.Title}}</title>
 	</head>

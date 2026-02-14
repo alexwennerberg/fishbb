@@ -1,5 +1,5 @@
 {{ template "header.html" . }}
-<table class="nav-table" id="threads">
+<table class="nav-table h-feed" id="threads">
   <tr><th>Thread</th><th style="text-align:center;width:4rem;" class="hide-mobile">Replies</th><th style="width:30%" class="hide-mobile">Last Post</th></tr>
   {{ if (and $.User ($.User.Role.Can "user")) }}
   <div class="body-header">
@@ -11,14 +11,14 @@
 <tr><td>No threads in this forum yet. Be the first to create one!</td></tr>
 {{ else }} 
   {{ range .Threads }}
-  <tr>
+  <tr class="h-entry">
     <td>
 		{{ if .Locked }} {{ template "lock.svg" }} {{ end }}
 		{{ if .Pinned }} {{ template "pin.svg" }} {{ end }}
-        <a class="title-link" href="{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
+        <a class="title-link p-name u-url" href="{{$.Forum.Slug}}/{{.ID}}">{{.Title}}</a><br>
 		<div class="flex-between">
 		<div style="color:var(--text-alt)">
-			by <a href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <span class="text-alt" title="{{.Created}}">{{ timeago .Created }}</span><br>
+			by <a class="p-author h-card" href="/u/{{.Author.Username}}">{{.Author.Username}}</a> <time class="dt-published text-alt" datetime="{{ isodate .Created }}" title="{{.Created}}">{{ timeago .Created }}</time><br>
 			<span class="mobile">Lastest <a href="{{.Latest.Slug}}">{{ timeago .Latest.Created }}</a> by <a href="/u/{{.Latest.Author.Username}}">{{.Latest.Author.Username}}</a></span>
 		</div>
 	  {{ if and $.User ($.User.Role.Can "mod")}}

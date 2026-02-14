@@ -739,6 +739,7 @@ func Serve() {
 	r.HandleFunc("/{board}", boardIndex)
 	// TODO these paths are kinda ugly
 	r.HandleFunc("GET /{board}/f/{forum}", forumPage)
+	r.HandleFunc("GET /{board}/f/{forum}/feed", forumFeedPage)
 	r.HandleFunc("GET /{board}/f/{forum}/{threadid}", threadPage)
 	r.HandleFunc("GET /u/{username}", userPage)
 	r.HandleFunc("GET /login", loginPage)
