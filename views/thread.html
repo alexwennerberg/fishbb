@@ -9,35 +9,7 @@
 
 	<a href="{{.Forum.Slug}}">{{.Forum.Name}}</a> > {{ if .Thread.Locked }} {{ template "lock.svg" }} {{end}} {{.Thread.Title}}
 </div>
-{{ range .Posts }}
-<div class="post h-entry" id={{.ID}}>
-  <div class="post-meta">
-	  <div style="color:var(--text-alt);">
-  <a class="p-author h-card" href="/u/{{.Author.Username}}"><b>{{.Author.Username}}</b></a> <a class="u-url" href="#{{.ID}}"
-																	title="Link to this post">#{{.ID}}</a> <time class="dt-published text-alt" datetime="{{ isodate .Created }}" title="{{ .Created
-	  }}">{{ timeago .Created}}</time>
-	  {{ if .Edited }}<em>(edited <time class="dt-updated" datetime="{{ isodate .Edited }}">{{timeago .Edited}}</time>)</em>{{end}}
-	  </div>
-	  <div>
-		  {{ if and $.User (or (eq .Author.ID $.User.ID) ($.User.Role.Can "mod")) }}
-		  <a href="/post/{{.ID}}/edit">Edit</a>
-		  <form style="display:inline" action="/post/{{.ID}}" method="POST">
-			  <input type="hidden" name="_method" value="DELETE"><button class="link-button">Delete</button>
-		<input type="hidden" name="CSRF" value="{{$.CSRFToken}}">
-		  </form>
-		  {{ end }}
-
-	  </div>
-  </div>
-  <div class="post-body e-content">
-  {{ .Render }}
-  </div>
-  {{ if and (or (not $.Thread.Locked) ($.User.Role.Can "mod")) (and $.User ($.User.Role.Can "user")) }}
-  <div class="flex-end">
-	  <a href="/post/new?thread={{$.Thread.ID}}&reply={{.ID}}"><button class="padded-button">Reply</button></a></div>
-  {{ end }}
-</div>
-{{ end }}
+{{ template "post-list.html" . }}
 {{ $pages := pageArr .ItemCount }}
 {{ $length := len $pages }}
 {{ if ne $length 1 }}
