@@ -93,12 +93,18 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 	i, err := getBoards()
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 	tmpl["Forums"] = i
 	serveHTML(w, r, "index", tmpl)
 }
 
 func boardIndex(w http.ResponseWriter, r *http.Request) {
+	_, err := getBoard(r.PathValue("board"))
+	if err != nil {
+		notFound(w, r)
+		return
+	}
 	u := GetUserInfo(r)
 	var role Role
 	if u != nil {
@@ -162,17 +168,17 @@ func threadPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	forum, err := getForumBySlug(r.PathValue("forum"))
-	if err != nil {
-		serverError(w, r, err)
-	}
-	page := page(r)
-	thread, err := getThread(threadID)
-	// TODO -- doesnt work?
 	if errors.Is(err, sql.ErrNoRows) {
 		notFound(w, r)
 		return
 	} else if err != nil {
 		serverError(w, r, err)
+		return
+	}
+	page := page(r)
+	thread, err := getThread(threadID)
+	if err != nil {
+		notFound(w, r)
 		return
 	}
 	tmpl["Thread"] = thread
@@ -191,7 +197,7 @@ func newThreadPage(w http.ResponseWriter, r *http.Request) {
 	var err error
 	forum, err := getForum(forumID)
 	if err != nil {
-		serverError(w, r, err)
+		notFound(w, r)
 		return
 	}
 	tmpl["Forum"] = forum
@@ -211,7 +217,7 @@ func newPostPage(w http.ResponseWriter, r *http.Request) {
 
 	thread, err := getThread(tid)
 	if err != nil {
-		serverError(w, r, err)
+		notFound(w, r)
 		return
 	}
 	if inReplyTo != 0 {
@@ -237,10 +243,15 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 	u := GetUserInfo(r)
 	content := r.FormValue("content")
 	if !postValid(content) {
-		return // TODO 4xx
+		errorPage(w, r, http.StatusBadRequest, "Post content is too long (maximum 10,000 characters)")
+		return
 	}
 	tid, _ := strconv.Atoi(r.URL.Query().Get("thread"))
-	thread, _ := getThread(tid)
+	thread, err := getThread(tid)
+	if err != nil {
+		notFound(w, r)
+		return
+	}
 	// TODO check if forum allows you to post
 	if !u.Role.Can(RoleUser) || (thread.Locked && !u.Role.Can(RoleMod)) {
 		unauthorized(w, r)
@@ -249,10 +260,12 @@ func createNewPost(w http.ResponseWriter, r *http.Request) {
 	pid, err := createPost(u.UserID, int(tid), content)
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 	slug, err := getPostSlug(int(pid))
 	if err != nil {
 		serverError(w, r, err)
+		return
 	}
 	http.Redirect(w, r, slug, http.StatusSeeOther)
 }
@@ -306,8 +319,7 @@ func editPostPage(w http.ResponseWriter, r *http.Request) {
 	pid, _ := strconv.Atoi(r.PathValue("postid"))
 	post, err := getPost(pid)
 	if err != nil {
-		panic(err)
-		// TODO distinguish notfound
+		notFound(w, r)
 		return
 	}
 	u := GetUserInfo(r)
@@ -342,7 +354,8 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	forumID, _ := strconv.Atoi(r.URL.Query().Get("forumid"))
 	f, err := getForum(forumID)
 	if err != nil {
-		serverError(w, r, err)
+		notFound(w, r)
+		return
 	}
 	if !u.Role.Can(f.WritePermissions) {
 		unauthorized(w, r)
@@ -350,15 +363,23 @@ func createNewThread(w http.ResponseWriter, r *http.Request) {
 	}
 	title := r.FormValue("title")
 	content := r.FormValue("content")
+	if strings.TrimSpace(title) == "" {
+		errorPage(w, r, http.StatusBadRequest, "Thread title cannot be empty")
+		return
+	}
+	if strings.TrimSpace(content) == "" {
+		errorPage(w, r, http.StatusBadRequest, "Thread content cannot be empty")
+		return
+	}
 	tid, err := createThread(u.UserID, forumID, title)
 	if err != nil {
-		// handle
 		serverError(w, r, err)
+		return
 	}
 	_, err = createPost(u.UserID, int(tid), content)
 	if err != nil {
 		serverError(w, r, err)
-		// handle
+		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("%s/%d", f.Slug, tid), http.StatusSeeOther)
 }
@@ -413,7 +434,12 @@ func registerPage(w http.ResponseWriter, r *http.Request) {
 		}
 		err := createUser(username, email, password, role)
 		if err != nil {
+			if strings.Contains(err.Error(), "UNIQUE constraint") {
+				formErr("Username or email already taken.")
+				return
+			}
 			serverError(w, r, err)
+			return
 		}
 		LoginFunc(w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -747,7 +773,6 @@ func Serve() {
 	// TODO Consider CSRF wrapping
 	r.With(LimitByRealIP(25, 1*time.Hour)).HandleFunc("/register", registerPage)
 	r.HandleFunc("GET /search", searchPage)
-	r.HandleFunc("GET /notifications", notificationsPage)
 	r.HandleFunc("GET /style.css", serveAsset)
 	r.HandleFunc("GET /robots.txt", serveAsset)
 	r.HandleFunc("GET /fixi.js", serveAsset)
@@ -765,6 +790,7 @@ func Serve() {
 	r.Group(func(r chi.Router) {
 		r.Use(Required)
 
+		r.HandleFunc("GET /notifications", notificationsPage)
 		r.HandleFunc("GET /post/new", newPostPage)
 		r.With(CSRFWrap).With(LimitByUser(10, 5*time.Minute)).HandleFunc("POST /post/new", createNewPost)
 		r.HandleFunc("GET /thread/new", newThreadPage)

@@ -6,7 +6,7 @@
     <td>
         <a class="title-link" href="{{.Slug}}">{{.Name}}</a><br>
 	  {{.Description}}<br>
-	  <span class="mobile">Threads: <b>{{.ThreadCount}}</b> (Last post <a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a>) </span>
+	  <span class="mobile">Threads: <b>{{.ThreadCount}}</b> {{ if .LastPost.ID }}(Last post <a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a>){{ else }}(No posts yet!){{ end }} </span>
     </td>
 	<td class="hide-mobile" style="text-align:center;">{{.ThreadCount}}</td>
     <td class="hide-mobile">
@@ -14,7 +14,7 @@
 		{{ if .LastPost.ID }}<a href="{{.LastPost.Slug}}">{{ timeago .LastPost.Created }}</a> 
 		by <a href="/u/{{.LastPost.Author.Username}}">{{.LastPost.Author.Username}}</a><br>
 		in <a href="{{.Slug}}/{{.LastPost.ThreadID}}">{{.LastPost.ThreadTitle}}</a><br>
-		</div>
+		</span>
 		{{else}}No posts yet!
 		{{ end }}
     </td>

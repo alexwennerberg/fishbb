@@ -81,11 +81,10 @@ func setThreadLock(threadid int, locked bool) error {
 func getThread(threadid int) (Thread, error) {
 	row := db.QueryRow(`
 		select thread.id, forumid, title, thread.authorid, user.username,
-		thread.created, thread.pinned, thread.locked, count(1) - 1 as replies
+		thread.created, thread.pinned, thread.locked,
+		(select count(1) - 1 from post where threadid = thread.id) as replies
 		from thread
 		join user on user.id = thread.authorid
-		join post on thread.id = post.threadid
-		join forum on thread.forumid = forum.id
 		where thread.id = ?`, threadid)
 	var t Thread
 	err := row.Scan(&t.ID, &t.ForumID, &t.Title, &t.Author.ID, &t.Author.Username, &t.Latest.Created, &t.Pinned, &t.Locked, &t.Replies)
