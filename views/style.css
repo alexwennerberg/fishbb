@@ -14,7 +14,7 @@
     --text: #fff;
     --text-inverse: #ddd;
     --text-alt: #ccc;
-    --bg-alt: #040404;
+    --bg-alt: #1a1a1a;
     --bg-inverse: #333;
     --bg: #111;
     --border: #555;
@@ -247,7 +247,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post {
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--border);
 }
 
 .post-meta { 
