@@ -12,10 +12,10 @@
 @media(prefers-color-scheme: dark) {
   :root {
     --text: #fff;
-    --text-inverse: #ccc;
+    --text-inverse: #ddd;
     --text-alt: #ccc;
     --bg-alt: #040404;
-    --bg-inverse: #222;
+    --bg-inverse: #333;
     --bg: #111;
     --border: #555;
     --link: var(--text);
@@ -221,8 +221,8 @@ table.nav-table {
 
 .nav-table tr:nth-child(even) td { background-color: var(--bg-alt); }
 .nav-table th { background-color: var(--bg-inverse); color: var(--text-inverse);}
-.div-header { 
-  padding: 0.2rem;
+.div-header {
+  padding: 0.3rem 0.5rem;
   font-weight: bold;
   background-color: var(--bg-inverse); color: var(--text-inverse);
 }
