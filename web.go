@@ -792,9 +792,9 @@ func Serve() {
 
 		r.HandleFunc("GET /notifications", notificationsPage)
 		r.HandleFunc("GET /post/new", newPostPage)
-		r.With(CSRFWrap).With(LimitByUser(10, 5*time.Minute)).HandleFunc("POST /post/new", createNewPost)
+		r.With(CSRFWrap).HandleFunc("POST /post/new", createNewPost) // TODO restore: .With(LimitByUser(10, 5*time.Minute))
 		r.HandleFunc("GET /thread/new", newThreadPage)
-		r.With(CSRFWrap).With(LimitByUser(10, 5*time.Minute)).HandleFunc("POST /thread/new", createNewThread)
+		r.With(CSRFWrap).HandleFunc("POST /thread/new", createNewThread) // TODO restore: .With(LimitByUser(10, 5*time.Minute))
 
 		r.HandleFunc("GET /post/{postid}/edit", editPostPage)
 		r.With(CSRFWrap).HandleFunc("POST /post/{postid}/edit", editPostPage)
